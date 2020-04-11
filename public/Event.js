@@ -1,17 +1,11 @@
-import { Games } from './Games';
-
-export var EventOptions = {
-    isCancelable,
-};
+const EventEmitter = require('events');
 
 const defaults = {
     isCancelable: true,
 };
 
-export class Event {
-    _type;
-    _isCancelable;
-    _canceled;
+class Event {
+
 
     get type() {
         return this._type;
@@ -53,7 +47,11 @@ function createProxyListener(originalListener, context) {
     };
 }
 
-export class CancelableEventEmitter extends EventEmitter {
+class CancelableEventEmitter extends EventEmitter {
+    constructor(){
+        super();
+    }
+
     on(eventName, listener) {
         return super.on(eventName, createProxyListener(listener, this));
     }
@@ -69,43 +67,43 @@ export class CancelableEventEmitter extends EventEmitter {
     }
 }
 
-export class BeforeDrawEvent extends Event {
+class BeforeDrawEvent extends Event {
     constructor(player, quantity) {
         super('beforedraw');
     }
 }
 
-export class DrawEvent extends Event {
+class DrawEvent extends Event {
     constructor(player, cards) {
         super('draw');
     }
 }
 
-export class BeforePassEvent extends Event {
+class BeforePassEvent extends Event {
     constructor(player) {
         super('beforepass');
     }
 }
 
-export class BeforeCardPlayEvent extends Event {
+class BeforeCardPlayEvent extends Event {
     constructor(card, player) {
         super('beforecardplay');
     }
 }
 
-export class CardPlayEvent extends Event {
+class CardPlayEvent extends Event {
     constructor(card, player) {
         super('cardplay');
     }
 }
 
-export class NextPlayerEvent extends Event {
+class NextPlayerEvent extends Event {
     constructor(player) {
         super('nextplayer');
     }
 }
 
-export class GameEndEvent extends Event {
+class GameEndEvent extends Event {
     constructor(winner) {
         super('end', { isCancelable: false, });
     }

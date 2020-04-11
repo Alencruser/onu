@@ -1,3 +1,4 @@
+/*
 import {
     BeforeCardPlayEvent,
     BeforeDrawEvent,
@@ -7,7 +8,8 @@ import {
     DrawEvent,
     GameEndEvent,
     NextPlayerEvent,
-} from './Event';
+} from './Event';*/
+let Event = require('./Event.js');
 
 const CARDS_PER_PLAYER = 7;
 const NUMBER_OF_PLAYER = 4;
@@ -97,7 +99,7 @@ class Card {
         return this.color;
     }
 
-    set color() {
+    set color(color) {
         this._color = color;
     }
 
@@ -117,6 +119,12 @@ class Card {
     matches(other) {
         if (this.isWildCard()) return true;
         return other.value === this.value || other.color === this.color;
+    }
+
+    is(value, color = NULL) {
+        let matches = this.value === value;
+        if (color) matches = matches && this.color === color;
+        return matches;
     }
 }
 
@@ -178,16 +186,17 @@ class shuffle {
 
 class Deck {
 
+    drawpile = [];
     constructor() {
-        this = createUnoDeck();
-        this = shuffle.shuffle();
+        this.drawpile = createUnoDeck();
+        this.drawpile = shuffle.shuffle();
     }
 
     draw() {
-        if (this[0].value == Value.DECKEPTION)
-            this.shuffle.reset()
-        let top = this[0];
-        this.shift()
+        if (this.drawpile[0].value == Value.DECKEPTION)
+            this.drawpile.shuffle.reset()
+        let top = this.drawpile[0];
+        this.drawpile.shift()
         return top;
     }
 }
@@ -227,7 +236,7 @@ class Player {
 
 }
 
-class Game extends CancelableEventEmitter {
+class Game extends Event.CancelableEventEmitter {
 
     drawPile;
     GameDirection;
@@ -314,14 +323,14 @@ class Game extends CancelableEventEmitter {
     }
 
     pass() {
-        if (!this.dispatchEvent(new BeforePassEvent(this._currentPlayer))) return; //EVENT
+        if (!this.dispatchEvent(new Event.BeforePassEvent(this._currentPlayer))) return; //EVENT
         this.goToNextPlayer();
     }
 
     goToNextPlayer() {
         this.drawn = false;
         this._currentPlayer = this.getNextPlayer();
-        if (!this.dispatchEvent(new NextPlayerEvent(this._currentPlayer))) return; //EVENT
+        if (!this.dispatchEvent(new Event.NextPlayerEvent(this._currentPlayer))) return; //EVENT
     }
 
     play(card) {
@@ -330,16 +339,16 @@ class Game extends CancelableEventEmitter {
         if (!card.matches(this._discardedCard))
             throw new Error(`${this._discardedCard}, from discard pile, does not match ${card}`);
 
-        if (!this.dispatchEvent(new BeforeCardPlayEvent(card, this._currentPlayer))) return; //EVENT
+        if (!this.dispatchEvent(new Event.BeforeCardPlayEvent(card, this._currentPlayer))) return; //EVENT
 
         currentPlayer.removeCard(card);
         this.drawPile.push(this._discardedCard);
         this._discardedCard = card;
 
-        if (!this.dispatchEvent(new CardPlayEvent(card, this._currentPlayer))) return; //EVENT
+        if (!this.dispatchEvent(new Event.CardPlayEvent(card, this._currentPlayer))) return; //EVENT
 
         if (currentPlayer.hand.length == 0) {
-            this.dispatchEvent(new GameEndEvent(this._currentPlayer)); //EVENT
+            this.dispatchEvent(new Event.GameEndEvent(this._currentPlayer)); //EVENT
 
             // TODO: how to stop game after it's finished?
         }
@@ -365,12 +374,12 @@ class Game extends CancelableEventEmitter {
     }
 
     privateDraw(player, amount) {
-        if (!this.dispatchEvent(new BeforeDrawEvent(player, amount))) return; //EVENT
+        if (!this.dispatchEvent(new Event.BeforeDrawEvent(player, amount))) return; //EVENT
         cards = [];
         for (let i = 0; i < amount; i++)
             cards.push(this.drawPile.draw());
         player.hand = player.hand.concat(cards);
-        if (!this.dispatchEvent(new DrawEvent(player, cards))) return; //EVENT
+        if (!this.dispatchEvent(new Event.DrawEvent(player, cards))) return; //EVENT
         this.drawn = true;
         return cards;
     }
