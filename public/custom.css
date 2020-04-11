@@ -1,0 +1,17 @@
+#signupButton {
+    margin-left:auto;
+    cursor:pointer;
+}
+
+#signinButton1 {
+    cursor: pointer;
+}
+
+#signupButton1 {
+    margin-left : auto;
+}
+
+#signinButton,#signupButton1 {
+    padding-bottom:8px;
+    border-bottom: solid 2px #58c8ff;
+}

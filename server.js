@@ -24,8 +24,7 @@ app.use(session({
 //Use of body-parser
 app.use(bodyparser.urlencoded({ extended: false }));
 //use of static folder
-app.use('/', express.static('public'));
-app.use('/room', express.static('public'));
+app.use(express.static('public'));
 //use of ejs template engine
 app.set('view engine', 'ejs');
 //Securisation input
@@ -41,6 +40,7 @@ function blbl(str) {
 };
 
 app.get('/', (req, res) => {
+    sess = req.session;
     if(sess.pseudo){
         return res.render('index',{pseudo:sess.pseudo});
     } else {
@@ -58,17 +58,19 @@ app.post('/register', (req, res) => {
         lastName = blbl(req.body.lastName),
         birthDate = blbl(req.body.birthDate),
         city = blbl(req.body.city),
-        zip = blbl(req.body.zip);
+        zip = blbl(req.body.zip),
+        sess=req.session;
 
 	bcrypt.genSalt(10, (err, salt) => {
 		bcrypt.hash(pass, salt, (err, hash) => {
 			pass = hash;
-			let createAccount = `INSERT INTO Users (Pseudo,Password,First_name,Last_name,Birth-date,City,Zipcode) VALUES ('${pseudo}','${pass}','${firstName}','${lastName}','${birthDate}','${city}','${zip}');`;
+			let createAccount = `INSERT INTO Users (Pseudo,Password,First_name,Last_name,Birth_date,City,Zipcode) VALUES ('${pseudo}','${pass}','${firstName}','${lastName}','${birthDate}','${city}','${zip}');`;
 			connection.query(createAccount, (error, results, field) => {
 				if (error) {
 					console.log(error);
 					res.redirect('/');
 				} else {
+                    sess.pseudo = pseudo;
 					res.redirect('/');
 				}
 			});
@@ -81,14 +83,14 @@ app.post('/connect', (req, res) => {
 	sess = req.session;
 	let pseudo = blbl(req.body.pseudo);
 	let pass = blbl(req.body.password);
-	let connectAccount = `SELECT pass FROM users WHERE username='${username}'`;
+	let connectAccount = `SELECT Password FROM Users WHERE Pseudo='${pseudo}'`;
 	connection.query(connectAccount, (error, results, field) => {
 		if (error) {
 			console.log(error);
 		} else {
-			bcrypt.compare(pass, results[0].pass, (err, result) => {
+			bcrypt.compare(pass, results[0].Password, (err, result) => {
 				if (result) {
-					sess.username = username;
+					sess.pseudo = pseudo;
 					res.redirect('/');
 				} else {
 					res.redirect('/')

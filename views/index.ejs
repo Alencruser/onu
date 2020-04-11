@@ -1,11 +1,118 @@
-
-    <title>Menu principal</title>
+<%- include('partials/header.ejs') %>
+<title>Menu principal</title>
 </head>
+
 <body>
 
     <% if(locals.pseudo){ %>
-        <h1>affichage jeu</h1>
+        <div class="container-fluid row">
+            <div class="col-sm-2 offset-sm-3"><div class="card" style="width: 18rem;">
+                <img src="25.png" class="card-img-top" alt="...">
+                <div class="card-body">
+                  <p class="card-text">Prix d'entrée : 25 Tokens</p>
+                </div>
+              </div></div>
+            <div class="col-sm-2"><div class="card" style="width: 18rem;">
+                <img src="100.png" class="card-img-top" alt="...">
+                <div class="card-body">
+                  <p class="card-text">Prix d'entrée : 100 Tokens</p>
+                </div>
+              </div></div>
+            <div class="col-sm-2"><div class="card" style="width: 18rem;">
+                <img src="500.png" class="card-img-top" alt="...">
+                <div class="card-body">
+                  <p class="card-text">Prix d'entrée : 500 Tokens</p>
+                </div>
+              </div></div>
+        </div>
     <% } else { %>
-        <form action=""></form>
+    <div class="modal" tabindex="-1" role="dialog" id="connect">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="display:flex;justify-content:space-around">
+                    <h5 class="modal-title" id="signinButton">Connexion</h5>
+                    <h5 class="modal-title" id="signupButton">Inscription</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="/connect" method="POST">
+                        <div class="form-group">
+                            <label for="pseudo">Pseudo</label>
+                            <input class="form-control" type="text" id="pseudo" name="pseudo">
+                        </div>
+                        <div class="form-group">
+                            <label for="pass">Mot de passe</label>
+                            <input class="form-control" type="password" id="pass" name="password">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Connexion</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" tabindex="-1" role="dialog" id="register">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header" style="display:flex;justify-content:space-around">
+                    <h5 class="modal-title" id="signinButton1">Connexion</h5>
+                    <h5 class="modal-title" id="signupButton1">Inscription</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="/register" method="POST">
+                        <div class="form-group">
+                            <label for="pseudo">Pseudo / Username</label>
+                            <input class="form-control" type="text" id="pseudo" name="pseudo">
+                        </div>
+                        <div class="form-group">
+                            <label for="pass">Mot de passe / Password</label>
+                            <input class="form-control" type="password" id="pass" name="password">
+                        </div>
+                        <div class="form-group">
+                            <label for="pass">Prenom / First Name</label>
+                            <input class="form-control" type="text" id="firstName" name="firstName">
+                        </div>
+                        <div class="form-group">
+                            <label for="pass">Nom / Last Name</label>
+                            <input class="form-control" type="text" id="lastName" name="lastName">
+                        </div>
+                        <div class="form-group">
+                            <label for="pass">Date de naissance / Birth Date</label>
+                            <input class="form-control" type="date" id="birthDate" name="birthDate">
+                        </div>
+                        <div class="form-group">
+                            <label for="pass">Ville / City </label>
+                            <input class="form-control" type="text" id="city" name="city">
+                        </div>
+                        <div class="form-group">
+                            <label for="pass">Code postal / Zip</label>
+                            <input class="form-control" type="text" id="zip" name="zip">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">S'enregistrer</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.getElementById('signupButton').addEventListener('click',()=>{
+            $('#connect').modal('hide');
+            $('#register').modal('show');
+        });
+        
+        document.getElementById('signinButton1').addEventListener('click',()=>{
+            $('#register').modal('hide');
+            $('#connect').modal('show');
+        });
+    </script>
     <% } %>
 </body>
+<%- include('partials/footer.ejs') %>
