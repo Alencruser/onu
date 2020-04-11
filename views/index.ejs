@@ -2,29 +2,117 @@
 <title>Menu principal</title>
 </head>
 
-<body>
+<body class="row">
 
     <% if(locals.pseudo){ %>
-        <div class="container-fluid row">
-            <div class="col-sm-2 offset-sm-3"><div class="card" style="width: 18rem;">
-                <img src="25.png" class="card-img-top" alt="...">
-                <div class="card-body">
-                  <p class="card-text">Prix d'entrée : 25 Tokens</p>
+    <div id="carouselExampleIndicators" class="carousel slide align-self-center container-fluid row"
+        data-interval="false" data-ride="carousel">
+        <ol class="carousel-indicators ">
+            <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+            <li data-target="#carouselExampleIndicators" id="profil" class="test" data-slide-to="1"></li>
+            <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+            <li data-target="#carouselExampleIndicators" data-slide-to="3"></li>
+        </ol>
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <div class="row">
+                    <h5 class="mx-auto screen-title">JOUER</h5>
                 </div>
-              </div></div>
-            <div class="col-sm-2"><div class="card" style="width: 18rem;">
-                <img src="100.png" class="card-img-top" alt="...">
-                <div class="card-body">
-                  <p class="card-text">Prix d'entrée : 100 Tokens</p>
+                <div class=" align-self-center container-fluid row text-center">
+                    <div class="col-sm-2 offset-sm-3">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title text-center">Initié</h5>
+                                <img src="img/icons/25.png" class="card-img-top" alt="...">
+                                <center><small class="text-center">Entrée : 25 Tokens</small><br>
+                                    <small class="text-center">Gain : 100 Tokens</small></center>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title text-center">Initié</h5>
+                                <img src="img/icons/25.png" class="card-img-top" alt="...">
+                                <center><small class="text-center">Entrée : 100 Tokens</small><br>
+                                    <small class="text-center">Gain : 400 Tokens</small></center>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-2">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title text-center">Initié</h5>
+                                <img src="img/icons/25.png" class="card-img-top" alt="...">
+                                <center><small class="text-center">Entrée : 500 Tokens</small><br>
+                                    <small class="text-center">Gain : 2000 Tokens</small></center>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-              </div></div>
-            <div class="col-sm-2"><div class="card" style="width: 18rem;">
-                <img src="500.png" class="card-img-top" alt="...">
-                <div class="card-body">
-                  <p class="card-text">Prix d'entrée : 500 Tokens</p>
+            </div>
+            <div class="carousel-item">
+                <div class="row">
+                    <h5 class="mx-auto screen-title">Profil</h5>
                 </div>
-              </div></div>
+                <div class="row">
+                    <div class="col-sm-12 col-lg-8 offset-lg-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-lg-4 img-text ">
+                                <% if(wrate){ %>
+                                    Taux de victoire : <%=wrate %>% 
+                                <% } %>
+                            </div>
+                            <div class="col-sm-4 col-lg-4 text-center"><img src="img/surprised.jpg"
+                                    class="rounded-circle" alt="" style="width:50%;height:auto;margin-left:5%">
+                            </div>
+                            <div class="col-sm-4 col-lg-4 img-text "><% if(locals.gplayed){ %>Parties jouées : <%=gplayed %><% } %></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-12 col-lg-8 offset-lg-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-lg-4 img-text"><% if(locals.tokenslost){ %>Tokens perdus : <%=tokenslost %><% } %>
+                            </div>
+                            <div class="col-sm-4 col-lg-4 img-text">
+                                <ul>
+                                    <li>
+                                    <p class="text-center"> <%=pseudo %> </p>
+                                    </li>
+                                    <li>
+                                        <p class="text-center"><% if(locals.xpAmount){ %>Niveau <%=xpAmount %><% } %></p>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-sm-4 col-lg-4 img-text"><% if(locals.tokenswon){ %>Tokens gagnés : <%=tokenswon %><% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="row">
+                    <h5 class="mx-auto screen-title">Leaderboard</h5>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="row">
+                    <h5 class="mx-auto screen-title">Boutique</h5>
+                </div>
+            </div>
         </div>
+        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+
+
     <% } else { %>
     <div class="modal" tabindex="-1" role="dialog" id="connect">
         <div class="modal-dialog" role="document">
@@ -46,9 +134,9 @@
                             <label for="pass">Mot de passe</label>
                             <input class="form-control" type="password" id="pass" name="password">
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Connexion</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Connexion</button>
                     </form>
                 </div>
             </div>
@@ -94,21 +182,21 @@
                             <label for="pass">Code postal / Zip</label>
                             <input class="form-control" type="text" id="zip" name="zip">
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">S'enregistrer</button>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">S'enregistrer</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
     <script>
-        document.getElementById('signupButton').addEventListener('click',()=>{
+        document.getElementById('signupButton').addEventListener('click', () => {
             $('#connect').modal('hide');
             $('#register').modal('show');
         });
-        
-        document.getElementById('signinButton1').addEventListener('click',()=>{
+
+        document.getElementById('signinButton1').addEventListener('click', () => {
             $('#register').modal('hide');
             $('#connect').modal('show');
         });

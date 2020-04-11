@@ -11,8 +11,8 @@ let express = require('express'),
         user: 'root',
         password: '',
         database: 'onu'
-    }),
-    sess;
+    });
+    
 
 app.use(session({
     secret: 'crayonrouge',
@@ -39,10 +39,27 @@ function blbl(str) {
         replace(/'/g, '&#039;');
 };
 
+let sess;
+
 app.get('/', (req, res) => {
     sess = req.session;
     if(sess.pseudo){
-        return res.render('index',{pseudo:sess.pseudo});
+        let getprofile = `SELECT * from Stats WHERE Id_user = '${sess.idUser}' `;
+        connection.query(getprofile,(err,results,field) =>{
+            if(err){
+                console.log(err);
+                return res.render('index',{pseudo:sess.pseudo});
+            }else {
+                return res.render('index',{
+                    pseudo:sess.pseudo,
+                    gplayed:results[0].Games_played.toString(),
+                    wrate:((results[0].Games_won/results[0].Games_played*100)||0).toString(),
+                    tokenswon: results[0].Tokens_won.toString(),
+                    tokenslost: results[0].Tokens_lost.toString(),
+                    xpAmount: sess.xpAmount.toString()
+                })
+            }
+        })
     } else {
         return res.render('index');
     }
@@ -70,8 +87,26 @@ app.post('/register', (req, res) => {
 					console.log(error);
 					res.redirect('/');
 				} else {
-                    sess.pseudo = pseudo;
-					res.redirect('/');
+                    //    Ici aller chercher directement l'idUser pour le stocker coté serveur
+                    let getId = `SELECT Id_user from Users WHERE pseudo = '${pseudo}'`
+                    connection.query(getId,(err,results,field) => {
+                        if(err){
+                            console.log(err);
+                            res.redirect('/');
+                        } else {
+                            sess.idUser = results[0].Id_user;
+                            sess.xpAmount = results[0].Xp;
+                            sess.pseudo = pseudo;
+
+                            let createStats = `INSERT INTO Stats (Id_user) VALUES ('${sess.idUser}')`;
+                            connection.query(createStats,(err,results,field) => {
+                                if(err){
+                                    console.log(err);
+                                }
+                                res.redirect('/');
+                            })
+                        }
+                    })
 				}
 			});
 		})
@@ -83,14 +118,16 @@ app.post('/connect', (req, res) => {
 	sess = req.session;
 	let pseudo = blbl(req.body.pseudo);
 	let pass = blbl(req.body.password);
-	let connectAccount = `SELECT Password FROM Users WHERE Pseudo='${pseudo}'`;
+	let connectAccount = `SELECT Id_user,Xp,Password FROM Users WHERE Pseudo='${pseudo}'`;
 	connection.query(connectAccount, (error, results, field) => {
 		if (error) {
 			console.log(error);
 		} else {
 			bcrypt.compare(pass, results[0].Password, (err, result) => {
 				if (result) {
-					sess.pseudo = pseudo;
+                    sess.pseudo = pseudo;
+                    sess.idUser = results[0].Id_user;
+                    sess.xpAmount = results[0].Xp;
 					res.redirect('/');
 				} else {
 					res.redirect('/')
