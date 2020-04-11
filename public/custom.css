@@ -46,4 +46,9 @@ body {
 .img-text{
     display:flex;
     align-items:center;
+    justify-content: center;
+}
+
+ul {
+    list-style-type: none;
 }

@@ -56,18 +56,39 @@
                     <h5 class="mx-auto screen-title">Profil</h5>
                 </div>
                 <div class="row">
-                    <div class="col-sm-4 col-lg-3 offset-lg-2 img-text">WR</div>
-                    <div class="col-sm-4 col-lg-3"><img src="img/surprised.jpg" class="rounded-circle" alt="" style="width:50%;height:auto">
+                    <div class="col-sm-12 col-lg-8 offset-lg-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-lg-4 img-text ">
+                                <% if(wrate){ %>
+                                    Taux de victoire : <%=wrate %>% 
+                                <% } %>
+                            </div>
+                            <div class="col-sm-4 col-lg-4 text-center"><img src="img/surprised.jpg"
+                                    class="rounded-circle" alt="" style="width:50%;height:auto;margin-left:5%">
+                            </div>
+                            <div class="col-sm-4 col-lg-4 img-text "><% if(locals.gplayed){ %>Parties jouées : <%=gplayed %><% } %></div>
+                        </div>
                     </div>
-                    <div class="col-sm-4 col-lg-3 img-text">Game played</div>
                 </div>
                 <div class="row">
-                    <div class="col-sm-4 col-lg-3 offset-lg-2 ">Coin lost</div>
-                    <div class="col-sm-4 col-lg-3 ">
-                        <p class="">Pseudo</p>
-                        <input type="text" value="Niveau 28">
+                    <div class="col-sm-12 col-lg-8 offset-lg-2">
+                        <div class="row">
+                            <div class="col-sm-4 col-lg-4 img-text"><% if(locals.tokenslost){ %>Tokens perdus : <%=tokenslost %><% } %>
+                            </div>
+                            <div class="col-sm-4 col-lg-4 img-text">
+                                <ul>
+                                    <li>
+                                    <p class="text-center"> <%=pseudo %> </p>
+                                    </li>
+                                    <li>
+                                        <p class="text-center"><% if(locals.xpAmount){ %>Niveau <%=xpAmount %><% } %></p>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-sm-4 col-lg-4 img-text"><% if(locals.tokenswon){ %>Tokens gagnés : <%=tokenswon %><% } %>
+                            </div>
+                        </div>
                     </div>
-                    <div class="col-sm-4 col-lg-3 ">Coin won</div>
                 </div>
             </div>
             <div class="carousel-item">
