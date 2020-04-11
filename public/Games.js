@@ -1,16 +1,3 @@
-/*
-import {
-    BeforeCardPlayEvent,
-    BeforeDrawEvent,
-    BeforePassEvent,
-    CancelableEventEmitter,
-    CardPlayEvent,
-    DrawEvent,
-    GameEndEvent,
-    NextPlayerEvent,
-} from './Event';*/
-let Event = require('./Event.js');
-
 const CARDS_PER_PLAYER = 7;
 const NUMBER_OF_PLAYER = 4;
 const NUMBER_OF_DRAW_TWO = 2;
@@ -19,21 +6,21 @@ const NUMBER_OF_SKIP = 2;
 const NUMBER_OF_WILD = 4;
 const NUMBER_OF_WILD_DRAW_FOUR = 4;
 
-const Color = {
+Color = {
     RED: 1,
     BLUE: 2,
     GREEN: 3,
     YELLOW: 4,
 }
 
-const colors = [
+colors = [
     Color.RED,
     Color.BLUE,
     Color.GREEN,
     Color.YELLOW
 ];
 
-const Value = {
+Value = {
     ZERO: 0,
     ONE: 1,
     TWO: 2,
@@ -50,9 +37,9 @@ const Value = {
     WILD: 13,
     WILD_DRAW_FOUR: 14,
     DECKEPTION: 15,
-}
+};
 
-const values = [
+values = [
     Value.ZERO,
     Value.ONE,
     Value.TWO,
@@ -75,10 +62,10 @@ function isWild(value) {
     return value === Value.WILD || value === Value.WILD_DRAW_FOUR;
 }
 
-const GameDirection = {
+GameDirection = {
     CLOCKWISE: 1,
     COUNTER_CLOCKWISE: 2,
-}
+};
 
 class Card {
 
@@ -236,7 +223,7 @@ class Player {
 
 }
 
-class Game extends Event.CancelableEventEmitter {
+class Game {
 
     drawPile;
     GameDirection;
@@ -246,7 +233,6 @@ class Game extends Event.CancelableEventEmitter {
     hasdrawn = false;
 
     constructor() {
-        super();
         for (let i = 0; i < NUMBER_OF_PLAYER; i++) {
             this._players.push(new Player(i))
         }
@@ -323,32 +309,30 @@ class Game extends Event.CancelableEventEmitter {
     }
 
     pass() {
-        if (!this.dispatchEvent(new Event.BeforePassEvent(this._currentPlayer))) return; //EVENT
         this.goToNextPlayer();
     }
 
     goToNextPlayer() {
         this.drawn = false;
         this._currentPlayer = this.getNextPlayer();
-        if (!this.dispatchEvent(new Event.NextPlayerEvent(this._currentPlayer))) return; //EVENT
+        centralizeEvents(new Discuss("NextPlayerEvent", NULL, NULL, NULL, this._currentPlayer._pos));
     }
 
     play(card) {
         const currentPlayer = this._currentPlayer;
-
-        if (!card.matches(this._discardedCard))
-            throw new Error(`${this._discardedCard}, from discard pile, does not match ${card}`);
-
-        if (!this.dispatchEvent(new Event.BeforeCardPlayEvent(card, this._currentPlayer))) return; //EVENT
+        if (!card.matches(this._discardedCard)){
+            centralizeEvents(new Discuss("CardDenyEvent", this._currentPlayer._pos, NULL, card, NULL));
+            // TODO: Boucler au dessus et attendre une carte
+        }
 
         currentPlayer.removeCard(card);
         this.drawPile.push(this._discardedCard);
         this._discardedCard = card;
 
-        if (!this.dispatchEvent(new Event.CardPlayEvent(card, this._currentPlayer))) return; //EVENT
+        centralizeEvents(new Discuss("CardPlayEvent", this._currentPlayer._pos, NULL, card, NULL));
 
         if (currentPlayer.hand.length == 0) {
-            this.dispatchEvent(new Event.GameEndEvent(this._currentPlayer)); //EVENT
+            centralizeEvents(new Discuss("GameEndEvent", this._currentPlayer.pos, NULL, card, NULL));
 
             // TODO: how to stop game after it's finished?
         }
@@ -374,14 +358,24 @@ class Game extends Event.CancelableEventEmitter {
     }
 
     privateDraw(player, amount) {
-        if (!this.dispatchEvent(new Event.BeforeDrawEvent(player, amount))) return; //EVENT
         cards = [];
         for (let i = 0; i < amount; i++)
             cards.push(this.drawPile.draw());
         player.hand = player.hand.concat(cards);
-        if (!this.dispatchEvent(new Event.DrawEvent(player, cards))) return; //EVENT
+        centralizeEvents(new Discuss("DrawEvent", NULL, player._pos, cards, NULL));
         this.drawn = true;
         return cards;
     }
-
 }
+
+class Discuss {
+    constructor(string, currentPlayer, drawPlayer, cards, nextPlayer) {
+        this.string = string;
+        this.currentPlayer = currentPlayer;
+        this.drawPlayer = drawPlayer;
+        this.cards = cards;
+        this.nextPlayer = nextPlayer;
+    }
+}
+
+
