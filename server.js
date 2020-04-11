@@ -11,8 +11,8 @@ let express = require('express'),
         user: 'root',
         password: '',
         database: 'onu'
-    }),
-    sess;
+    });
+    
 
 app.use(session({
     secret: 'crayonrouge',
@@ -38,6 +38,8 @@ function blbl(str) {
         replace(/--/g, '&#151;').
         replace(/'/g, '&#039;');
 };
+
+let sess;
 
 app.get('/', (req, res) => {
     sess = req.session;
