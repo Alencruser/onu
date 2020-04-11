@@ -23,5 +23,27 @@ body,html {
 body {
     margin-left:0 !important;
     margin-right:0 !important;
-    background-image: url('background.png');
+    background-image: url('img/background.png');
+}
+
+.screen-title {
+    color:white;
+    margin-bottom:10vh;
+    margin-top: 5vh;
+}
+
+.carousel {
+    position:initial;
+}
+
+#carouselExampleIndicators {
+    height:60%;
+    background-repeat: no-repeat;
+    background-size:80% 100% ;
+    background-position:center;
+}
+
+.img-text{
+    display:flex;
+    align-items:center;
 }
