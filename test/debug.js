@@ -272,7 +272,7 @@ describe('Game', function () {
                 );
 
                 curr.hand = [playerCard];
-                    
+
                 expect(playerCard.matches(discardedCard)).to.equal(true);
                 game.play(playerCard);
                 expect(curr.hand).to.have.lengthOf(0);
@@ -290,7 +290,7 @@ describe('Game', function () {
                 const playerCard = discardedCard;
 
                 curr.hand = [playerCard, playerCard];
-                
+
                 expect(playerCard.matches(discardedCard)).to.equal(true);
                 game.play(playerCard);
                 expect(game.currentPlayer).to.not.equal(curr);
@@ -331,7 +331,7 @@ describe('Game', function () {
                 curr.hand = [skip, skip];
                 expect(game.currentPlayer._pos).to.equal(curr._pos);
                 game.play(skip);
-                expect(game.currentPlayer._pos).to.not.equal((curr._pos)+1);
+                expect(game.currentPlayer._pos).to.not.equal((curr._pos) + 1);
                 expect(game.currentPlayer._pos).to.not.equal(curr._pos);
             });
 
@@ -348,11 +348,26 @@ describe('Game', function () {
                 expect(game.currentPlayer).to.not.equal(next);
                 expect(game.currentPlayer).to.not.equal(curr);
             });
-        });
 
+            it('adds 2 cards to next player after a DRAW TWO', function () {
+                const curr = game.currentPlayer;
+                const next = game.nextPlayer;
+                const oldLength = next.hand.length;
+                const discardedCard = game.discardedCard;
+
+                const drawTwo = new Card(Value.DRAW_TWO, discardedCard.color);
+                const reverse = new Card(Value.REVERSE, discardedCard.color);
+
+                curr.hand = [drawTwo, drawTwo];
+
+                game.play(drawTwo);
+
+                expect(game.currentPlayer).not.to.equal(curr);
+                expect(game.currentPlayer).not.to.equal(next);
+                expect(game.currentPlayer._pos).to.equal(curr._pos + 2);
+                expect(next.hand).to.have.lengthOf(oldLength + 2);
+            });
+        });
     });
 
 });
-
-
-// let game = new Game();

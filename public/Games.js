@@ -165,21 +165,6 @@ class Deck {
         this.drawpile.push.apply(this.drawpile, new Card(1, Value.DECKEPTION));
     }
 
-    // draw(num = null) {
-    //     if (this.drawpile[0].value == Value.DECKEPTION) {
-    //         this.drawpile.shift();
-    //         let m = this.size(), i;
-    //         while (m) {
-    //             i = Math.floor(Math.random() * m--);
-    //             [this.drawpile[m], this.drawpile[i]] = [this.drawpile[i], this.drawpile[m]];
-    //         }
-    //         this.drawpile.push.apply(this.drawpile, new Card(1, Value.DECKEPTION));
-    //     }
-    //     let top = this.drawpile[0];
-    //     this.drawpile.shift()
-    //     return top;
-    // }
-
     draw(num = null) {
         num = num || 1;
         let cards = [];
