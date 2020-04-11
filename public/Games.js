@@ -1,19 +1,35 @@
+import {
+    BeforeCardPlayEvent,
+    BeforeDrawEvent,
+    BeforePassEvent,
+    CancelableEventEmitter,
+    CardPlayEvent,
+    DrawEvent,
+    GameEndEvent,
+    NextPlayerEvent,
+} from './Event';
+
+const CARDS_PER_PLAYER = 7;
+const NUMBER_OF_PLAYER = 4;
+const NUMBER_OF_DRAW_TWO = 2;
+const NUMBER_OF_REVERSE = 2;
+const NUMBER_OF_SKIP = 2;
+const NUMBER_OF_WILD = 4;
+const NUMBER_OF_WILD_DRAW_FOUR = 4;
+
 const Color = {
     RED: 1,
     BLUE: 2,
     GREEN: 3,
     YELLOW: 4,
 }
+
 const colors = [
     Color.RED,
     Color.BLUE,
     Color.GREEN,
     Color.YELLOW
 ];
-
-function isValidColor(color) {
-    return colors.indexOf(color) !== -1;
-}
 
 const Value = {
     ZERO: 0,
@@ -33,6 +49,7 @@ const Value = {
     WILD_DRAW_FOUR: 14,
     DECKEPTION: 15,
 }
+
 const values = [
     Value.ZERO,
     Value.ONE,
@@ -56,43 +73,10 @@ function isWild(value) {
     return value === Value.WILD || value === Value.WILD_DRAW_FOUR;
 }
 
-function isValidValue(value) {
-    return values.indexOf(value) !== -1;
-}
-
-var currentCard;
-
 const GameDirection = {
     CLOCKWISE: 1,
     COUNTER_CLOCKWISE: 2,
 }
-
-const CARDS_PER_PLAYER = 7;
-const NUMBER_OF_PLAYER = 4;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 class Card {
 
@@ -163,13 +147,13 @@ function createUnoDeck() {
             deck.push.apply(deck, createCards(2, n, color));
         }
 
-        deck.push.apply(deck, createCards(2, Value.DRAW_TWO, color));
-        deck.push.apply(deck, createCards(2, Value.SKIP, color));
-        deck.push.apply(deck, createCards(2, Value.REVERSE, color));
+        deck.push.apply(deck, createCards(NUMBER_OF_DRAW_TWO, Value.DRAW_TWO, color));
+        deck.push.apply(deck, createCards(NUMBER_OF_SKIP, Value.SKIP, color));
+        deck.push.apply(deck, createCards(NUMBER_OF_REVERSE, Value.REVERSE, color));
     });
 
-    deck.push.apply(deck, createCards(4, Value.WILD));
-    deck.push.apply(deck, createCards(4, Value.WILD_DRAW_FOUR));
+    deck.push.apply(deck, createCards(NUMBER_OF_WILD, Value.WILD));
+    deck.push.apply(deck, createCards(NUMBER_OF_WILD_DRAW_FOUR, Value.WILD_DRAW_FOUR));
 
     return deck;
 }
@@ -205,17 +189,6 @@ class Deck {
         let top = this[0];
         this.shift()
         return top;
-    }
-
-    drawstart() {
-
-        this.shift()
-        return top;
-    }
-
-    blow(card) {
-        this.push(currentCard);
-        currentCard = card;
     }
 }
 
@@ -254,16 +227,17 @@ class Player {
 
 }
 
-class Game {
+class Game extends CancelableEventEmitter {
 
     drawPile;
     GameDirection;
     _currentPlayer;
-    _players = [];
     _discardedCard;
+    _players = [];
     hasdrawn = false;
 
     constructor() {
+        super();
         for (let i = 0; i < NUMBER_OF_PLAYER; i++) {
             this._players.push(new Player(i))
         }
@@ -340,80 +314,34 @@ class Game {
     }
 
     pass() {
+        if (!this.dispatchEvent(new BeforePassEvent(this._currentPlayer))) return; //EVENT
         this.goToNextPlayer();
     }
 
     goToNextPlayer() {
         this.drawn = false;
         this._currentPlayer = this.getNextPlayer();
+        if (!this.dispatchEvent(new NextPlayerEvent(this._currentPlayer))) return; //EVENT
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     play(card) {
         const currentPlayer = this._currentPlayer;
 
         if (!card.matches(this._discardedCard))
-            throw new Error(
-                `${this._discardedCard}, from discard pile, does not match ${card}`,
-            );
+            throw new Error(`${this._discardedCard}, from discard pile, does not match ${card}`);
+
+        if (!this.dispatchEvent(new BeforeCardPlayEvent(card, this._currentPlayer))) return; //EVENT
 
         currentPlayer.removeCard(card);
+        this.drawPile.push(this._discardedCard);
         this._discardedCard = card;
 
+        if (!this.dispatchEvent(new CardPlayEvent(card, this._currentPlayer))) return; //EVENT
+
         if (currentPlayer.hand.length == 0) {
-            // game is over, we have a winner!
+            this.dispatchEvent(new GameEndEvent(this._currentPlayer)); //EVENT
+
             // TODO: how to stop game after it's finished?
-            return;
         }
 
         switch (this._discardedCard.value) {
@@ -437,10 +365,13 @@ class Game {
     }
 
     privateDraw(player, amount) {
+        if (!this.dispatchEvent(new BeforeDrawEvent(player, amount))) return; //EVENT
         cards = [];
         for (let i = 0; i < amount; i++)
             cards.push(this.drawPile.draw());
         player.hand = player.hand.concat(cards);
+        if (!this.dispatchEvent(new DrawEvent(player, cards))) return; //EVENT
+        this.drawn = true;
         return cards;
     }
 
