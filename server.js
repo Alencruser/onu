@@ -49,12 +49,14 @@ io.on('connection',(socket)=>{
     socket.on('createGroup',(pseudo)=>{
         socket.pseudo = pseudo
         room = socket.id;
+        socket.roomId = room;
         socket.join(room);
         io.to(room).emit('party created',room,[pseudo]);
     });
 
     socket.on('looking for party',(room,pseudo)=>{
-        socket.pseudo = pseudo
+        socket.pseudo = pseudo;
+        socket.roomId = room;
         socket.join(room);
         let clients = io.sockets.adapter.rooms[room].sockets; 
         let list = []
@@ -64,14 +66,43 @@ io.on('connection',(socket)=>{
         }
         io.to(room).emit('party joined',list); 
     });
-    socket.on('group size',()=>{
-        io.to(room).emit('group size',Object.keys(io.sockets.adapter.rooms[room].sockets).length,room);
+    socket.on('group size',(price)=>{
+        io.to(room).emit('group size',Object.keys(io.sockets.adapter.rooms[room].sockets).length,room,price);
     });
 
-    socket.on('connect me',(room)=>{
+    socket.on('connect me',(room,pseudo)=>{
+        room +='1'
+        socket.roomId = room;
+        socket.pseudo = pseudo;
         socket.join(room);
         io.to(room).emit('connect me',Object.keys(io.sockets.adapter.rooms[room].sockets).length)
-    })
+    });
+
+
+    socket.on('start game',(price)=>{
+        let room = socket.roomId;
+        let players = Object.keys(io.sockets.adapter.rooms[room].sockets);
+        players.sort();
+        //choix de l'hote
+        if(players[0] == socket.id){
+            // envoyer uniquement à l'hote
+            io.to(socket.id).emit('you are the host',players.length,price);
+        }
+    });
+
+    socket.on('setup',(game)=>{
+        //assigner les ids aux joueurs
+        let room = socket.roomId;
+        let players = Object.keys(io.sockets.adapter.rooms[room].sockets);
+        players.sort();
+        let placement = {};
+        players.map(e=>{
+            placement[players.indexOf(e)] =  io.sockets.connected[e].pseudo
+        })
+            game['pos'] = placement;
+            io.to(room).emit('setup',game);
+        //envoyer les infos aux joueurs
+    });
 
     socket.on('disconnect',()=>{
         console.log('user '+socket.id+' disconnected');
@@ -109,6 +140,7 @@ app.post('/room/:id',(req,res)=>{
     if(!sess.pseudo)return res.redirect('/');
     sess.gameRoom = req.params.id;
     sess.gameNumber = req.body.groupSize;
+    sess.gamePrice = req.body.groupPrice;
     res.redirect('/room');
 });
 
@@ -116,7 +148,7 @@ app.get('/room',(req,res)=>{
     sess=req.session;
     if(!sess.pseudo)return res.redirect('/'); 
     sess=req.session;
-    return res.render('room',{pseudo:sess.pseudo,roomId:sess.gameRoom,number:sess.gameNumber});
+    return res.render('room',{pseudo:sess.pseudo,roomId:sess.gameRoom,number:sess.gameNumber,price:sess.groupPrice});
 })
 
 
@@ -177,6 +209,7 @@ app.post('/connect', (req, res) => {
 		if (error) {
 			console.log(error);
 		} else {
+            if(results.length){            
 			bcrypt.compare(pass, results[0].Password, (err, result) => {
 				if (result) {
                     sess.pseudo = pseudo;
@@ -186,7 +219,10 @@ app.post('/connect', (req, res) => {
 				} else {
 					res.redirect('/')
 				}
-			})
+            })
+        } else {
+            res.redirect('/');
+        }
 		}
 	});
 });
