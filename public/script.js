@@ -63,11 +63,10 @@ socket.on('setup', (session) => {
                 let src = "img/card/"+ colKeys[colVal.indexOf(e._color)]+'_'+ ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(e._value)]))?convertValue[valKeys[valVal.indexOf(e._value)]]:valKeys[valVal.indexOf(e._value)] )+".png";
                 let img = document.createElement('img');
                 img.src=src;
+                img.dataset.attr = e._color+','+e._value;
                 document.getElementById('siege0').append(img);
             })
-            let pseudoDiv = document.createElement('div');
-            pseudoDiv.textContent = mypseudo + ': Cartes en mains : ' + session.players[player].hand.length;
-            document.getElementById('siege0').append(pseudoDiv);
+            
             
             //placer autres joueurs
             let siegeIndex = 1;
