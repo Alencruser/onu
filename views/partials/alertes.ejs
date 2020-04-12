@@ -1,0 +1,17 @@
+<%  if (locals.message && message[0]!="") { -%>
+    <div class="ui message <%=message[0]%>">
+        <i class="close icon"></i>
+        <div class="header">
+            <%=message[1]%>
+        </div>
+        <p><%=message[2]%></p>
+    </div>
+    <% } -%>
+
+    <div class="ui message" id="messageCustom" style="display: none;">
+        <i class="close icon"></i>
+        <div class="header" id="messageStatus">
+            
+        </div>
+        <p id="messageContent"></p>
+    </div>
