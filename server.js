@@ -21,6 +21,8 @@ app.use(session({
 }
 ));
 
+
+
 //Use of body-parser
 app.use(bodyparser.urlencoded({ extended: false }));
 //use of static folder
@@ -40,6 +42,43 @@ function blbl(str) {
 };
 
 let sess;
+
+io.on('connection',(socket)=>{
+    console.log('user connected');
+    let room;
+    socket.on('createGroup',(pseudo)=>{
+        socket.pseudo = pseudo
+        room = socket.id;
+        socket.join(room);
+        io.to(room).emit('party created',room,[pseudo]);
+    });
+
+    socket.on('looking for party',(room,pseudo)=>{
+        socket.pseudo = pseudo
+        socket.join(room);
+        let clients = io.sockets.adapter.rooms[room].sockets; 
+        let list = []
+        for(var client in clients){
+            console.log(io.sockets.connected[client].pseudo);
+            list.push(io.sockets.connected[client].pseudo);
+        }
+        io.to(room).emit('party joined',list); 
+    });
+    socket.on('group size',()=>{
+        io.to(room).emit('group size',Object.keys(io.sockets.adapter.rooms[room].sockets).length,room);
+    });
+
+    socket.on('connect me',(room)=>{
+        socket.join(room);
+        io.to(room).emit('connect me',Object.keys(io.sockets.adapter.rooms[room].sockets).length)
+    })
+
+    socket.on('disconnect',()=>{
+        console.log('user '+socket.id+' disconnected');
+    })
+
+})
+
 
 app.get('/', (req, res) => {
     sess = req.session;
@@ -65,6 +104,21 @@ app.get('/', (req, res) => {
     }
 });
 
+app.post('/room/:id',(req,res)=>{
+    sess = req.session;
+    if(!sess.pseudo)return res.redirect('/');
+    sess.gameRoom = req.params.id;
+    sess.gameNumber = req.body.groupSize;
+    res.redirect('/room');
+});
+
+app.get('/room',(req,res)=>{
+    sess=req.session;
+    if(!sess.pseudo)return res.redirect('/'); 
+    sess=req.session;
+    return res.render('room',{pseudo:sess.pseudo,roomId:sess.gameRoom,number:sess.gameNumber});
+})
+
 
 
 //create an account
@@ -88,7 +142,7 @@ app.post('/register', (req, res) => {
 					res.redirect('/');
 				} else {
                     //    Ici aller chercher directement l'idUser pour le stocker coté serveur
-                    let getId = `SELECT Id_user from Users WHERE pseudo = '${pseudo}'`
+                    let getId = `SELECT Id_user,Xp from Users WHERE pseudo = '${pseudo}'`
                     connection.query(getId,(err,results,field) => {
                         if(err){
                             console.log(err);
