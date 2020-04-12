@@ -157,6 +157,42 @@ describe('Card', function () {
     });
 });
 
+describe('Player', function () {
+
+    describe('#removecard', function () {
+        it('remove card from hand', () => {
+            const player1 = new Player(0);
+            const wild = new Card(Value.WILD);
+            player1.hand.push(new Card(Value.WILD));
+            player1.removeCard(wild);
+            expect(player1.hand.length).to.equal(0);
+        });
+    });
+
+    describe('#hasPlayable', function () {
+        it('check if player can play', () => {
+            const player1 = new Player(0);
+            const redOne = new Card(Value.ONE, Color.RED);
+            const yellowFive = new Card(Value.FIVE, Color.YELLOW);
+            player1.hand.push(redOne);
+            player1.hand.push(yellowFive);
+            expect(player1.hasPlayable(new Card(Value.FOUR, Color.RED))).to.equal(true);
+        });
+    });
+
+    describe('#hasPlayable', function () {
+        it('check if player cant play', () => {
+            const player1 = new Player(0);
+            const redOne = new Card(Value.ONE, Color.RED);
+            const yellowFive = new Card(Value.FIVE, Color.YELLOW);
+            player1.hand.push(redOne);
+            player1.hand.push(yellowFive);
+            expect(player1.hasPlayable(new Card(Value.FOUR, Color.BLUE))).to.equal(false);
+        });
+    });
+
+});
+
 const filterByValue = (value) => {
     return (card) => card.value === value;
 };
@@ -172,14 +208,14 @@ describe('Deck', function () {
         deck = new Deck();
     });
 
-    it('has 108 cards', function () {
-        expect(deck).to.have.lengthOf(108);
+    it('has 109 cards', function () {
+        expect(deck).to.have.lengthOf(109);
     });
 
-    it('has 76 numbers', function () {
+    it('has 77 numbers', function () {
         const numbers = (card) =>
             card.value >= Value.ZERO && card.value <= Value.NINE;
-        expect(deck.drawpile.filter(numbers)).to.have.lengthOf(76);
+        expect(deck.drawpile.filter(numbers)).to.have.lengthOf(77);
     });
 
     it('has 4 zeros', function () {
@@ -219,10 +255,16 @@ describe('Deck', function () {
         expect(wildDrawFours).to.have.lengthOf(4);
     });
 
-    it('has 107 cards after a draw', function () {
-        expect(deck).to.have.lengthOf(108);
+    it('has 108 cards after a draw', function () {
+        expect(deck).to.have.lengthOf(109);
         deck.draw();
-        expect(deck).to.have.lengthOf(107);
+        expect(deck).to.have.lengthOf(108);
+    });
+
+    it('has 101 cards after a 8 draw', function () {
+        expect(deck).to.have.lengthOf(109);
+        deck.draw(8);
+        expect(deck).to.have.lengthOf(101);
     });
 
 });
@@ -230,7 +272,7 @@ describe('Deck', function () {
 
 describe('Game', function () {
     it('does not start with a wild card', function () {
-        let game = new Game();
+        let game = new Game(3, 25);
 
         expect(game.discardedCard.isWildCard()).to.equal(false);
     });
@@ -238,7 +280,7 @@ describe('Game', function () {
         let game;
 
         beforeEach(function () {
-            game = new Game();
+            game = new Game(4, 25);
         });
 
         describe('#play()', function () {
@@ -259,7 +301,6 @@ describe('Game', function () {
                 curr.hand = [playerCard];
 
                 expect(playerCard.matches(discardedCard)).to.equal(false);
-                // don't touch player's hand
                 expect(curr.hand).to.have.lengthOf(1);
             });
 
@@ -279,7 +320,6 @@ describe('Game', function () {
                 expect(curr.hand).to.not.include(playerCard);
                 expect(curr.hand.indexOf(playerCard)).to.equal(-1);
 
-                // discarded card must be equal to player card now
                 expect(game.discardedCard.color === playerCard.color).to.equal(true);
                 expect(game.discardedCard.value === playerCard.value).to.equal(true);
             });
@@ -364,10 +404,9 @@ describe('Game', function () {
 
                 expect(game.currentPlayer).not.to.equal(curr);
                 expect(game.currentPlayer).not.to.equal(next);
-                expect(game.currentPlayer._pos).to.equal(curr._pos + 2);
+                expect(game.currentPlayer._pos).to.equal((curr._pos + 2) % game.NUMBER_OF_PLAYER);
                 expect(next.hand).to.have.lengthOf(oldLength + 2);
             });
         });
     });
-
 });

@@ -162,11 +162,10 @@ class Deck {
             i = Math.floor(Math.random() * m--);
             [this.drawpile[m], this.drawpile[i]] = [this.drawpile[i], this.drawpile[m]];
         }
-        this.drawpile.push.apply(this.drawpile, new Card(1, Value.DECKEPTION));
+        this.drawpile.push(new Card(1, Value.DECKEPTION));
     }
 
-    draw(num = null) {
-        num = num || 1;
+    draw(num = 1) {
         let cards = [];
         let top;
         for (let i = 0; i < num; i++) {
@@ -177,7 +176,7 @@ class Deck {
                     i = Math.floor(Math.random() * m--);
                     [this.drawpile[m], this.drawpile[i]] = [this.drawpile[i], this.drawpile[m]];
                 }
-                this.drawpile.push.apply(this.drawpile, new Card(1, Value.DECKEPTION));
+                this.drawpile.push(new Card(1, Value.DECKEPTION));
             }
             top = this.drawpile[0];
             this.drawpile.shift()
@@ -214,6 +213,14 @@ class Player {
         );
     }
 
+    hasPlayable(card) {
+        if (!card) return false;
+
+        return this.hand.some(
+            (c) => c.value === card.value || c.color === card.color || c.value > 12,
+        );
+    }
+
     removeCard(card) {
         const i = this.hand.findIndex(
             (c) => c.value === card.value && c.color === card.color,
@@ -228,15 +235,18 @@ class Player {
 }
 
 class Game {
-
+    _price;
     drawPile;
     direction;
     _currentPlayer;
     _discardedCard;
     _players = [];
     hasdrawn = false;
+    NUMBER_OF_PLAYER;
 
-    constructor() {
+    constructor(NUMBER_OF_PLAYER, price) {
+        this.NUMBER_OF_PLAYER = NUMBER_OF_PLAYER;
+        this._price = price;
         for (let i = 0; i < NUMBER_OF_PLAYER; i++) {
             this._players.push(new Player(i))
         }
@@ -248,7 +258,7 @@ class Game {
         this.direction = GameDirection.CLOCKWISE;
         this._players.forEach(
             (p) => (p.hand = this.drawPile.draw(CARDS_PER_PLAYER)),
-            //centralizeEvents(new Discuss("DrawEvent", null, i, _player[i].hand, null));
+            //centralizeEvents(new Discuss("DrawEvent", null, i, _player[i].hand, null, null));
         );
 
         do {
@@ -315,26 +325,31 @@ class Game {
     goToNextPlayer() {
         this.drawn = false;
         this._currentPlayer = this.getNextPlayer();
-        //centralizeEvents(new Discuss("NextPlayerEvent", null, null, null, this._currentPlayer._pos));
+        centralizeEvents(new Discuss("NextPlayerEvent", null, null, null, this._currentPlayer._pos, null));
+    }
+
+    candraw() {
+        if (this._currentPlayer.hasPlayable(this._discardedCard)) return false;
+        else return true;
     }
 
     play(card) {
         let currentPlayer = this._currentPlayer;
-        if (!card.matches(this._discardedCard)) {
-            //centralizeEvents(new Discuss("CardDenyEvent", this._currentPlayer._pos, null, card, null));
-            // TODO: Boucler au dessus et attendre une carte
+        let cards = new Card(card.value, card.color);
+        if (!cards.matches(this._discardedCard)) {
+            centralizeEvents(new Discuss("CardDenyEvent", this._currentPlayer._pos, null, card, null, null));
+            return;
         }
 
         currentPlayer.removeCard(card);
         this.drawPile.drawpile.push(this._discardedCard);
         this._discardedCard = card;
 
-        //centralizeEvents(new Discuss("CardPlayEvent", this._currentPlayer._pos, null, card, null));
+        centralizeEvents(new Discuss("CardPlayEvent", this._currentPlayer._pos, null, card, null, null));
 
         if (currentPlayer.hand.length == 0) {
-            //centralizeEvents(new Discuss("GameEndEvent", this._currentPlayer.pos, null, card, null));
-
-            // TODO: how to stop game after it's finished?
+            centralizeEvents(new Discuss("GameEndEvent", this._currentPlayer.pos, null, card, null, this._price));
+            return;
         }
 
         switch (this._discardedCard.value) {
@@ -358,23 +373,22 @@ class Game {
     }
 
     privateDraw(player, amount) {
-        let cards = [];
-        for (let i = 0; i < amount; i++)
-            cards.push(this.drawPile.draw());
+        let cards = this.drawPile.draw(amount);
         player.hand = player.hand.concat(cards);
-        //centralizeEvents(new Discuss("DrawEvent", null, player._pos, cards, null));
+        centralizeEvents(new Discuss("DrawEvent", null, player._pos, cards, null, null));
         this.drawn = true;
         return cards;
     }
 }
 
 class Discuss {
-    constructor(string, currentPlayer, drawPlayer, cards, nextPlayer) {
+    constructor(string, currentPlayer, drawPlayer, cards, nextPlayer, price) {
         this.string = string;
         this.currentPlayer = currentPlayer;
         this.drawPlayer = drawPlayer;
         this.cards = cards;
         this.nextPlayer = nextPlayer;
+        this.price = price;
     }
 }
 
@@ -385,3 +399,18 @@ module.exports = {
     Game: Game,
     Discuss: Discuss,
 }
+
+function centralizeEvents(Message) {
+    switch (Message.string) {
+        case "NextPlayerEvent": // Message.nextPlayer
+            break;
+        case "CardDenyEvent": // Message.currentPlayer
+            break;
+        case "CardPlayEvent": // Message.currentPlayer & Message.cards
+            break;
+        case "GameEndEvent": // Message.currentPlayer & Message.price
+            break;
+        case "DrawEvent": // Message.drawPlayer & Message.cards
+            break;
+    }
+};
