@@ -1,5 +1,32 @@
-<title>Room x</title>
+<%-include('partials/header.ejs')%>
+<% if(locals.roomId) { %>
+<title>Room <%=roomId%></title>
 </head>
+
 <body>
-    
+    <h5>Room de jeu <%=roomId%></h5>
 </body>
+<script>
+    let socket = io('90.76.213.45:8080');
+
+    setTimeout(()=>{
+        connect()
+    },200);
+    function connect(){
+        socket.emit('connect me', '<%=roomId%>');
+    }
+
+    socket.on('connect me', (players) => {
+        if (players == '<%=number%>') {
+            //message starting game 
+            //eventt socket pour chercher les id, prendre un hote et start SA game
+            console.log('tous les joueurs sont là, début de la partie')
+        } else {
+            //modifier les alertes custom pour tenir informés les joueurs du "chargement"
+            console.log(players + ' joueurs présent sur <%=number%>');
+        }
+    })
+
+</script>
+<% } %>
+<%-include('partials/footer.ejs')%>
