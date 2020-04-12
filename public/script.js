@@ -5,7 +5,19 @@ let game;
 let colKeys = Object.keys(Color),
     colVal = Object.values(Color),
     valKeys = Object.keys(Value),
-    valVal = Object.values(Value);
+    valVal = Object.values(Value),
+    convertValue = {
+        ZERO:0,
+        ONE:1,
+        TWO:2,
+        THREE:3,
+        FOUR:4,
+        FIVE:5,
+        SIX:6,
+        SEVEN:7,
+        EIGHT:8,
+        NINE:9
+    };
 
 function launchCustom() {
     socket.emit('group size', 0);
@@ -42,10 +54,21 @@ socket.on('setup', (session) => {
             let numberOfPlayers = session.players.length;
             //placement de la carte du haut de pile
             let discarded = document.createElement('img');
-            discarded.src= colKeys[colVal.indexOf(session.discardedCard._color)]+'_'+ valKeys[valVal.indexOf(session.discardedCard._value)] +".png"
-            document.getElementById('discardedCard').append();
-            //placer joueur principal
-            document.getElementById('siege0').textContent = mypseudo + ': Cartes en mains : ' + session.players[player].hand.length;
+            discarded.src= "img/card/"+colKeys[colVal.indexOf(session.discardedCard._color)]+'_'+ ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(session.discardedCard._value)]))?convertValue[valKeys[valVal.indexOf(session.discardedCard._value)]]:valKeys[valVal.indexOf(session.discardedCard._value)] )+".png";
+            if(document.getElementById('discardedCard').children.length)document.getElementById('discardedCard').removeChild(document.getElementById('discardedCard').lastElementChild);
+            document.getElementById('discardedCard').append(discarded);
+            //placer joueur principal ett ses cartes
+            document.getElementById('siege0').innerHTML="";
+            session.players[player].hand.map(e=>{
+                let src = "img/card/"+ colKeys[colVal.indexOf(e._color)]+'_'+ ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(e._value)]))?convertValue[valKeys[valVal.indexOf(e._value)]]:valKeys[valVal.indexOf(e._value)] )+".png";
+                let img = document.createElement('img');
+                img.src=src;
+                document.getElementById('siege0').append(img);
+            })
+            let pseudoDiv = document.createElement('div');
+            pseudoDiv.textContent = mypseudo + ': Cartes en mains : ' + session.players[player].hand.length;
+            document.getElementById('siege0').append(pseudoDiv);
+            
             //placer autres joueurs
             let siegeIndex = 1;
             for (i = 1; i < numberOfPlayers; i++) {
