@@ -1,14 +1,5 @@
-#signupButton {
-    margin-left:auto;
+#signupButton,#signinButton1 {
     cursor:pointer;
-}
-
-#signinButton1 {
-    cursor: pointer;
-}
-
-#signupButton1 {
-    margin-left : auto;
 }
 
 #signinButton,#signupButton1 {
