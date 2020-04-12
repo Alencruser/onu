@@ -51,3 +51,24 @@ ul {
 #launchCustom {
     margin-right:5%;
 }
+
+#discardedCard {
+    align-items: flex-start;
+}
+
+#discardedCard img {
+    height:33%;
+}
+
+
+#tableGame .row {
+    margin-right:0 !important;
+}
+
+#siege0 {
+    display: block ruby;
+}
+
+#siege0 img {
+    height:33%;
+}
