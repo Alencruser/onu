@@ -232,6 +232,10 @@ class Player {
         return this._pos;
     }
 
+    get length() {
+        return Object.keys(this.hand).length;
+    }
+
 }
 
 class Game {
@@ -257,14 +261,14 @@ class Game {
         this.drawPile = new Deck();
         this.direction = GameDirection.CLOCKWISE;
         this._players.forEach(
-            (p) => (p.hand = this.drawPile.draw(CARDS_PER_PLAYER)),
-            //centralizeEvents(new Discuss("DrawEvent", null, i, _player[i].hand, null, null));
+            (p) => (p.hand = (this.drawPile.draw(CARDS_PER_PLAYER)).sort(function(a,b){return ((a.value + a.color * 15)<(b.color * 15 + b.value))?1:-1})),
         );
+        centralizeEvents(new Discuss("StartEvent", null, null, null, null, null));
 
         do {
             this._discardedCard = this.drawPile.draw()[0];
+            if (this._discardedCard.isSpecialCard()) this.drawPile.drawpile.push(this._discardedCard);
         } while (this._discardedCard.isSpecialCard());
-
         this._currentPlayer = this._players[
             Math.floor(Math.random() * this._players.length)
         ];
@@ -297,6 +301,8 @@ class Game {
     set playingDirection(dir) {
         if (dir !== this.direction) this.reverseGame();
     }
+
+
 
     reverseGame() {
         this.direction =
@@ -374,10 +380,9 @@ class Game {
 
     privateDraw(player, amount) {
         let cards = this.drawPile.draw(amount);
-        player.hand = player.hand.concat(cards);
+        player.hand = (player.hand.concat(cards)).sort(function(a,b){return ((a.value + a.color * 15)<(b.color * 15 + b.value))?1:-1});
         centralizeEvents(new Discuss("DrawEvent", null, player._pos, cards, null, null));
         this.drawn = true;
-        return cards;
     }
 }
 
@@ -402,6 +407,8 @@ module.exports = {
 
 function centralizeEvents(Message) {
     switch (Message.string) {
+        case "StartEvent": // Nothing
+            break;
         case "NextPlayerEvent": // Message.nextPlayer
             break;
         case "CardDenyEvent": // Message.currentPlayer
