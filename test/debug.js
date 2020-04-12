@@ -191,6 +191,32 @@ describe('Player', function () {
         });
     });
 
+    describe('#hasPlayableDodgeDraw', function () {
+        it('check if player can play', () => {
+            const player1 = new Player(0);
+            const drawTwo = new Card(Value.DRAW_TWO, Color.RED);
+            const drawFour = new Card(Value.WILD_DRAW_FOUR);
+            const redOne = new Card(Value.ONE, Color.RED);
+            const yellowFive = new Card(Value.FIVE, Color.YELLOW);
+            player1.hand.push(redOne);
+            player1.hand.push(drawFour);
+            expect(player1.hasPlayableDodgeDraw(drawTwo)).to.equal(true);
+        });
+    });
+
+    describe('#hasPlayableDodgeDraw', function () {
+        it('check if player cant play', () => {
+            const player1 = new Player(0);
+            const drawTwo = new Card(Value.DRAW_TWO, Color.RED);
+            const drawFour = new Card(Value.WILD_DRAW_FOUR);
+            const redOne = new Card(Value.ONE, Color.RED);
+            const yellowFive = new Card(Value.FIVE, Color.YELLOW);
+            player1.hand.push(redOne);
+            player1.hand.push(yellowFive);
+            expect(player1.hasPlayableDodgeDraw(drawTwo)).to.equal(false);
+        });
+    });
+
 });
 
 const filterByValue = (value) => {
@@ -304,6 +330,33 @@ describe('Game', function () {
                 expect(curr.hand).to.have.lengthOf(1);
             });
 
+            it('throws if the card on discard pile does not match with played card', function () {
+                const curr = game.currentPlayer;
+                const discardedCard = game.discardedCard;
+
+                const blueZero = new Card(Value.ZERO, Color.BLUE);
+                const redOne = new Card(Value.ONE, Color.RED);
+                const yellowTwo = new Card(Value.TWO, Color.YELLOW);
+
+                const playerCard = discardedCard.matches(blueZero)
+                    ? discardedCard.matches(redOne)
+                        ? yellowTwo
+                        : redOne
+                    : blueZero;
+
+                curr.hand = [playerCard];
+
+                expect(playerCard.matches(discardedCard)).to.equal(false);
+                expect(curr.hand).to.have.lengthOf(1);
+            });
+
+            it('Kick player when leave', function () {
+                const nbplayer = Object.keys(game._players).length;
+                game.playerLeave(2);
+                const nbplayerafter = Object.keys(game._players).length;
+                expect(nbplayerafter).to.equal(nbplayer-1);
+            });
+
             it('removes played card from player hand', function () {
                 const curr = game.currentPlayer;
                 const discardedCard = game.discardedCard;
@@ -383,7 +436,6 @@ describe('Game', function () {
 
                 curr.hand = [reverse, reverse];
 
-                expect(game.currentPlayer.name).to.equal(curr.name);
                 game.play(reverse);
                 expect(game.currentPlayer).to.not.equal(next);
                 expect(game.currentPlayer).to.not.equal(curr);
@@ -392,13 +444,15 @@ describe('Game', function () {
             it('adds 2 cards to next player after a DRAW TWO', function () {
                 const curr = game.currentPlayer;
                 const next = game.nextPlayer;
-                const oldLength = next.hand.length;
+
                 const discardedCard = game.discardedCard;
 
                 const drawTwo = new Card(Value.DRAW_TWO, discardedCard.color);
                 const reverse = new Card(Value.REVERSE, discardedCard.color);
 
                 curr.hand = [drawTwo, drawTwo];
+                next.hand = [reverse];
+                const oldLength = next.hand.length;
 
                 game.play(drawTwo);
 
@@ -406,6 +460,94 @@ describe('Game', function () {
                 expect(game.currentPlayer).not.to.equal(next);
                 expect(game.currentPlayer._pos).to.equal((curr._pos + 2) % game.NUMBER_OF_PLAYER);
                 expect(next.hand).to.have.lengthOf(oldLength + 2);
+            });
+
+            it('adds 4 cards to next player after 2 DRAW TWO', function () {
+                const curr = game.currentPlayer;
+                const next = game.nextPlayer;
+
+                const discardedCard = game.discardedCard;
+
+                const drawTwo = new Card(Value.DRAW_TWO, discardedCard.color);
+                const reverse = new Card(Value.REVERSE, discardedCard.color);
+
+                curr.hand = [drawTwo, drawTwo];
+
+                next.hand = [drawTwo, drawTwo];
+                const NextLength = next.hand.length;
+
+                game.play(drawTwo);
+
+                const nextnext = game.nextPlayer;
+
+                nextnext.hand = [reverse];
+                const NextNextLength = nextnext.hand.length;
+
+                game.play(drawTwo);
+
+                const NextLengthafter = next.hand.length;
+                const NextNextLengthafter = nextnext.hand.length;
+                expect(game.currentPlayer).not.to.equal(curr);
+                expect(game.currentPlayer).not.to.equal(next);
+                expect(game.currentPlayer._pos).to.equal((curr._pos + 3) % game.NUMBER_OF_PLAYER);
+                expect(NextLengthafter).to.equal(NextLength - 1);
+                expect(NextNextLengthafter).to.equal(NextNextLength + 4);
+            });
+
+            it('adds 6 cards to next player after a DRAW TWO and a DRAW FOUR', function () {
+                const curr = game.currentPlayer;
+                const next = game.nextPlayer;
+
+                const discardedCard = game.discardedCard;
+
+                const drawTwo = new Card(Value.DRAW_TWO, discardedCard.color);
+                const drawFour = new Card(Value.WILD_DRAW_FOUR, discardedCard.color);
+                const reverse = new Card(Value.REVERSE, discardedCard.color);
+
+                curr.hand = [drawTwo, drawTwo];
+
+                next.hand = [drawTwo, drawTwo, drawFour];
+                const NextLength = next.hand.length;
+
+                game.play(drawTwo);
+
+                const nextnext = game.nextPlayer;
+
+                nextnext.hand = [reverse];
+                const NextNextLength = nextnext.hand.length;
+
+                game.play(drawFour);
+
+                const NextLengthafter = next.hand.length;
+                const NextNextLengthafter = nextnext.hand.length;
+                expect(game.currentPlayer).not.to.equal(curr);
+                expect(game.currentPlayer).not.to.equal(next);
+                expect(game.currentPlayer._pos).to.equal((curr._pos + 3) % game.NUMBER_OF_PLAYER);
+                expect(NextLengthafter).to.equal(NextLength - 1);
+                expect(NextNextLengthafter).to.equal(NextNextLength + 6);
+            });
+        });
+    });
+
+    describe('with two players', function () {
+        let game;
+
+        beforeEach(function () {
+            game = new Game(2, 25);
+        });
+
+        describe('#play()', function () {
+            it('Dont changes the playing direction if thrown REVERSE', function () {
+                const curr = game.currentPlayer;
+                const next = game.nextPlayer;
+                const discardedCard = game.discardedCard;
+                const reverse = new Card(Value.REVERSE, discardedCard.color);
+
+                curr.hand = [reverse, reverse];
+
+                game.play(reverse);
+                expect(game.currentPlayer).to.not.equal(next);
+                expect(game.currentPlayer).to.equal(curr);
             });
         });
     });
