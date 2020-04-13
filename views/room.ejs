@@ -60,7 +60,21 @@
         }
     });
 
+    document.onkeydown = fkey;
+    document.onkeypress = fkey
+    document.onkeyup = fkey;
 
+    var wasPressed = false;
+
+    function fkey(e){
+        e = e || window.event;
+       if( wasPressed ) return; 
+
+        if (e.keyCode == 116) {
+            window.location.href= window.location.href.replace('/room','');
+            wasPressed = true;
+        }
+    }
 </script>
 <% } %>
 <%-include('partials/footer.ejs')%>

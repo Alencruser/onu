@@ -135,23 +135,14 @@ app.get('/', (req, res) => {
     }
 });
 
-app.post('/room/:id',(req,res)=>{
+app.post('/room',(req,res)=>{
     sess = req.session;
     if(!sess.pseudo)return res.redirect('/');
-    sess.gameRoom = req.params.id;
+    sess.gameRoom = req.body.id;
     sess.gameNumber = req.body.groupSize;
     sess.gamePrice = req.body.groupPrice;
-    res.redirect('/room');
-});
-
-app.get('/room',(req,res)=>{
-    sess=req.session;
-    if(!sess.pseudo)return res.redirect('/'); 
-    sess=req.session;
     return res.render('room',{pseudo:sess.pseudo,roomId:sess.gameRoom,number:sess.gameNumber,price:sess.groupPrice});
-})
-
-
+});
 
 //create an account
 app.post('/register', (req, res) => {

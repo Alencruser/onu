@@ -25,7 +25,7 @@ function launchCustom() {
 socket.on('group size', (size, room, price) => {
     if (size > 1) {
         let form = document.createElement('form');
-        form.action = "/room/" + room;
+        form.action = "/room";
         form.method = 'POST';
         let input = document.createElement('input');
         input.name = "groupSize";
@@ -33,8 +33,12 @@ socket.on('group size', (size, room, price) => {
         let input2 = document.createElement('input');
         input2.name = "groupPrice";
         input2.value = price;
+        let input3 = document.createElement('input');
+        input3.name = 'id';
+        input3.value = room;
         form.append(input);
         form.append(input2);
+        form.append(input3);
         document.body.append(form);
         form.submit();
     }
