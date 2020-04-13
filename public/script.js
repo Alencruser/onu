@@ -141,9 +141,11 @@ socket.on('PlayedEvent', (card, current) => {
     console.log(current, game._currentPlayer._pos, document.getElementById('siege0').dataset.pos);
     if (current != siege0.dataset.pos) {
         console.log("Hey");
+        console.log(new Card(card.value,card.color));
         for (let i = 0; i < Object.keys(game._currentPlayer.hand).length; i++) {
             let car = new Card(siege0.children[i].dataset.attr.split(',')[1], siege0.children[i].dataset.attr.split(',')[0]);
-            if (car.matches(new Card(card.color,card.value))) {
+            console.log(car,new Card(card.value,card.color));
+            if (car.is(card.value,card.color)) {
                 siege0.removeChild(siege0.children[i]);
                 break;
             }
