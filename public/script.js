@@ -67,8 +67,8 @@ socket.on('setup', (session) => {
                 })
                 game[property] = x
                 break;
-                case 'drawpile':
-                    game[property] = $.extend(true, Object.create(Object.getPrototypeOf(new Deck())), session.game.drawpile)
+                case 'drawPile':
+                    game[property] = $.extend(true, Object.create(Object.getPrototypeOf(new Deck())), session.game.drawPile)
                     break;
 
         }
