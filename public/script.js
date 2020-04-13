@@ -53,16 +53,18 @@ socket.on('you are the host', (partySize, price) => {
 });
 
 socket.on('setup', (session) => {
-    game = new Game(2, 0);
-    game._price = session.game._price;
-    game.drawPile.drawpile = session.game.drawPile.drawpile;
-    game.direction = session.game.direction;
-    game._currentPlayer.hand = session.game._currentPlayer.hand;
-    game._currentPlayer._pos = session.game._currentPlayer._pos;
-    game._discardedCard = session.game._discardedCard;
-    game.hasdrawn = session.game.hasdrawn;
-    game.NUMBER_OF_PLAYER = session.game.NUMBER_OF_PLAYER;
-    game.cumulativeamount = session.game.cumulativeamount;
+    // game = new Game(2, 0);
+    jQuery.extend(true,game,session.game);
+    // game._price = session.game._price;
+    // game.drawPile.drawpile = session.game.drawPile.drawpile;
+    // game.direction = session.game.direction;
+    // game._currentPlayer.hand = session.game._currentPlayer.hand;
+    // game._currentPlayer._pos = session.game._currentPlayer._pos;
+    // game._discardedCard = session.game._discardedCard;
+    // game.hasdrawn = session.game.hasdrawn;
+    // game.NUMBER_OF_PLAYER = session.game.NUMBER_OF_PLAYER;
+    // game.cumulativeamount = session.game.cumulativeamount;
+    // game._players = session.game._players;
     let placement = session.pos;
     for (var player in placement) {
         if (mypseudo == placement[player]) {
@@ -101,7 +103,7 @@ socket.on('setup', (session) => {
                 while (!placed) {
                     siegeIndex++;
                     let siege = document.getElementById('siege' + siegeIndex).dataset.socket;
-                    
+
                     let permit = []
                     if (siege.includes(',')) permit = siege.split(',');
                     else permit.push(siege);
@@ -147,15 +149,14 @@ socket.on('PlayedEvent', (card, current) => {
     else {
         for (let i = 2; i < 15; i++) {
             let siege = document.getElementById('siege' + i);
-            console.log(siege);
-            if( game._currentPlayer._pos == siege.dataset.pos){
+            if (game._currentPlayer._pos == siege.dataset.pos) {
                 console.log("C'est le siége " + i);
                 siege.removeChild(siege.children[0]);
             }
         }
-        //let currentpos = game._currentPlayer._pos;
-        
         game.play(card);
+
+        console.log(game._currentPlayer._pos, siege0.dataset.pos);
     }
 });
 
@@ -163,7 +164,7 @@ function centralizeEvents(Message, value, color) {
     if (siege0.dataset.pos == game._currentPlayer._pos) {
         switch (Message) {
             case "clickcardEvent":
-                console.log("Je suis le joueur ",siege0.dataset.pos,", le joueur " + game._currentPlayer._pos+" viens de jouer");
+                console.log("Je suis le joueur ", siege0.dataset.pos, ", le joueur " + game._currentPlayer._pos + " viens de jouer");
                 console.log(game);
                 game.play(new Card(value, color));
                 console.log(game);
@@ -183,7 +184,7 @@ function centralizeEvents(Message, value, color) {
 
 
 //Choix couleur après +4 ou changement couleur
-$('.color').click((e)=>{
+$('.color').click((e) => {
     game._discardedCard.color = Color[e.target.dataset.color.toUpperCase()];
     //console log de la nouvelle couleur
     console.log(game._discardedCard);
@@ -191,6 +192,6 @@ $('.color').click((e)=>{
 })
 
 
-function chooseColor(color){
+function chooseColor(color) {
 
 }

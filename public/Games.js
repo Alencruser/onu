@@ -317,17 +317,12 @@ class Game {
     }
 
     getNextPlayer() {
-        console.log("CurrentPlayer in Games before Next", this._currentPlayer._pos, " avec ", this._players.length, " joueurs");
         let idx = this._currentPlayer._pos;
         if (this.direction == GameDirection.CLOCKWISE) {
-            console.log(idx , " +1");
             idx++;
-            console.log(idx);
             if (idx == this._players.length) idx = 0;
-            console.log(idx);
         }
         else {
-            console.log(idx, " -1");
             idx--;
             if (idx == -1) idx = this._players.length;
         }
@@ -345,8 +340,6 @@ class Game {
     goToNextPlayer() {
         this.drawn = false;
         this._currentPlayer = this.getNextPlayer();
-        console.log(this._players);
-        console.log("CurrentPlayer in Games after Next", this._currentPlayer._pos, " avec ", this._players.length, " joueurs");
     }
 
     candraw() {
@@ -365,7 +358,6 @@ class Game {
         currentPlayer.removeCard(card);
         this.drawPile.drawpile.push(this._discardedCard);
         this._discardedCard = card;
-        console.log("Passage dans Play()");
         if (currentPlayer.hand.length == 0) {
             centralizeEvents(new Discuss("GameEndEvent", null, null));
             return;
@@ -446,10 +438,10 @@ class Discuss {
     }
 }
 
-module.exports = {
-    Card: Card,
-    Deck: Deck,
-    Player: Player,
-    Game: Game,
-    Discuss: Discuss,
-}
+// module.exports = {
+//     Card: Card,
+//     Deck: Deck,
+//     Player: Player,
+//     Game: Game,
+//     Discuss: Discuss,
+// }
