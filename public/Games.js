@@ -367,10 +367,10 @@ class Game {
             centralizeEvents(new Discuss("CardDenyEvent", null, null));
             return;
         }
-        let firstround;
-        firstround = this._currentPlayer.removeCard(card);
+        
+        this._currentPlayer.removeCard(card);
         if(this.round == 0)
-            this._players[this._currentPlayer._pos].hand = firstround;
+            this._players[this._currentPlayer._pos].hand = this._currentPlayer.hand;
         console.log(this._currentPlayer);
         this.drawPile.drawpile.push(this._discardedCard);
         this._discardedCard = card;
