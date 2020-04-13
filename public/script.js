@@ -52,7 +52,7 @@ socket.on('you are the host', (partySize, price) => {
 });
 
 socket.on('setup', (session) => {
-    game = new Game(4, 0);
+    game = new Game(2, 0);
     game._price = session.game._price;
     game.drawPile.drawpile = session.game.drawPile.drawpile;
     game.direction = session.game.direction;
@@ -100,6 +100,7 @@ socket.on('setup', (session) => {
                 while (!placed) {
                     siegeIndex++;
                     let siege = document.getElementById('siege' + siegeIndex).dataset.socket;
+                    
                     let permit = []
                     if (siege.includes(',')) permit = siege.split(',');
                     else permit.push(siege);
@@ -107,6 +108,7 @@ socket.on('setup', (session) => {
                     if (permit.includes(numberOfPlayers.toString())) {
                         //assigner la place au siege
                         document.getElementById('siege' + siegeIndex).textContent = placement[actualPlayer];
+                        document.getElementById('siege' + siegeIndex).dataset.pos = actualPlayer;
                         for (x = 0; x < session.players[actualPlayer].hand.length; x++) {
                             let img = document.createElement('img');
                             img.src = "img/Card/default_back.png";
@@ -130,36 +132,40 @@ socket.on('PlayedEvent', (card, current) => {
             convertValue[valKeys[valVal.indexOf(card._value)]] :
             valKeys[valVal.indexOf(card._value)]) + ".png";
     let siege0 = document.getElementById('siege0');
+    console.log(current, game._currentPlayer._pos, document.getElementById('siege0').dataset.pos);
     if (current == game._currentPlayer._pos) {
+        console.log("Hey");
         for (let i = 0; i < Object.keys(game._currentPlayer.hand).length; i++) {
-            console.log(siege0.children[i]);
             let car = new Card(siege0.children[i].dataset.attr.split(',')[1], siege0.children[i].dataset.attr.split(',')[0]);
             if (car.matches(card)) {
-                console.log(siege0.children);
                 siege0.removeChild(siege0.children[i]);
-                console.log(siege0.children);
                 break;
             }
         }
     }
     else {
+        for (let i = 2; i < 15; i++) {
+            let siege = document.getElementById('siege' + i);
+            console.log(siege);
+            if( game._currentPlayer._pos == siege.dataset.pos){
+                console.log("C'est le siége " + i);
+                siege.removeChild(siege.children[0]);
+            }
+        }
         //let currentpos = game._currentPlayer._pos;
+        
         game.play(card);
     }
 });
-
-// socket.on('clickcardEvent', (card) => {
-//     let room = socket.roomId;
-//     let players = Object.keys(io.sockets.adapter.rooms[room].sockets);
-//     players.sort();
-//     io.to(players[0]).emit('play card', card);
-// });
 
 function centralizeEvents(Message, value, color) {
     if (siege0.dataset.pos == game._currentPlayer._pos) {
         switch (Message) {
             case "clickcardEvent":
+                console.log("Je suis le joueur ",siege0.dataset.pos,", le joueur " + game._currentPlayer._pos+" viens de jouer");
+                console.log(game);
                 game.play(new Card(value, color));
+                console.log(game);
                 socket.emit('PlayedEvent', new Card(value, color), game._currentPlayer._pos); //TEMPORAIRE
                 break;
             case "CardDenyEvent": // Message.currentPlayer

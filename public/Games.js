@@ -317,11 +317,20 @@ class Game {
     }
 
     getNextPlayer() {
+        console.log("CurrentPlayer in Games before Next", this._currentPlayer._pos, " avec ", this._players.length, " joueurs");
         let idx = this._currentPlayer._pos;
-        if (this.direction == GameDirection.CLOCKWISE)
-            idx = (idx + 1) % (this._players.length);
-        else
-            idx = (idx - 1) % (this._players.length);
+        if (this.direction == GameDirection.CLOCKWISE) {
+            console.log(idx , " +1");
+            idx++;
+            console.log(idx);
+            if (idx == this._players.length) idx = 0;
+            console.log(idx);
+        }
+        else {
+            console.log(idx, " -1");
+            idx--;
+            if (idx == -1) idx = this._players.length;
+        }
         return this._players[idx];
     }
 
@@ -336,6 +345,8 @@ class Game {
     goToNextPlayer() {
         this.drawn = false;
         this._currentPlayer = this.getNextPlayer();
+        console.log(this._players);
+        console.log("CurrentPlayer in Games after Next", this._currentPlayer._pos, " avec ", this._players.length, " joueurs");
     }
 
     candraw() {
@@ -347,16 +358,16 @@ class Game {
         let currentPlayer = this._currentPlayer;
         let cards = new Card(card.value, card.color);
         if (!cards.matches(this._discardedCard)) {
-            centralizeEvents(new Discuss("CardDenyEvent",null,null));
+            centralizeEvents(new Discuss("CardDenyEvent", null, null));
             return;
         }
 
         currentPlayer.removeCard(card);
         this.drawPile.drawpile.push(this._discardedCard);
         this._discardedCard = card;
-
+        console.log("Passage dans Play()");
         if (currentPlayer.hand.length == 0) {
-            centralizeEvents(new Discuss("GameEndEvent",null,null));
+            centralizeEvents(new Discuss("GameEndEvent", null, null));
             return;
         }
 
@@ -388,6 +399,8 @@ class Game {
                 else
                     this.goToNextPlayer();
                 break;
+            default:
+                break;
         }
 
         this.goToNextPlayer();
@@ -396,7 +409,7 @@ class Game {
     privateDraw(player, amount) {
         let cards = this.drawPile.draw(amount);
         player.hand = (player.hand.concat(cards)).sort(function (a, b) { return ((a.value + a.color * 15) < (b.color * 15 + b.value)) ? 1 : -1 });
-        centralizeEvents(new Discuss("DrawEvent",null,null));
+        centralizeEvents(new Discuss("DrawEvent", null, null));
         this.drawn = true;
     }
 
@@ -404,7 +417,7 @@ class Game {
         this.drawn = true;
         let card = this.drawPile.draw();
         this._currentPlayer.hand = (this._currentPlayer.hand.concat(card)).sort(function (a, b) { return ((a.value + a.color * 15) < (b.color * 15 + b.value)) ? 1 : -1 });
-        centralizeEvents(new Discuss("DrawEvent",null,null));
+        centralizeEvents(new Discuss("DrawEvent", null, null));
         if (!card.matches(this._discardedCard))
             this.goToNextPlayer();
     }
