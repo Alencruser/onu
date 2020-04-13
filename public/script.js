@@ -67,9 +67,9 @@ socket.on('setup', (session) => {
                 })
                 game[property] = x
                 break;
-                case 'drawPile':
-                    game[property] = $.extend(true, Object.create(Object.getPrototypeOf(new Deck())), session.game.drawPile)
-                    break;
+            case 'drawPile':
+                game[property] = $.extend(true, Object.create(Object.getPrototypeOf(new Deck())), session.game.drawPile)
+                break;
 
         }
     }
@@ -137,7 +137,7 @@ socket.on('setup', (session) => {
     console.log(session);
 })
 
-socket.on('PlayedEvent', (card, current,previousPos) => {
+socket.on('PlayedEvent', (card, current, previousPos) => {
     document.getElementById('discard').src = "img/card/" + colKeys[colVal.indexOf(card.color)] + '_' +
         ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(card.value)])) ?
             convertValue[valKeys[valVal.indexOf(card.value)]] :
@@ -200,9 +200,10 @@ $('.color').click((e) => {
     //console log de la nouvelle couleur
     console.log(game._discardedCard);
     //envoyer l'event aux autres
+    socket.emit('Change Color', game._discardedCard.color);
 })
 
-
-function chooseColor(color) {
-
-}
+socket.on('Change Color', (color) => {
+    game._discardedCard.color = color;
+    console.log(game);
+})
