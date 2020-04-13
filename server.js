@@ -105,9 +105,9 @@ io.on('connection', (socket) => {
         //envoyer les infos aux joueurs
     });
 
-    socket.on('PlayedEvent', (card,current) => {
+    socket.on('PlayedEvent', (card,current,previousPos) => {
         let room = socket.roomId;
-        io.to(room).emit('PlayedEvent',card,current);
+        io.to(room).emit('PlayedEvent',card,current,previousPos);
     }
     );
 
