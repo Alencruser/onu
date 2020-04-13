@@ -54,15 +54,15 @@ socket.on('you are the host', (partySize, price) => {
 
 socket.on('setup', (session) => {
     game = $.extend(true, Object.create(Object.getPrototypeOf(new Game())), session.game);
-    console.log('session game avant clone property',session.game);
+    console.log('session game avant clone property', session.game);
     //recursively create prototype of
-    for(var property in game){
-        switch(property){
+    for (var property in game) {
+        switch (property) {
             case '_currentPlayer':
-            game[property] = $.extend(true, Object.create(Object.getPrototypeOf(new Player())), session.game._currentPlayer);
-            break;
+                game[property] = $.extend(true, Object.create(Object.getPrototypeOf(new Player())), session.game._currentPlayer);
+                break;
             case '_players':
-               let x = game[property].map((e,i)=>{
+                let x = game[property].map((e, i) => {
                     return $.extend(true, Object.create(Object.getPrototypeOf(new Player())), session.game._players[i]);
                 })
                 game[property] = x
@@ -111,7 +111,7 @@ socket.on('setup', (session) => {
                 while (!placed) {
                     siegeIndex++;
                     let siege = document.getElementById('siege' + siegeIndex).dataset.socket;
-                    
+
                     let permit = []
                     if (siege.includes(',')) permit = siege.split(',');
                     else permit.push(siege);
@@ -137,18 +137,19 @@ socket.on('setup', (session) => {
     console.log(session);
 })
 
-socket.on('PlayedEvent', (card, current) => {
+socket.on('PlayedEvent', (card, current,previousPos) => {
     document.getElementById('discard').src = "img/card/" + colKeys[colVal.indexOf(card.color)] + '_' +
         ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(card.value)])) ?
             convertValue[valKeys[valVal.indexOf(card.value)]] :
             valKeys[valVal.indexOf(card.value)]) + ".png";
     let siege0 = document.getElementById('siege0');
     console.log(current, game._currentPlayer._pos, document.getElementById('siege0').dataset.pos);
-    if (current != siege0.dataset.pos ) {
+    if (previousPos == siege0.dataset.pos) {
         console.log("Hey");
+        console.log(new Card(card.value, card.color));
         for (let i = 0; i < Object.keys(game._currentPlayer.hand).length; i++) {
             let car = new Card(siege0.children[i].dataset.attr.split(',')[1], siege0.children[i].dataset.attr.split(',')[0]);
-            if (car.is(card.value,card.color)) {
+            if (car.is(card.value, card.color)) {
                 siege0.removeChild(siege0.children[i]);
                 break;
             }
@@ -157,16 +158,16 @@ socket.on('PlayedEvent', (card, current) => {
     else {
         for (let i = 2; i < 15; i++) {
             let siege = document.getElementById('siege' + i);
-            if( game._currentPlayer._pos == siege.dataset.pos){
+            if (previousPos == siege.dataset.pos) {
                 console.log("C'est le siége " + i);
                 siege.removeChild(siege.children[0]);
             }
         }
         //let currentpos = game._currentPlayer._pos;
-        console.log('ma game avant que lautre ne joue',game);
-        game.play(new Card(card.value,card.color));
-        console.log('ma game une fois que lautre joueur a joué',game);
-        console.log('ma pos sa grand mère la pute',document.getElementById('siege0').dataset.pos);
+        console.log('ma game avant que lautre ne joue', game);
+        game.play(new Card(card.value, card.color));
+        console.log('ma game une fois que lautre joueur a joué', game);
+        console.log('ma pos sa grand mère la pute', document.getElementById('siege0').dataset.pos);
     }
 });
 
@@ -174,10 +175,11 @@ function centralizeEvents(Message, value, color) {
     if (siege0.dataset.pos == game._currentPlayer._pos) {
         switch (Message) {
             case "clickcardEvent":
-                console.log("Je suis le joueur ",siege0.dataset.pos,", le joueur " + game._currentPlayer._pos+" viens de jouer");
+                let previousPos = game._currentPlayer._pos;
+                console.log("Je suis le joueur ", siege0.dataset.pos, ", le joueur " + game._currentPlayer._pos + " viens de jouer");
                 game.play(new Card(value, color));
-                console.log('game après play coté joueur qui a joué',game);
-                socket.emit('PlayedEvent', {value:value, color:color}, game._currentPlayer._pos); //TEMPORAIRE
+                console.log('game après play coté joueur qui a joué', game);
+                socket.emit('PlayedEvent', { value: value, color: color }, game._currentPlayer._pos, previousPos); //TEMPORAIRE
                 break;
             case "CardDenyEvent": // Message.currentPlayer
                 break;
@@ -193,7 +195,7 @@ function centralizeEvents(Message, value, color) {
 
 
 //Choix couleur après +4 ou changement couleur
-$('.color').click((e)=>{
+$('.color').click((e) => {
     game._discardedCard.color = Color[e.target.dataset.color.toUpperCase()];
     //console log de la nouvelle couleur
     console.log(game._discardedCard);
@@ -201,6 +203,6 @@ $('.color').click((e)=>{
 })
 
 
-function chooseColor(color){
+function chooseColor(color) {
 
 }
