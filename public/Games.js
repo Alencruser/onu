@@ -336,7 +336,6 @@ class Game {
     goToNextPlayer() {
         this.drawn = false;
         this._currentPlayer = this.getNextPlayer();
-        centralizeEvents(new Discuss("NextPlayerEvent",null,null));
     }
 
     candraw() {
@@ -355,8 +354,6 @@ class Game {
         currentPlayer.removeCard(card);
         this.drawPile.drawpile.push(this._discardedCard);
         this._discardedCard = card;
-
-        centralizeEvents(new Discuss("CardPlayEvent",null,null));
 
         if (currentPlayer.hand.length == 0) {
             centralizeEvents(new Discuss("GameEndEvent",null,null));

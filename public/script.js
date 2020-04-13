@@ -142,7 +142,10 @@ socket.on('PlayedEvent', (card, current) => {
             }
         }
     }
-    else { }
+    else {
+        //let currentpos = game._currentPlayer._pos;
+        game.play(card);
+    }
 });
 
 // socket.on('clickcardEvent', (card) => {
@@ -159,13 +162,7 @@ function centralizeEvents(Message, value, color) {
                 game.play(new Card(value, color));
                 socket.emit('PlayedEvent', new Card(value, color), game._currentPlayer._pos); //TEMPORAIRE
                 break;
-            case "StartEvent": // Nothing
-                break;
-            case "NextPlayerEvent": // Message.nextPlayer
-                break;
             case "CardDenyEvent": // Message.currentPlayer
-                break;
-            case "CardPlayEvent": socket.emit('PlayedEvent', game);
                 break;
             case "GameEndEvent": // Message.currentPlayer & Message.price
                 break;
