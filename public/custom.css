@@ -81,3 +81,14 @@ ul {
 .img-socket img {
     height:5vh;
 }
+
+.color {
+    width:20vh;
+    height:20vh;
+    cursor: pointer;
+}
+
+#colorContainer {
+    display:flex;
+    justify-content: space-between;
+}

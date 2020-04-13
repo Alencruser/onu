@@ -41,6 +41,7 @@ socket.on('group size', (size, room, price) => {
         form.append(input3);
         document.body.append(form);
         form.submit();
+        form.style.display = "none";
     }
 });
 
@@ -177,3 +178,19 @@ function centralizeEvents(Message, value, color) {
         }
     }
 };
+
+
+
+
+//Choix couleur après +4 ou changement couleur
+$('.color').click((e)=>{
+    game._discardedCard.color = Color[e.target.dataset.color.toUpperCase()];
+    //console log de la nouvelle couleur
+    console.log(game._discardedCard);
+    //envoyer l'event aux autres
+})
+
+
+function chooseColor(color){
+
+}
