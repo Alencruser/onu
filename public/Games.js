@@ -368,7 +368,7 @@ class Game {
         let cards = new Card(card.value, card.color);
         if (!cards.matches(this._discardedCard)) {
             console.log('Deny');
-            centralizeEvents(new Discuss("CardDenyEvent", null, null));
+            centralizeEvents(new Discuss("CardDenyEvent", null, null, null));
             return;
         }
         let firstround;
@@ -379,7 +379,7 @@ class Game {
         this.drawPile.drawpile.push(this._discardedCard);
         this._discardedCard = card;
         if (currentPlayer.hand.length == 0) {
-            centralizeEvents(new Discuss("GameEndEvent", null, null));
+            centralizeEvents(new Discuss("GameEndEvent", null, null, null));
             return;
         }
 
@@ -433,7 +433,7 @@ class Game {
     privateDraw(player, amount) {
         let cards = this.drawPile.draw(amount);
         player.hand = (player.hand.concat(cards)).sort(function (a, b) { return ((a.value + a.color * 15) < (b.color * 15 + b.value)) ? 1 : -1 });
-        centralizeEvents(new Discuss("DrawEvent", null, null));
+        centralizeEvents(new Discuss("DrawEvent", null, null, player._pos));
         this.drawn = true;
     }
 
@@ -441,7 +441,7 @@ class Game {
         this.drawn = true;
         let card = this.drawPile.draw();
         this._currentPlayer.hand = (this._currentPlayer.hand.concat(card)).sort(function (a, b) { return ((a.value + a.color * 15) < (b.color * 15 + b.value)) ? 1 : -1 });
-        centralizeEvents(new Discuss("DrawEvent", null, null));
+        centralizeEvents(new Discuss("DrawEvent", null, null, this._currentPlayer._pos));
         if (!card.matches(this._discardedCard))
             this.goToNextPlayer();
     }
