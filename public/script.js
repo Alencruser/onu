@@ -62,9 +62,10 @@ socket.on('setup', (session) => {
             game[property] = $.extend(true, Object.create(Object.getPrototypeOf(new Player())), session.game._currentPlayer);
             break;
             case '_players':
-                game[property].map((e,i)=>{
+               let x = game[property].map((e,i)=>{
                     return $.extend(true, Object.create(Object.getPrototypeOf(new Player())), session.game._players[i]);
                 })
+                game[property] = x
                 break;
         }
     }
@@ -143,7 +144,7 @@ socket.on('PlayedEvent', (card, current) => {
         console.log("Hey");
         for (let i = 0; i < Object.keys(game._currentPlayer.hand).length; i++) {
             let car = new Card(siege0.children[i].dataset.attr.split(',')[1], siege0.children[i].dataset.attr.split(',')[0]);
-            if (car.matches(new Card(card.color,card.value))) {
+            if (car.is(card.value,card.color)) {
                 siege0.removeChild(siege0.children[i]);
                 break;
             }

@@ -107,8 +107,8 @@ class Card {
     }
 
     is(value, color = null) {
-        let matches = this.value === value;
-        if (color) matches = matches && this.color === color;
+        let matches = this.value == value;
+        if (color) matches = matches && this.color == color;
         return matches;
     }
 }
