@@ -326,6 +326,7 @@ class Game {
             idx--;
             if (idx == -1) idx = this._players.length;
         }
+        console.log('player idx dans nexttplayer', this._players[idx])
         return this._players[idx];
     }
 
@@ -348,13 +349,13 @@ class Game {
     }
 
     play(card) {
+        console.log('je proc dans play');
         let currentPlayer = this._currentPlayer;
         let cards = new Card(card.value, card.color);
         if (!cards.matches(this._discardedCard)) {
             centralizeEvents(new Discuss("CardDenyEvent", null, null));
             return;
         }
-
         currentPlayer.removeCard(card);
         this.drawPile.drawpile.push(this._discardedCard);
         this._discardedCard = card;
@@ -399,7 +400,6 @@ class Game {
             default:
                 break;
         }
-
         this.goToNextPlayer();
     }
 
