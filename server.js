@@ -116,9 +116,9 @@ io.on('connection', (socket) => {
         io.to(room).emit('Change Color',color);
     });
 
-    socket.on('draw', (game) => {
+    socket.on('draw', (player) => {
         let room = socket.roomId;
-        io.to(room).emit('draw',game);
+        io.to(room).emit('draw',player);
     })
 
     socket.on('disconnect', () => {

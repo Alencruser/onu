@@ -186,7 +186,7 @@ function centralizeEvents(Message, value, color, player) {
             case "GameEndEvent": // Message.currentPlayer & Message.price
                 break;
             case "DrawEvent": // Message.drawPlayer & Message.cards
-                socket.emit('draw',game);
+                socket.emit('draw',player);
                 break;
         }
     }
@@ -210,7 +210,12 @@ socket.on('Change Color', (color) => {
 });
 
 
-socket.on('draw',(newGame)=>{
-    console.log('dzdzd',game);
-    console.log('newgame',newGame);
+socket.on('draw',(player)=>{
+    if(player == document.getElementById('siege0').dataset.pos){
+        //message de pioche
+        // refresh les cartes du joueur 0
+        document.getElementById('siege0').innerHTML = "";
+    }else{
+        //chercher le siège concerné et rajouter ses cartes
+    }
 });
