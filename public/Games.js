@@ -231,6 +231,7 @@ class Player {
 
     removeCard(card) {
         let i;
+        let x = this.hand.slice();
         this.hand.map((e, v) => {
             if (e._color == card._color && e._value == card._value)
                 i = v;
@@ -238,7 +239,9 @@ class Player {
 
         // let i = this.hand.indexOf(card);
         console.log("RemoveCard",i);
-        this.hand.splice(i, 1);
+        x.splice(i, 1);
+        this.hand = x
+        return x;
     }
 
     get pos() {
@@ -261,6 +264,7 @@ class Game {
     hasdrawn = false;
     NUMBER_OF_PLAYER;
     cumulativeamount = 0;
+    round = 0;
 
     constructor(NUMBER_OF_PLAYER, price) {
         this.NUMBER_OF_PLAYER = NUMBER_OF_PLAYER;
@@ -363,7 +367,11 @@ class Game {
             centralizeEvents(new Discuss("CardDenyEvent", null, null));
             return;
         }
-        this._currentPlayer.removeCard(card);
+        let firstround;
+        firstround = this._currentPlayer.removeCard(card);
+        if(this.round == 0)
+            this._players[this._currentPlayer._pos].hand = firstround;
+        console.log(this._currentPlayer);
         this.drawPile.drawpile.push(this._discardedCard);
         this._discardedCard = card;
         if (currentPlayer.hand.length == 0) {
@@ -415,6 +423,7 @@ class Game {
                 break;
         }
         this.goToNextPlayer();
+        this.round++;
     }
 
     privateDraw(player, amount) {
