@@ -366,9 +366,14 @@ class Game {
                     this.privateDraw(this.getNextPlayer(), this.cumulativeamount + 4);
                     this.cumulativeamount = 0;
                     this.goToNextPlayer();
+                    $('#changeColor').modal('show');
                 }
                 else
                     this.cumulativeamount += 4;
+                break;
+            case Value.WILD:
+                this.goToNextPlayer();
+                $('#changeColor').modal('show');
                 break;
             case Value.DRAW_TWO:
                 if (!this.getNextPlayer().hasPlayableDodgeDraw(this._discardedCard)) {

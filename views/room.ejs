@@ -35,6 +35,23 @@
         <div class="text-white col-lg-6 text-center" id="siege0" data-socket=""></div>
         <div class="text-white col-lg-2 img-socket" id="siege14" data-socket="8"></div>
     </div>
+
+
+    <div class="modal fade" id="changeColor" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+          <div class="modal-content">
+            <div class="modal-body" id="colorContainer">
+              <div class="color side" data-dismiss="modal" data-color="blue" style="background-color:blue"></div>
+              <div class="color side" data-dismiss="modal" data-color="yellow" style="background-color:yellow"></div>
+              <div class="color side" data-dismiss="modal" data-color="green" style="background-color:green"></div>
+              <div class="color" data-dismiss="modal" data-color="red" style="background-color:red"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
 </body>
 <script>
     let socket = io('');
@@ -60,9 +77,9 @@
         }
     });
 
-    document.onkeydown = fkey;
-    document.onkeypress = fkey
-    document.onkeyup = fkey;
+    // document.onkeydown = fkey;
+    // document.onkeypress = fkey
+    // document.onkeyup = fkey;
 
     var wasPressed = false;
 
