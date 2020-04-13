@@ -67,6 +67,10 @@ socket.on('setup', (session) => {
                 })
                 game[property] = x
                 break;
+                case 'drawpile':
+                    game[property] = $.extend(true, Object.create(Object.getPrototypeOf(new Deck())), session.game.drawpile)
+                    break;
+
         }
     }
     let placement = session.pos;
