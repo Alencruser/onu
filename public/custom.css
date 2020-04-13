@@ -66,9 +66,18 @@ ul {
 }
 
 #siege0 {
-    display: block ruby;
+    display: flex;
+    justify-content: center;
 }
 
 #siege0 img {
-    height:33%;
+    height:20vh;
+}
+
+.img-socket {
+    display: flex;
+}
+
+.img-socket img {
+    height:5vh;
 }
