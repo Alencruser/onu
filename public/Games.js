@@ -215,8 +215,9 @@ class Player {
     hasPlayable(card) {
         if (!card) return false;
 
+        this.hand.map(c => { console.log(c.value == card.value || c.color == card.color || c.value > 12,c) });
         return this.hand.some(
-            (c) => c.value == card.value || c.color == card.color || c.value > 12,
+            (c) => c._value == card._value || c._color == card._color || c._value > 12,
         );
     }
 
@@ -238,7 +239,7 @@ class Player {
         });
 
         // let i = this.hand.indexOf(card);
-        console.log("RemoveCard",i);
+        console.log("RemoveCard", i);
         x.splice(i, 1);
         this.hand = x
         return x;
@@ -351,11 +352,14 @@ class Game {
     goToNextPlayer() {
         this.drawn = false;
         this._currentPlayer = this.getNextPlayer();
+        this.candraw();
     }
 
     candraw() {
-        if (this._currentPlayer.hasPlayable(this._discardedCard)) return false;
-        else return true;
+        if (!this._currentPlayer.hasPlayable(this._discardedCard))
+            this.privateDraw(this._currentPlayer,1);
+        if (!this._currentPlayer.hasPlayable(this._discardedCard))
+            this.goToNextPlayer();
     }
 
     play(card) {
@@ -369,7 +373,7 @@ class Game {
         }
         let firstround;
         firstround = this._currentPlayer.removeCard(card);
-        if(this.round == 0)
+        if (this.round == 0)
             this._players[this._currentPlayer._pos].hand = firstround;
         console.log(this._currentPlayer);
         this.drawPile.drawpile.push(this._discardedCard);
