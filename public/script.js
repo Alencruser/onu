@@ -25,7 +25,7 @@ function launchCustom() {
 socket.on('group size', (size, room, price) => {
     if (size > 1) {
         let form = document.createElement('form');
-        form.action = "/room/" + room;
+        form.action = "/room";
         form.method = 'POST';
         let input = document.createElement('input');
         input.name = "groupSize";
@@ -33,8 +33,12 @@ socket.on('group size', (size, room, price) => {
         let input2 = document.createElement('input');
         input2.name = "groupPrice";
         input2.value = price;
+        let input3 = document.createElement('input');
+        input3.name = 'id';
+        input3.value = room;
         form.append(input);
         form.append(input2);
+        form.append(input3);
         document.body.append(form);
         form.submit();
     }
@@ -95,7 +99,6 @@ socket.on('setup', (session) => {
                 //ici assigner les places avec un while
                 while (!placed) {
                     siegeIndex++;
-                    console.log(document.getElementById('siege' + siegeIndex).dataset.socket);
                     let siege = document.getElementById('siege' + siegeIndex).dataset.socket;
                     let permit = []
                     if (siege.includes(',')) permit = siege.split(',');
@@ -103,15 +106,18 @@ socket.on('setup', (session) => {
 
                     if (permit.includes(numberOfPlayers.toString())) {
                         //assigner la place au siege
-                        document.getElementById('siege' + siegeIndex).textContent = placement[actualPlayer] + ': Cartes en mains : ' + session.players[actualPlayer].hand.length;
+                        document.getElementById('siege' + siegeIndex).textContent = placement[actualPlayer];
+                        for (x = 0; x < session.players[actualPlayer].hand.length; x++) {
+                            let img = document.createElement('img');
+                            img.src = "img/Card/default_back.png";
+                            document.getElementById('siege' + siegeIndex).append(img);
+                        }
+
                         //placed passe true
                         placed = true;
                     }
 
                 }
-                console.log('tour numero :' + i);
-                console.log('acttual player pos', actualPlayer);
-                console.log(placement[actualPlayer]);
             }
         }
     }
