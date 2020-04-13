@@ -92,7 +92,7 @@ socket.on('setup', (session) => {
                 img.src = src;
                 img.dataset.attr = e._color + ',' + e._value;
                 document.getElementById('siege0').append(img);
-                img.addEventListener("click", function () { centralizeEvents("clickcardEvent", e._value, e._color); });
+                img.addEventListener("click", function () { centralizeEvents("clickcardEvent", e._value, e._color, color); });
             })
 
 
@@ -171,7 +171,7 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
     }
 });
 
-function centralizeEvents(Message, value, color) {
+function centralizeEvents(Message, value, color, player) {
     if (siege0.dataset.pos == game._currentPlayer._pos) {
         switch (Message) {
             case "clickcardEvent":
