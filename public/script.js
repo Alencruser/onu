@@ -186,6 +186,7 @@ function centralizeEvents(Message, value, color) {
             case "GameEndEvent": // Message.currentPlayer & Message.price
                 break;
             case "DrawEvent": // Message.drawPlayer & Message.cards
+                socket.emit('draw',game);
                 break;
         }
     }
@@ -206,4 +207,10 @@ $('.color').click((e) => {
 socket.on('Change Color', (color) => {
     game._discardedCard.color = color;
     console.log(game);
-})
+});
+
+
+socket.on('draw',(newGame)=>{
+    console.log('dzdzd',game);
+    console.log('newgame',newGame);
+});
