@@ -67,6 +67,10 @@ socket.on('setup', (session) => {
                 })
                 game[property] = x
                 break;
+                case 'drawpile':
+                    game[property] = $.extend(true, Object.create(Object.getPrototypeOf(new Deck())), session.game.drawpile)
+                    break;
+
         }
     }
     let placement = session.pos;
@@ -140,7 +144,7 @@ socket.on('PlayedEvent', (card, current) => {
             valKeys[valVal.indexOf(card.value)]) + ".png";
     let siege0 = document.getElementById('siege0');
     console.log(current, game._currentPlayer._pos, document.getElementById('siege0').dataset.pos);
-    if (current != siege0.dataset.pos) {
+    if (current != siege0.dataset.pos ) {
         console.log("Hey");
         for (let i = 0; i < Object.keys(game._currentPlayer.hand).length; i++) {
             let car = new Card(siege0.children[i].dataset.attr.split(',')[1], siege0.children[i].dataset.attr.split(',')[0]);
