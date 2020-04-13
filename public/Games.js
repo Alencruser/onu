@@ -317,20 +317,16 @@ class Game {
     }
 
     getNextPlayer() {
-        console.log("CurrentPlayer in Games before Next", this._currentPlayer._pos, " avec ", this._players.length, " joueurs");
         let idx = this._currentPlayer._pos;
         if (this.direction == GameDirection.CLOCKWISE) {
-            console.log(idx , " +1");
             idx++;
-            console.log(idx);
             if (idx == this._players.length) idx = 0;
-            console.log(idx);
         }
         else {
-            console.log(idx, " -1");
             idx--;
             if (idx == -1) idx = this._players.length;
         }
+        console.log('player idx dans nexttplayer', this._players[idx])
         return this._players[idx];
     }
 
@@ -345,8 +341,6 @@ class Game {
     goToNextPlayer() {
         this.drawn = false;
         this._currentPlayer = this.getNextPlayer();
-        console.log(this._players);
-        console.log("CurrentPlayer in Games after Next", this._currentPlayer._pos, " avec ", this._players.length, " joueurs");
     }
 
     candraw() {
@@ -355,24 +349,29 @@ class Game {
     }
 
     play(card) {
+        console.log('je proc dans play');
         let currentPlayer = this._currentPlayer;
         let cards = new Card(card.value, card.color);
         if (!cards.matches(this._discardedCard)) {
             centralizeEvents(new Discuss("CardDenyEvent", null, null));
             return;
         }
-
+        console.log('359');
         currentPlayer.removeCard(card);
+        console.log('361');
         this.drawPile.drawpile.push(this._discardedCard);
+        console.log('363');
         this._discardedCard = card;
-        console.log("Passage dans Play()");
+        console.log('365');
         if (currentPlayer.hand.length == 0) {
+            console.log('367');
             centralizeEvents(new Discuss("GameEndEvent", null, null));
             return;
         }
 
         switch (this._discardedCard.value) {
             case Value.WILD_DRAW_FOUR:
+                console.log('374');
                 if (!this.getNextPlayer().hasPlayableDodgeDraw(this._discardedCard)) {
                     this.privateDraw(this.getNextPlayer(), this.cumulativeamount + 4);
                     this.cumulativeamount = 0;
@@ -383,10 +382,12 @@ class Game {
                     this.cumulativeamount += 4;
                 break;
             case Value.WILD:
+                console.log('385');
                 this.goToNextPlayer();
                 $('#changeColor').modal('show');
                 break;
             case Value.DRAW_TWO:
+                console.log('390');
                 if (!this.getNextPlayer().hasPlayableDodgeDraw(this._discardedCard)) {
                     this.privateDraw(this.getNextPlayer(), this.cumulativeamount + 2);
                     this.cumulativeamount = 0;
@@ -396,9 +397,11 @@ class Game {
                     this.cumulativeamount += 2;
                 break;
             case Value.SKIP:
+                console.log('400');
                 this.goToNextPlayer();
                 break;
             case Value.REVERSE:
+                console.log('404');
                 if (this.NUMBER_OF_PLAYER > 2)
                     this.reverseGame();
                 else
@@ -407,8 +410,9 @@ class Game {
             default:
                 break;
         }
-
+        console.log('413');
         this.goToNextPlayer();
+        console.log('415');
     }
 
     privateDraw(player, amount) {

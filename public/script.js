@@ -53,16 +53,21 @@ socket.on('you are the host', (partySize, price) => {
 });
 
 socket.on('setup', (session) => {
-    game = new Game(2, 0);
-    game._price = session.game._price;
-    game.drawPile.drawpile = session.game.drawPile.drawpile;
-    game.direction = session.game.direction;
-    game._currentPlayer.hand = session.game._currentPlayer.hand;
-    game._currentPlayer._pos = session.game._currentPlayer._pos;
-    game._discardedCard = session.game._discardedCard;
-    game.hasdrawn = session.game.hasdrawn;
-    game.NUMBER_OF_PLAYER = session.game.NUMBER_OF_PLAYER;
-    game.cumulativeamount = session.game.cumulativeamount;
+    game = $.extend(true, Object.create(Object.getPrototypeOf(new Game())), session.game);
+    console.log('session game avant clone property',session.game);
+    //recursively create prototype of
+    for(var property in game){
+        switch(property){
+            case '_currentPlayer':
+            game[property] = $.extend(true, Object.create(Object.getPrototypeOf(new Player())), session.game._currentPlayer);
+            break;
+            case '_players':
+                game[property].map((e,i)=>{
+                    return $.extend(true, Object.create(Object.getPrototypeOf(new Player())), session.game._players[i]);
+                })
+                break;
+        }
+    }
     let placement = session.pos;
     for (var player in placement) {
         if (mypseudo == placement[player]) {
@@ -128,17 +133,17 @@ socket.on('setup', (session) => {
 })
 
 socket.on('PlayedEvent', (card, current) => {
-    document.getElementById('discard').src = "img/card/" + colKeys[colVal.indexOf(card._color)] + '_' +
-        ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(card._value)])) ?
-            convertValue[valKeys[valVal.indexOf(card._value)]] :
-            valKeys[valVal.indexOf(card._value)]) + ".png";
+    document.getElementById('discard').src = "img/card/" + colKeys[colVal.indexOf(card.color)] + '_' +
+        ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(card.value)])) ?
+            convertValue[valKeys[valVal.indexOf(card.value)]] :
+            valKeys[valVal.indexOf(card.value)]) + ".png";
     let siege0 = document.getElementById('siege0');
     console.log(current, game._currentPlayer._pos, document.getElementById('siege0').dataset.pos);
-    if (current == game._currentPlayer._pos) {
+    if (current != siege0.dataset.pos) {
         console.log("Hey");
         for (let i = 0; i < Object.keys(game._currentPlayer.hand).length; i++) {
             let car = new Card(siege0.children[i].dataset.attr.split(',')[1], siege0.children[i].dataset.attr.split(',')[0]);
-            if (car.matches(card)) {
+            if (car.matches(new Card(card.color,card.value))) {
                 siege0.removeChild(siege0.children[i]);
                 break;
             }
@@ -147,15 +152,16 @@ socket.on('PlayedEvent', (card, current) => {
     else {
         for (let i = 2; i < 15; i++) {
             let siege = document.getElementById('siege' + i);
-            console.log(siege);
             if( game._currentPlayer._pos == siege.dataset.pos){
                 console.log("C'est le siége " + i);
                 siege.removeChild(siege.children[0]);
             }
         }
         //let currentpos = game._currentPlayer._pos;
-        
-        game.play(card);
+        console.log('ma game avant que lautre ne joue',game);
+        game.play(new Card(card.value,card.color));
+        console.log('ma game une fois que lautre joueur a joué',game);
+        console.log('ma pos sa grand mère la pute',document.getElementById('siege0').dataset.pos);
     }
 });
 
@@ -164,10 +170,9 @@ function centralizeEvents(Message, value, color) {
         switch (Message) {
             case "clickcardEvent":
                 console.log("Je suis le joueur ",siege0.dataset.pos,", le joueur " + game._currentPlayer._pos+" viens de jouer");
-                console.log(game);
                 game.play(new Card(value, color));
-                console.log(game);
-                socket.emit('PlayedEvent', new Card(value, color), game._currentPlayer._pos); //TEMPORAIRE
+                console.log('game après play coté joueur qui a joué',game);
+                socket.emit('PlayedEvent', {value:value, color:color}, game._currentPlayer._pos); //TEMPORAIRE
                 break;
             case "CardDenyEvent": // Message.currentPlayer
                 break;
