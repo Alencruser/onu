@@ -133,7 +133,7 @@
 
 
 
-        let socket = io('90.76.213.45:8080');
+        let socket = io('');
 
         document.getElementById('createRoom').addEventListener('click', () => {
             socket.emit('createGroup', '<%=pseudo%>');

@@ -103,7 +103,7 @@ class Card {
 
     matches(other) {
         if (this.isWildCard()) return true;
-        return other.value === this.value || other.color === this.color;
+        return other._value == this.value || other._color == this.color;
     }
 
     is(value, color = null) {
@@ -271,7 +271,6 @@ class Game {
         this._players.forEach(
             (p) => (p.hand = (this.drawPile.draw(CARDS_PER_PLAYER)).sort(function (a, b) { return ((a.value + a.color * 15) < (b.color * 15 + b.value)) ? 1 : -1 })),
         );
-        centralizeEvents(new Discuss("StartEvent", null, null, null, null, null));
 
         do {
             this._discardedCard = this.drawPile.draw()[0];
@@ -337,7 +336,7 @@ class Game {
     goToNextPlayer() {
         this.drawn = false;
         this._currentPlayer = this.getNextPlayer();
-        centralizeEvents(new Discuss("NextPlayerEvent", null, null, null, this._currentPlayer._pos, null));
+        centralizeEvents(new Discuss("NextPlayerEvent",null,null));
     }
 
     candraw() {
@@ -349,7 +348,7 @@ class Game {
         let currentPlayer = this._currentPlayer;
         let cards = new Card(card.value, card.color);
         if (!cards.matches(this._discardedCard)) {
-            centralizeEvents(new Discuss("CardDenyEvent", this._currentPlayer._pos, null, card, null, null));
+            centralizeEvents(new Discuss("CardDenyEvent",null,null));
             return;
         }
 
@@ -357,10 +356,10 @@ class Game {
         this.drawPile.drawpile.push(this._discardedCard);
         this._discardedCard = card;
 
-        centralizeEvents(new Discuss("CardPlayEvent", this._currentPlayer._pos, null, card, null, null));
+        centralizeEvents(new Discuss("CardPlayEvent",null,null));
 
         if (currentPlayer.hand.length == 0) {
-            centralizeEvents(new Discuss("GameEndEvent", this._currentPlayer.pos, null, card, null, this._price));
+            centralizeEvents(new Discuss("GameEndEvent",null,null));
             return;
         }
 
@@ -400,7 +399,7 @@ class Game {
     privateDraw(player, amount) {
         let cards = this.drawPile.draw(amount);
         player.hand = (player.hand.concat(cards)).sort(function (a, b) { return ((a.value + a.color * 15) < (b.color * 15 + b.value)) ? 1 : -1 });
-        centralizeEvents(new Discuss("DrawEvent", null, player._pos, player.hand, null, null));
+        centralizeEvents(new Discuss("DrawEvent",null,null));
         this.drawn = true;
     }
 
@@ -408,7 +407,7 @@ class Game {
         this.drawn = true;
         let card = this.drawPile.draw();
         this._currentPlayer.hand = (this._currentPlayer.hand.concat(card)).sort(function (a, b) { return ((a.value + a.color * 15) < (b.color * 15 + b.value)) ? 1 : -1 });
-        centralizeEvents(new Discuss("DrawEvent", null, player._pos, player.hand, null, null));
+        centralizeEvents(new Discuss("DrawEvent",null,null));
         if (!card.matches(this._discardedCard))
             this.goToNextPlayer();
     }
@@ -439,20 +438,3 @@ module.exports = {
     Game: Game,
     Discuss: Discuss,
 }
-
-function centralizeEvents(Message) {
-    switch (Message.string) {
-        case "StartEvent": // Nothing
-            break;
-        case "NextPlayerEvent": // Message.nextPlayer
-            break;
-        case "CardDenyEvent": // Message.currentPlayer
-            break;
-        case "CardPlayEvent": // Message.currentPlayer & Message.cards
-            break;
-        case "GameEndEvent": // Message.currentPlayer & Message.price
-            break;
-        case "DrawEvent": // Message.drawPlayer & Message.cards
-            break;
-    }
-};

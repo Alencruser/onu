@@ -12,7 +12,7 @@ let express = require('express'),
         password: '',
         database: 'onu'
     });
-    
+
 
 app.use(session({
     secret: 'crayonrouge',
@@ -43,69 +43,76 @@ function blbl(str) {
 
 let sess;
 
-io.on('connection',(socket)=>{
+io.on('connection', (socket) => {
     console.log('user connected');
     let room;
-    socket.on('createGroup',(pseudo)=>{
+    socket.on('createGroup', (pseudo) => {
         socket.pseudo = pseudo
         room = socket.id;
         socket.roomId = room;
         socket.join(room);
-        io.to(room).emit('party created',room,[pseudo]);
+        io.to(room).emit('party created', room, [pseudo]);
     });
 
-    socket.on('looking for party',(room,pseudo)=>{
+    socket.on('looking for party', (room, pseudo) => {
         socket.pseudo = pseudo;
         socket.roomId = room;
         socket.join(room);
-        let clients = io.sockets.adapter.rooms[room].sockets; 
+        let clients = io.sockets.adapter.rooms[room].sockets;
         let list = []
-        for(var client in clients){
+        for (var client in clients) {
             console.log(io.sockets.connected[client].pseudo);
             list.push(io.sockets.connected[client].pseudo);
         }
-        io.to(room).emit('party joined',list); 
+        io.to(room).emit('party joined', list);
     });
-    socket.on('group size',(price)=>{
-        io.to(room).emit('group size',Object.keys(io.sockets.adapter.rooms[room].sockets).length,room,price);
+    socket.on('group size', (price) => {
+        io.to(room).emit('group size', Object.keys(io.sockets.adapter.rooms[room].sockets).length, room, price);
     });
 
-    socket.on('connect me',(room,pseudo)=>{
-        room +='1'
+    socket.on('connect me', (room, pseudo) => {
+        room += '1'
         socket.roomId = room;
         socket.pseudo = pseudo;
         socket.join(room);
-        io.to(room).emit('connect me',Object.keys(io.sockets.adapter.rooms[room].sockets).length)
+        io.to(room).emit('connect me', Object.keys(io.sockets.adapter.rooms[room].sockets).length)
     });
 
 
-    socket.on('start game',(price)=>{
+    socket.on('start game', (price) => {
         let room = socket.roomId;
         let players = Object.keys(io.sockets.adapter.rooms[room].sockets);
         players.sort();
         //choix de l'hote
-        if(players[0] == socket.id){
+        if (players[0] == socket.id) {
             // envoyer uniquement à l'hote
-            io.to(socket.id).emit('you are the host',players.length,price);
+            io.to(socket.id).emit('you are the host', players.length, price);
         }
     });
 
-    socket.on('setup',(game)=>{
+    socket.on('setup', (game) => {
         //assigner les ids aux joueurs
         let room = socket.roomId;
         let players = Object.keys(io.sockets.adapter.rooms[room].sockets);
         players.sort();
         let placement = {};
-        players.map(e=>{
-            placement[players.indexOf(e)] =  io.sockets.connected[e].pseudo
+        players.map(e => {
+            placement[players.indexOf(e)] = io.sockets.connected[e].pseudo
         })
-            game['pos'] = placement;
-            io.to(room).emit('setup',game);
+        game['pos'] = placement;
+        game['game'] = game.game;
+        io.to(room).emit('setup', game);
         //envoyer les infos aux joueurs
     });
 
-    socket.on('disconnect',()=>{
-        console.log('user '+socket.id+' disconnected');
+    socket.on('PlayedEvent', (card,current) => {
+        let room = socket.roomId;
+        io.to(room).emit('PlayedEvent',card,current);
+    }
+    );
+
+    socket.on('disconnect', () => {
+        console.log('user ' + socket.id + ' disconnected');
     })
 
 })
@@ -113,17 +120,17 @@ io.on('connection',(socket)=>{
 
 app.get('/', (req, res) => {
     sess = req.session;
-    if(sess.pseudo){
+    if (sess.pseudo) {
         let getprofile = `SELECT * from Stats WHERE Id_user = '${sess.idUser}' `;
-        connection.query(getprofile,(err,results,field) =>{
-            if(err){
+        connection.query(getprofile, (err, results, field) => {
+            if (err) {
                 console.log(err);
-                return res.render('index',{pseudo:sess.pseudo});
-            }else {
-                return res.render('index',{
-                    pseudo:sess.pseudo,
-                    gplayed:results[0].Games_played.toString(),
-                    wrate:((results[0].Games_won/results[0].Games_played*100)||0).toString(),
+                return res.render('index', { pseudo: sess.pseudo });
+            } else {
+                return res.render('index', {
+                    pseudo: sess.pseudo,
+                    gplayed: results[0].Games_played.toString(),
+                    wrate: ((results[0].Games_won / results[0].Games_played * 100) || 0).toString(),
                     tokenswon: results[0].Tokens_won.toString(),
                     tokenslost: results[0].Tokens_lost.toString(),
                     xpAmount: sess.xpAmount.toString()
@@ -135,48 +142,48 @@ app.get('/', (req, res) => {
     }
 });
 
-app.post('/room/:id',(req,res)=>{
+app.post('/room/:id', (req, res) => {
     sess = req.session;
-    if(!sess.pseudo)return res.redirect('/');
+    if (!sess.pseudo) return res.redirect('/');
     sess.gameRoom = req.params.id;
     sess.gameNumber = req.body.groupSize;
     sess.gamePrice = req.body.groupPrice;
     res.redirect('/room');
 });
 
-app.get('/room',(req,res)=>{
-    sess=req.session;
-    if(!sess.pseudo)return res.redirect('/'); 
-    sess=req.session;
-    return res.render('room',{pseudo:sess.pseudo,roomId:sess.gameRoom,number:sess.gameNumber,price:sess.groupPrice});
+app.get('/room', (req, res) => {
+    sess = req.session;
+    if (!sess.pseudo) return res.redirect('/');
+    sess = req.session;
+    return res.render('room', { pseudo: sess.pseudo, roomId: sess.gameRoom, number: sess.gameNumber, price: sess.groupPrice });
 })
 
 
 
 //create an account
 app.post('/register', (req, res) => {
-	let pseudo = blbl(req.body.pseudo)
-        pass = blbl(req.body.password),
+    let pseudo = blbl(req.body.pseudo)
+    pass = blbl(req.body.password),
         firstName = blbl(req.body.firstName),
         lastName = blbl(req.body.lastName),
         birthDate = blbl(req.body.birthDate),
         city = blbl(req.body.city),
         zip = blbl(req.body.zip),
-        sess=req.session;
+        sess = req.session;
 
-	bcrypt.genSalt(10, (err, salt) => {
-		bcrypt.hash(pass, salt, (err, hash) => {
-			pass = hash;
-			let createAccount = `INSERT INTO Users (Pseudo,Password,First_name,Last_name,Birth_date,City,Zipcode) VALUES ('${pseudo}','${pass}','${firstName}','${lastName}','${birthDate}','${city}','${zip}');`;
-			connection.query(createAccount, (error, results, field) => {
-				if (error) {
-					console.log(error);
-					res.redirect('/');
-				} else {
+    bcrypt.genSalt(10, (err, salt) => {
+        bcrypt.hash(pass, salt, (err, hash) => {
+            pass = hash;
+            let createAccount = `INSERT INTO Users (Pseudo,Password,First_name,Last_name,Birth_date,City,Zipcode) VALUES ('${pseudo}','${pass}','${firstName}','${lastName}','${birthDate}','${city}','${zip}');`;
+            connection.query(createAccount, (error, results, field) => {
+                if (error) {
+                    console.log(error);
+                    res.redirect('/');
+                } else {
                     //    Ici aller chercher directement l'idUser pour le stocker coté serveur
                     let getId = `SELECT Id_user,Xp from Users WHERE pseudo = '${pseudo}'`
-                    connection.query(getId,(err,results,field) => {
-                        if(err){
+                    connection.query(getId, (err, results, field) => {
+                        if (err) {
                             console.log(err);
                             res.redirect('/');
                         } else {
@@ -185,56 +192,56 @@ app.post('/register', (req, res) => {
                             sess.pseudo = pseudo;
 
                             let createStats = `INSERT INTO Stats (Id_user) VALUES ('${sess.idUser}')`;
-                            connection.query(createStats,(err,results,field) => {
-                                if(err){
+                            connection.query(createStats, (err, results, field) => {
+                                if (err) {
                                     console.log(err);
                                 }
                                 res.redirect('/');
                             })
                         }
                     })
-				}
-			});
-		})
-	});
+                }
+            });
+        })
+    });
 
 });
 //Connect to an account
 app.post('/connect', (req, res) => {
-	sess = req.session;
-	let pseudo = blbl(req.body.pseudo);
-	let pass = blbl(req.body.password);
-	let connectAccount = `SELECT Id_user,Xp,Password FROM Users WHERE Pseudo='${pseudo}'`;
-	connection.query(connectAccount, (error, results, field) => {
-		if (error) {
-			console.log(error);
-		} else {
-            if(results.length){            
-			bcrypt.compare(pass, results[0].Password, (err, result) => {
-				if (result) {
-                    sess.pseudo = pseudo;
-                    sess.idUser = results[0].Id_user;
-                    sess.xpAmount = results[0].Xp;
-					res.redirect('/');
-				} else {
-					res.redirect('/')
-				}
-            })
+    sess = req.session;
+    let pseudo = blbl(req.body.pseudo);
+    let pass = blbl(req.body.password);
+    let connectAccount = `SELECT Id_user,Xp,Password FROM Users WHERE Pseudo='${pseudo}'`;
+    connection.query(connectAccount, (error, results, field) => {
+        if (error) {
+            console.log(error);
         } else {
-            res.redirect('/');
+            if (results.length) {
+                bcrypt.compare(pass, results[0].Password, (err, result) => {
+                    if (result) {
+                        sess.pseudo = pseudo;
+                        sess.idUser = results[0].Id_user;
+                        sess.xpAmount = results[0].Xp;
+                        res.redirect('/');
+                    } else {
+                        res.redirect('/')
+                    }
+                })
+            } else {
+                res.redirect('/');
+            }
         }
-		}
-	});
+    });
 });
 //Logout part
 app.get('/logout', (req, res) => {
-	req.session.destroy((err) => {
-		if (err) {
-			console.log(err);
-		} else {
-			res.redirect('/');
-		}
-	});
+    req.session.destroy((err) => {
+        if (err) {
+            console.log(err);
+        } else {
+            res.redirect('/');
+        }
+    });
 });
 
 app.get('*', (req, res) => {
