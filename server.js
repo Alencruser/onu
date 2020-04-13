@@ -111,6 +111,11 @@ io.on('connection', (socket) => {
     }
     );
 
+    socket.on('Change Color', (color) => {
+        let room = socket.roomId;
+        io.to(room).emit('Change Color',color);
+    })
+
     socket.on('disconnect', () => {
         console.log('user ' + socket.id + ' disconnected');
     })

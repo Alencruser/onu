@@ -201,14 +201,14 @@ class Player {
     getCardByValue(value) {
         if (!value) return undefined;
 
-        return this.hand.find((c) => c.value === value);
+        return this.hand.find((c) => c.value == value);
     }
 
     hasCard(card) {
         if (!card) return false;
 
         return this.hand.some(
-            (c) => c.value === card.value && c.color === card.color,
+            (c) => c.value == card.value && c.color == card.color,
         );
     }
 
@@ -216,22 +216,28 @@ class Player {
         if (!card) return false;
 
         return this.hand.some(
-            (c) => c.value === card.value || c.color === card.color || c.value > 12,
+            (c) => c.value == card.value || c.color == card.color || c.value > 12,
         );
     }
 
     hasPlayableDodgeDraw(card) {
+        console.log(card);
         if (!card) return false;
-
+        this.hand.map(c => { console.log(c._value == card._value || c._value == Value.WILD_DRAW_FOUR, c) });
         return this.hand.some(
-            (c) => c.value === card.value || c.value === Value.WILD_DRAW_FOUR,
+            (c) => c._value == card._value || c._value == Value.WILD_DRAW_FOUR,
         );
     }
 
     removeCard(card) {
-        const i = this.hand.findIndex(
-            (c) => c.value === card.value && c.color === card.color,
-        );
+        let i;
+        this.hand.map((e, v) => {
+            if (e._color == card._color && e._value == card._value)
+                i = v;
+        });
+
+        // let i = this.hand.indexOf(card);
+        console.log("RemoveCard",i);
         this.hand.splice(i, 1);
     }
 
@@ -353,10 +359,11 @@ class Game {
         let currentPlayer = this._currentPlayer;
         let cards = new Card(card.value, card.color);
         if (!cards.matches(this._discardedCard)) {
+            console.log('Deny');
             centralizeEvents(new Discuss("CardDenyEvent", null, null));
             return;
         }
-        currentPlayer.removeCard(card);
+        this._currentPlayer.removeCard(card);
         this.drawPile.drawpile.push(this._discardedCard);
         this._discardedCard = card;
         if (currentPlayer.hand.length == 0) {
@@ -366,27 +373,34 @@ class Game {
 
         switch (this._discardedCard.value) {
             case Value.WILD_DRAW_FOUR:
+                if (document.getElementById('siege0').dataset.pos == this._currentPlayer._pos)
+                    $('#changeColor').modal('show');
                 if (!this.getNextPlayer().hasPlayableDodgeDraw(this._discardedCard)) {
+                    console.log('Chain');
                     this.privateDraw(this.getNextPlayer(), this.cumulativeamount + 4);
                     this.cumulativeamount = 0;
-                    this.goToNextPlayer();
-                    $('#changeColor').modal('show');
+                    game.goToNextPlayer();
                 }
-                else
+                else {
                     this.cumulativeamount += 4;
+                    console.log("Cumul");
+                }
                 break;
             case Value.WILD:
-                this.goToNextPlayer();
-                $('#changeColor').modal('show');
+                if (document.getElementById('siege0').dataset.pos == this._currentPlayer._pos)
+                    $('#changeColor').modal('show');
                 break;
             case Value.DRAW_TWO:
                 if (!this.getNextPlayer().hasPlayableDodgeDraw(this._discardedCard)) {
+                    console.log('Chain');
                     this.privateDraw(this.getNextPlayer(), this.cumulativeamount + 2);
                     this.cumulativeamount = 0;
                     this.goToNextPlayer();
                 }
-                else
+                else {
                     this.cumulativeamount += 2;
+                    console.log("Cumul");
+                }
                 break;
             case Value.SKIP:
                 this.goToNextPlayer();
