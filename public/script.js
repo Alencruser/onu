@@ -156,6 +156,9 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
                 break;
             }
         }
+        //série de if elseif pour check, card deny, game ended, draw
+        
+        //aller check toutes les mains de players et toutes les images socket associées
     }
     else {
         for (let i = 2; i < 15; i++) {
@@ -170,7 +173,47 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
         game.play(new Card(card.value, card.color));
         console.log('ma game une fois que lautre joueur a joué', game);
         console.log('ma pos sa grand mère la pute', document.getElementById('siege0').dataset.pos);
+
+
+        //série de if pour check les events
+        //if currenttplayer pos == siege0 pos
+        //else
+        //meme traitement, check toutes les players hand et les socket img
+            
+
+
     }
+
+    game._players.map(e=>{
+        let pos = e._pos;
+        for(i=0;i<15;){
+            let div = document.getElementById('siege'+i);
+            //si la main que je regarde est dans cette div
+            if(div.dataset.pos == pos){
+                console.log(' le joueur pos : '+pos+' est au siege '+i);
+                //je check si le nombre de cartes est similaire
+                if(div.children.length < e.hand.length){
+                    console.log('le joueur '+ pos +' a : '+e.hand.length+' et moi jai x images : '+div.children.length);
+                    //je vide les cartes du joueur déphasé
+                    div.innerHTML = "";
+                    e.hand.map(y=>{
+                        //creer une variable image
+                        let img = document.createElement('img')
+                        //prendre la combinaison value color pour aller chercher la bonne carte cf : le ternaire de fou
+                        img.src = i==0?("img/card/" + colKeys[colVal.indexOf(y._color)] + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(y._value)])) ? convertValue[valKeys[valVal.indexOf(y._value)]] : valKeys[valVal.indexOf(y._value)]) + ".png"):"img/Card/default_back.png";
+                        //append à div mon img
+                        div.append(img);
+                    })
+                    //je redonne les cartes;
+                }
+
+            }
+            if(i==0)i+=2
+            else i++;
+        }
+    })
+
+
 });
 
 function centralizeEvents(Message, value, color, player) {
@@ -182,12 +225,6 @@ function centralizeEvents(Message, value, color, player) {
                 game.play(new Card(value, color));
                 console.log('game après play coté joueur qui a joué', game);
                 socket.emit('PlayedEvent', { value: value, color: color }, game._currentPlayer._pos, previousPos); //TEMPORAIRE
-                break;
-            case "CardDenyEvent": // Message.currentPlayer
-                break;
-            case "GameEndEvent": socket.emit('GameEndEvent', player);
-                break;
-            case "DrawEvent": // Message.drawPlayer & Message.cards
                 break;
         }
     }
