@@ -379,7 +379,7 @@ class Game {
         this.drawPile.drawpile.push(this._discardedCard);
         this._discardedCard = card;
         if (currentPlayer.hand.length == 0) {
-            centralizeEvents("GameEndEvent", null, null, null);
+            centralizeEvents("GameEndEvent", null, null, this._currentPlayer._pos);
             return;
         }
 

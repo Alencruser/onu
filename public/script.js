@@ -1,6 +1,6 @@
 //variable stocke la game
 let game;
-
+let playersPseudo = [];
 //variables pour echanger les valeurs en couleur ou valeur
 let colKeys = Object.keys(Color),
     colVal = Object.values(Color),
@@ -74,6 +74,8 @@ socket.on('setup', (session) => {
         }
     }
     let placement = session.pos;
+    playersPseudo = session.pos;
+    console.log(playersPseudo);
     for (var player in placement) {
         if (mypseudo == placement[player]) {
             let numberOfPlayers = session.players.length;
@@ -92,7 +94,7 @@ socket.on('setup', (session) => {
                 img.src = src;
                 img.dataset.attr = e._color + ',' + e._value;
                 document.getElementById('siege0').append(img);
-                img.addEventListener("click", function () { centralizeEvents("clickcardEvent", e._value, e._color, color); });
+                img.addEventListener("click", function () { centralizeEvents("clickcardEvent", e._value, e._color, null); });
             })
 
 
@@ -183,16 +185,13 @@ function centralizeEvents(Message, value, color, player) {
                 break;
             case "CardDenyEvent": // Message.currentPlayer
                 break;
-            case "GameEndEvent": // Message.currentPlayer & Message.price
+            case "GameEndEvent": socket.emit('GameEndEvent', player);
                 break;
             case "DrawEvent": // Message.drawPlayer & Message.cards
                 break;
         }
     }
 };
-
-
-
 
 //Choix couleur après +4 ou changement couleur
 $('.color').click((e) => {
@@ -206,4 +205,11 @@ $('.color').click((e) => {
 socket.on('Change Color', (color) => {
     game._discardedCard.color = color;
     console.log(game);
+})
+
+socket.on('GameEndEvent', (playerPos) => {
+    console.log(playerPos);
+    var mymodal = $('#popup');
+    mymodal.find('modal-body').text('Game Ended ! Winner is ' + playersPseudo[playerPos]);
+    mymodal.modal('show');
 })
