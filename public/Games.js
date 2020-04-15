@@ -360,7 +360,6 @@ class Game {
         let currentPlayer = this._currentPlayer;
         let cards = new Card(card.value, card.color);
         if (!cards.matches(this._discardedCard)) {
-            centralizeEvents("CardDenyEvent", null, null, null);
             return;
         }
         this._currentPlayer.removeCard(card);
@@ -369,7 +368,6 @@ class Game {
         this.drawPile.drawpile.push(this._discardedCard);
         this._discardedCard = card;
         if (currentPlayer.hand.length == 0) {
-            centralizeEvents("GameEndEvent", null, null, this._currentPlayer._pos);
             return;
         }
 
@@ -431,7 +429,6 @@ class Game {
     privateDraw(player, amount) {
         let cards = this.drawPile.draw(amount);
         player.hand = (player.hand.concat(cards)).sort(function (a, b) { return ((a.value + a.color * 15) > (b.color * 15 + b.value)) ? 1 : -1 });
-        centralizeEvents("DrawEvent", null, null, player._pos);
         this.drawn = true;
     }
 
@@ -439,7 +436,6 @@ class Game {
         this.drawn = true;
         let card = this.drawPile.draw();
         this._currentPlayer.hand = (this._currentPlayer.hand.concat(card)).sort(function (a, b) { return ((a.value + a.color * 15) > (b.color * 15 + b.value)) ? 1 : -1 });
-        centralizeEvents("DrawEvent", null, null, this._currentPlayer._pos);
         if (!card.matches(this._discardedCard))
             this.goToNextPlayer();
     }
@@ -448,6 +444,5 @@ class Game {
         if (this._players[player] == this._currentPlayer)
             this.goToNextPlayer();
         this._players.splice(player, 1);
-
     }
 }
