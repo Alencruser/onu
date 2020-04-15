@@ -183,35 +183,36 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
 
 
     }
+    console.log(game);
 
-    game._players.map(e=>{
-        let pos = e._pos;
-        for(i=0;i<15;){
-            let div = document.getElementById('siege'+i);
-            //si la main que je regarde est dans cette div
-            if(div.dataset.pos == pos){
-                console.log(' le joueur pos : '+pos+' est au siege '+i);
-                //je check si le nombre de cartes est similaire
-                if(div.children.length < e.hand.length){
-                    console.log('le joueur '+ pos +' a : '+e.hand.length+' et moi jai x images : '+div.children.length);
-                    //je vide les cartes du joueur déphasé
-                    div.innerHTML = "";
-                    e.hand.map(y=>{
-                        //creer une variable image
-                        let img = document.createElement('img')
-                        //prendre la combinaison value color pour aller chercher la bonne carte cf : le ternaire de fou
-                        img.src = i==0?("img/card/" + colKeys[colVal.indexOf(y._color)] + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(y._value)])) ? convertValue[valKeys[valVal.indexOf(y._value)]] : valKeys[valVal.indexOf(y._value)]) + ".png"):"img/Card/default_back.png";
-                        //append à div mon img
-                        div.append(img);
-                    })
-                    //je redonne les cartes;
-                }
+    // game._players.map(e=>{
+    //     let pos = e._pos;
+    //     for(i=0;i<15;){
+    //         let div = document.getElementById('siege'+i);
+    //         //si la main que je regarde est dans cette div
+    //         if(div.dataset.pos == pos){
+    //             console.log(' le joueur pos : '+pos+' est au siege '+i);
+    //             //je check si le nombre de cartes est similaire
+    //             if(div.children.length < e.hand.length){
+    //                 console.log('le joueur '+ pos +' a : '+e.hand.length+' et moi jai x images : '+div.children.length);
+    //                 //je vide les cartes du joueur déphasé
+    //                 div.innerHTML = "";
+    //                 e.hand.map(y=>{
+    //                     //creer une variable image
+    //                     let img = document.createElement('img')
+    //                     //prendre la combinaison value color pour aller chercher la bonne carte cf : le ternaire de fou
+    //                     img.src = i==0?("img/card/" + colKeys[colVal.indexOf(y._color)] + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(y._value)])) ? convertValue[valKeys[valVal.indexOf(y._value)]] : valKeys[valVal.indexOf(y._value)]) + ".png"):"img/Card/default_back.png";
+    //                     //append à div mon img
+    //                     div.append(img);
+    //                 })
+    //                 //je redonne les cartes;
+    //             }
 
-            }
-            if(i==0)i+=2
-            else i++;
-        }
-    })
+    //         }
+    //         if(i==0)i+=2
+    //         else i++;
+    //     }
+    // })
 
 
 });
