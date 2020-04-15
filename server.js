@@ -116,16 +116,6 @@ io.on('connection', (socket) => {
         io.to(room).emit('Change Color',color);
     });
 
-    socket.on('draw', (player,discarded,players) => {
-        let room = socket.roomId;
-        io.to(room).emit('draw',player,discarded,players);
-    })
-
-    socket.on('GameEndEvent', (playerPos) => {
-        let room = socket.roomId;
-        io.to(room).emit('GameEndEvent',playerPos);
-    })
-
     socket.on('disconnect', () => {
         console.log('user ' + socket.id + ' disconnected');
     })

@@ -264,6 +264,7 @@ class Game {
     NUMBER_OF_PLAYER;
     cumulativeamount = 0;
     round = 0;
+    choice = 1;
 
     constructor(NUMBER_OF_PLAYER, price) {
         this.NUMBER_OF_PLAYER = NUMBER_OF_PLAYER;
@@ -354,7 +355,7 @@ class Game {
 
     candraw() {
         if (!this._currentPlayer.hasPlayable(this._discardedCard))
-            this.privateDraw(this._currentPlayer,1);
+            this.privateDraw(this._currentPlayer, 1);
         if (!this._currentPlayer.hasPlayable(this._discardedCard))
             this.goToNextPlayer();
     }
@@ -367,9 +368,8 @@ class Game {
             centralizeEvents("CardDenyEvent", null, null, null);
             return;
         }
-        console.log("Cumulative amount : ",this.cumulativeamount);
         this._currentPlayer.removeCard(card);
-        if(this.round == 0)
+        if (this.round == 0)
             this._players[this._currentPlayer._pos].hand = this._currentPlayer.hand;
         this.drawPile.drawpile.push(this._discardedCard);
         this._discardedCard = card;
@@ -380,13 +380,14 @@ class Game {
 
         switch (this._discardedCard.value) {
             case Value.WILD_DRAW_FOUR:
+                this.choice = 0;
                 if (document.getElementById('siege0').dataset.pos == this._currentPlayer._pos)
                     $('#changeColor').modal('show');
                 if (!this.getNextPlayer().hasPlayableDodgeDraw(this._discardedCard)) {
                     console.log('Chain');
                     this.privateDraw(this.getNextPlayer(), this.cumulativeamount + 4);
                     this.cumulativeamount = 0;
-                    game.goToNextPlayer();
+                    this._currentPlayer = this.getNextPlayer();
                 }
                 else {
                     this.cumulativeamount += 4;
@@ -394,9 +395,12 @@ class Game {
                 }
                 break;
             case Value.WILD:
-                if (document.getElementById('siege0').dataset.pos == this._currentPlayer._pos)
+                this.choice = 0;
+                if (document.getElementById('siege0').dataset.pos == this._currentPlayer._pos) {
                     $('#changeColor').modal('show');
+                }
                 break;
+
             case Value.DRAW_TWO:
                 if (!this.getNextPlayer().hasPlayableDodgeDraw(this._discardedCard)) {
                     console.log('Chain');
@@ -410,19 +414,29 @@ class Game {
                 }
                 break;
             case Value.SKIP:
-                this.goToNextPlayer();
+                this._currentPlayer = this.getNextPlayer();
                 break;
             case Value.REVERSE:
                 if (this.NUMBER_OF_PLAYER > 2)
                     this.reverseGame();
                 else
-                    this.goToNextPlayer();
+                this._currentPlayer = this.getNextPlayer();
                 break;
             default:
                 break;
         }
-        this.goToNextPlayer();
-        this.round++;
+
+        if (this.choice) {
+            this.goToNextPlayer();
+            this.round++;
+
+            this._players.map((e, i) => {
+                this._players[i].hand.sort(function (a, b) {
+                    return ((a.value + a.color * 15) > (b.color * 15 + b.value)) ? 1 : -1
+                })
+            })
+            console.log('dans game.play le discarded card et le currentplayer', this);
+        }
     }
 
     privateDraw(player, amount) {
