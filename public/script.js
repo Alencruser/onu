@@ -55,7 +55,6 @@ socket.on('you are the host', (partySize, price) => {
 
 socket.on('setup', (session) => {
     game = $.extend(true, Object.create(Object.getPrototypeOf(new Game())), session.game);
-    console.log('session game avant clone property', session.game);
     //recursively create prototype of
     for (var property in game) {
         switch (property) {
@@ -76,7 +75,6 @@ socket.on('setup', (session) => {
     }
     let placement = session.pos;
     playersPseudo = session.pos;
-    console.log(playersPseudo);
     for (var player in placement) {
         if (mypseudo == placement[player]) {
             let numberOfPlayers = session.players.length;
@@ -107,7 +105,7 @@ socket.on('setup', (session) => {
                 if (numberOfPlayers == 2) {
                     actualPlayer = 1 - player;
                 } else {
-                    actualPlayer = (player + i) % (numberOfPlayers);
+                    actualPlayer = (+player + i)%numberOfPlayers;
                 }
 
                 //ici assigner les places avec un while
@@ -151,7 +149,6 @@ socket.on('setup', (session) => {
             else i++
         }
     });
-    console.log(session);
 })
 
 socket.on('PlayedEvent', (card, current, previousPos) => {
@@ -193,7 +190,11 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
                         img.src = i == 0 ? ("img/card/" + colKeys[colVal.indexOf(y._color)] + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(y._value)])) ? convertValue[valKeys[valVal.indexOf(y._value)]] : valKeys[valVal.indexOf(y._value)]) + ".png") : "img/Card/default_back.png";
                         //append à div mon img
                         img.dataset.attr = y._color + ',' + y._value;
-                        if (i == 0) img.addEventListener("click", function () { centralizeEvents("clickcardEvent", y._value, y._color, null); });
+                        if (i == 0){
+                            img.addEventListener("click", function () { centralizeEvents("clickcardEvent", y._value, y._color, null); });
+                            if(e.hand.length>10)
+                            img.style.height ='20'-(e.hand.length-10)+'vh';
+                        } 
                         div.append(img);
                     })
                     //je redonne les cartes;
