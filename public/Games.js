@@ -221,7 +221,6 @@ class Player {
     }
 
     hasPlayableDodgeDraw(card) {
-        console.log(card);
         if (!card) return false;
         return this.hand.some(
             (c) => c._value == card._value || c._value == Value.WILD_DRAW_FOUR,
@@ -235,9 +234,6 @@ class Player {
             if (e._color == card._color && e._value == card._value)
                 i = v;
         });
-
-        // let i = this.hand.indexOf(card);
-        console.log("RemoveCard", i);
         x.splice(i, 1);
         this.hand = x
         return x;
@@ -364,7 +360,6 @@ class Game {
         let currentPlayer = this._currentPlayer;
         let cards = new Card(card.value, card.color);
         if (!cards.matches(this._discardedCard)) {
-            console.log('Deny');
             centralizeEvents("CardDenyEvent", null, null, null);
             return;
         }
@@ -384,14 +379,12 @@ class Game {
                 if (document.getElementById('siege0').dataset.pos == this._currentPlayer._pos)
                     $('#changeColor').modal('show');
                 if (!this.getNextPlayer().hasPlayableDodgeDraw(this._discardedCard)) {
-                    console.log('Chain');
                     this.privateDraw(this.getNextPlayer(), this.cumulativeamount + 4);
                     this.cumulativeamount = 0;
                     this._currentPlayer = this.getNextPlayer();
                 }
                 else {
                     this.cumulativeamount += 4;
-                    console.log("Cumul");
                 }
                 break;
             case Value.WILD:
@@ -403,14 +396,12 @@ class Game {
 
             case Value.DRAW_TWO:
                 if (!this.getNextPlayer().hasPlayableDodgeDraw(this._discardedCard)) {
-                    console.log('Chain');
                     this.privateDraw(this.getNextPlayer(), this.cumulativeamount + 2);
                     this.cumulativeamount = 0;
                     this.goToNextPlayer();
                 }
                 else {
                     this.cumulativeamount += 2;
-                    console.log("Cumul");
                 }
                 break;
             case Value.SKIP:
@@ -429,13 +420,11 @@ class Game {
         if (this.choice) {
             this.goToNextPlayer();
             this.round++;
-
             this._players.map((e, i) => {
                 this._players[i].hand.sort(function (a, b) {
                     return ((a.value + a.color * 15) > (b.color * 15 + b.value)) ? 1 : -1
                 })
             })
-            console.log('dans game.play le discarded card et le currentplayer', this);
         }
     }
 
@@ -460,16 +449,5 @@ class Game {
             this.goToNextPlayer();
         this._players.splice(player, 1);
 
-    }
-}
-
-class Discuss {
-    constructor(string, currentPlayer, drawPlayer, cards, nextPlayer, price) {
-        this.string = string;
-        this.currentPlayer = currentPlayer;
-        this.drawPlayer = drawPlayer;
-        this.cards = cards;
-        this.nextPlayer = nextPlayer;
-        this.price = price;
     }
 }
