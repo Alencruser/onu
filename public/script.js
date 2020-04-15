@@ -231,6 +231,7 @@ $('.color').click((e) => {
 
 socket.on('Change Color', (color) => {
     game._discardedCard.color = color;
+    document.getElementById('discard').src = document.getElementById('discard').src.replace('undefined',colKeys[colVal.indexOf(color)]) ;
     game.choice = 1;
     game._players.map(e => {
         let pos = e._pos;
