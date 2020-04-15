@@ -334,7 +334,7 @@ class Game {
         }
         else {
             idx--;
-            if (idx == -1) idx = this._players.length;
+            if (idx == -1) idx = this._players.length - 1;
         }
         return this._players[idx];
     }
@@ -420,7 +420,7 @@ class Game {
                 if (this.NUMBER_OF_PLAYER > 2)
                     this.reverseGame();
                 else
-                this._currentPlayer = this.getNextPlayer();
+                    this._currentPlayer = this.getNextPlayer();
                 break;
             default:
                 break;
