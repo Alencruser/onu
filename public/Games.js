@@ -362,6 +362,12 @@ class Game {
         if (!cards.matches(this._discardedCard)) {
             return;
         }
+        if (this.cumulativeamount > 0) {
+            if (card._value != this._discardedCard._value && card._value != Value.WILD_DRAW_FOUR) {
+                return;
+            }
+        }
+        console.log("Play the card", card);
         this._currentPlayer.removeCard(card);
         if (this.round == 0)
             this._players[this._currentPlayer._pos].hand = this._currentPlayer.hand;

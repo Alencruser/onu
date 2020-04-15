@@ -55,7 +55,6 @@ socket.on('you are the host', (partySize, price) => {
 
 socket.on('setup', (session) => {
     game = $.extend(true, Object.create(Object.getPrototypeOf(new Game())), session.game);
-    console.log('session game avant clone property', session.game);
     //recursively create prototype of
     for (var property in game) {
         switch (property) {
@@ -76,7 +75,6 @@ socket.on('setup', (session) => {
     }
     let placement = session.pos;
     playersPseudo = session.pos;
-    console.log(playersPseudo);
     for (var player in placement) {
         if (mypseudo == placement[player]) {
             let numberOfPlayers = session.players.length;
@@ -180,7 +178,6 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
         for (i = 0; i < 15;) {
             let div = document.getElementById('siege' + i);
             //si la main que je regarde est dans cette div
-
             if (div.dataset.pos == pos) {
                 //je check si le nombre de cartes est similaire
                 if (div.children.length != e.hand.length) {
