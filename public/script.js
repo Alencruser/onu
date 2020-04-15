@@ -1,6 +1,6 @@
 //variable stocke la game
 let game;
-
+let playersPseudo = [];
 //variables pour echanger les valeurs en couleur ou valeur
 let colKeys = Object.keys(Color),
     colVal = Object.values(Color),
@@ -22,6 +22,7 @@ let colKeys = Object.keys(Color),
 function launchCustom() {
     socket.emit('group size', 0);
 }
+
 socket.on('group size', (size, room, price) => {
     if (size > 1) {
         let form = document.createElement('form');
@@ -74,6 +75,8 @@ socket.on('setup', (session) => {
         }
     }
     let placement = session.pos;
+    playersPseudo = session.pos;
+    console.log(playersPseudo);
     for (var player in placement) {
         if (mypseudo == placement[player]) {
             let numberOfPlayers = session.players.length;
@@ -134,17 +137,17 @@ socket.on('setup', (session) => {
             }
         }
     }
-    game._players.map(e=>{
+    game._players.map(e => {
         let pos = e._pos;
-        for(i=0;i<15;){
-            let div = document.getElementById('siege'+i);
+        for (i = 0; i < 15;) {
+            let div = document.getElementById('siege' + i);
             //si la main que je regarde est dans cette div
-            
-            if(div.dataset.pos == game._currentPlayer._pos){
+
+            if (div.dataset.pos == game._currentPlayer._pos) {
                 div.style.border = "2px solid black";
 
             }
-            if(i==0)i+=2
+            if (i == 0) i += 2
             else i++
         }
     });
@@ -152,92 +155,62 @@ socket.on('setup', (session) => {
 })
 
 socket.on('PlayedEvent', (card, current, previousPos) => {
-    document.getElementById('discard').src = "img/card/" + colKeys[colVal.indexOf(card.color)] + '_' +
-        ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(card.value)])) ?
-            convertValue[valKeys[valVal.indexOf(card.value)]] :
-            valKeys[valVal.indexOf(card.value)]) + ".png";
     let siege0 = document.getElementById('siege0');
-    console.log(current, game._currentPlayer._pos, document.getElementById('siege0').dataset.pos);
     if (previousPos == siege0.dataset.pos) {
         for (let i = 0; i < Object.keys(game._currentPlayer.hand).length; i++) {
-            console.log('i au moment suppress',i);
-            console.log('le siege 0',siege0);
-            console.log('les children de i')
             let car = new Card(siege0.children[i].dataset.attr.split(',')[1], siege0.children[i].dataset.attr.split(',')[0]);
             if (car.is(card.value, card.color)) {
                 siege0.removeChild(siege0.children[i]);
                 break;
             }
         }
-        //série de if elseif pour check, card deny, game ended, draw
-        
-        //aller check toutes les mains de players et toutes les images socket associées
     }
     else {
         for (let i = 2; i < 15; i++) {
             let siege = document.getElementById('siege' + i);
             if (previousPos == siege.dataset.pos) {
-                
                 siege.style.border = "none";
-    
-                
-                console.log("C'est le siége " + i);
                 siege.removeChild(siege.children[0]);
             }
         }
-        //let currentpos = game._currentPlayer._pos;
         game.play(new Card(card.value, card.color));
-
-
-        //série de if pour check les events
-        //if currenttplayer pos == siege0 pos
-        //else
-        //meme traitement, check toutes les players hand et les socket img
-            
-
-
     }
-
-    console.log('game après la modif de ttous les joueurs',game);
-
-    game._players.map(e=>{
+    game._players.map(e => {
         let pos = e._pos;
-        for(i=0;i<15;){
-            let div = document.getElementById('siege'+i);
+        for (i = 0; i < 15;) {
+            let div = document.getElementById('siege' + i);
             //si la main que je regarde est dans cette div
-            
-            if(div.dataset.pos == pos){
-                console.log(' le joueur pos : '+pos+' est au siege '+i);
+
+            if (div.dataset.pos == pos) {
                 //je check si le nombre de cartes est similaire
-                if(div.children.length != e.hand.length){
-                    console.log('le joueur '+ pos +' a : '+e.hand.length+' et moi jai x images : '+div.children.length);
+                if (div.children.length != e.hand.length) {
                     //je vide les cartes du joueur déphasé
                     div.innerHTML = "";
-                    e.hand.map(y=>{
+                    e.hand.map(y => {
                         //creer une variable image
                         let img = document.createElement('img')
                         //prendre la combinaison value color pour aller chercher la bonne carte cf : le ternaire de fou
-                        img.src = i==0?("img/card/" + colKeys[colVal.indexOf(y._color)] + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(y._value)])) ? convertValue[valKeys[valVal.indexOf(y._value)]] : valKeys[valVal.indexOf(y._value)]) + ".png"):"img/Card/default_back.png";
+                        img.src = i == 0 ? ("img/card/" + colKeys[colVal.indexOf(y._color)] + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(y._value)])) ? convertValue[valKeys[valVal.indexOf(y._value)]] : valKeys[valVal.indexOf(y._value)]) + ".png") : "img/Card/default_back.png";
                         //append à div mon img
                         img.dataset.attr = y._color + ',' + y._value;
-                        if(i==0)img.addEventListener("click", function () { centralizeEvents("clickcardEvent", y._value, y._color, null); });
+                        if (i == 0) img.addEventListener("click", function () { centralizeEvents("clickcardEvent", y._value, y._color, null); });
                         div.append(img);
                     })
                     //je redonne les cartes;
                 }
-
             }
-            if(div.dataset.pos == game._currentPlayer._pos){
+            if (div.dataset.pos == game._currentPlayer._pos) {
                 div.style.border = "2px solid black";
-
             }
-            if(i==0)i+=2
+            if (i == 0) i += 2
             else i++
         }
     });
-
-    
-
+    if (card.value == game._discardedCard._value && card.color == game._discardedCard._color)
+        document.getElementById('discard').src = "img/card/" + colKeys[colVal.indexOf(card.color)] + '_' +
+            ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(card.value)])) ?
+                convertValue[valKeys[valVal.indexOf(card.value)]] :
+                valKeys[valVal.indexOf(card.value)]) + ".png";
 });
 
 function centralizeEvents(Message, value, color, player) {
@@ -246,83 +219,66 @@ function centralizeEvents(Message, value, color, player) {
         switch (Message) {
             case "clickcardEvent":
                 let previousPos = game._currentPlayer._pos;
-                console.log("Je suis le joueur ", siege0.dataset.pos, ", le joueur " + game._currentPlayer._pos + " viens de jouer");
                 game.play(new Card(value, color));
-                console.log('game après play coté joueur qui a joué', game);
                 socket.emit('PlayedEvent', { value: value, color: color }, game._currentPlayer._pos, previousPos); //TEMPORAIRE
                 break;
         }
     }
 };
 
-
-
-
 //Choix couleur après +4 ou changement couleur
 $('.color').click((e) => {
     game._discardedCard.color = Color[e.target.dataset.color.toUpperCase()];
-    //console log de la nouvelle couleur
-  //  console.log(game._discardedCard);
-   // envoyer l'event aux autres
     socket.emit('Change Color', game._discardedCard.color);
 })
 
 socket.on('Change Color', (color) => {
     game._discardedCard.color = color;
     game.choice = 1;
-    game._players.map(e=>{
+    game._players.map(e => {
         let pos = e._pos;
-        for(i=0;i<15;){
-            let div = document.getElementById('siege'+i);
+        for (i = 0; i < 15;) {
+            let div = document.getElementById('siege' + i);
             //si la main que je regarde est dans cette div
-            if(div.dataset.pos == game._currentPlayer._pos){
+            if (div.dataset.pos == game._currentPlayer._pos) {
                 div.style.border = "2px solid black";
 
             }
-            if(i==0)i+=2
+            if (i == 0) i += 2
             else i++
         }
     });
     game.goToNextPlayer();
     game.round++;
-    console.log(game);
-
-
-    game._players.map(e=>{
+    game._players.map(e => {
         let pos = e._pos;
-        for(i=0;i<15;){
-            let div = document.getElementById('siege'+i);
+        for (i = 0; i < 15;) {
+            let div = document.getElementById('siege' + i);
             //si la main que je regarde est dans cette div
-            if(div.dataset.pos == pos){
-                console.log(' le joueur pos : '+pos+' est au siege '+i);
+            if (div.dataset.pos == pos) {
                 //je check si le nombre de cartes est similaire
-                if(div.children.length != e.hand.length){
-                    console.log('le joueur '+ pos +' a : '+e.hand.length+' et moi jai x images : '+div.children.length);
+                if (div.children.length != e.hand.length) {
                     //je vide les cartes du joueur déphasé
                     div.innerHTML = "";
-                    e.hand.map(y=>{
+                    e.hand.map(y => {
                         //creer une variable image
                         let img = document.createElement('img')
                         //prendre la combinaison value color pour aller chercher la bonne carte cf : le ternaire de fou
-                        img.src = i==0?("img/card/" + colKeys[colVal.indexOf(y._color)] + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(y._value)])) ? convertValue[valKeys[valVal.indexOf(y._value)]] : valKeys[valVal.indexOf(y._value)]) + ".png"):"img/Card/default_back.png";
+                        img.src = i == 0 ? ("img/card/" + colKeys[colVal.indexOf(y._color)] + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(y._value)])) ? convertValue[valKeys[valVal.indexOf(y._value)]] : valKeys[valVal.indexOf(y._value)]) + ".png") : "img/Card/default_back.png";
                         //append à div mon img
                         img.dataset.attr = y._color + ',' + y._value;
-                        if(i==0)img.addEventListener("click", function () { centralizeEvents("clickcardEvent", y._value, y._color, null); });
+                        if (i == 0) img.addEventListener("click", function () { centralizeEvents("clickcardEvent", y._value, y._color, null); });
                         div.append(img);
                     })
                     //je redonne les cartes;
                 }
-
             }
-            if(div.dataset.pos == game._currentPlayer._pos){
+            if (div.dataset.pos == game._currentPlayer._pos) {
                 div.style.border = "2px solid black";
 
             }
-            if(i==0)i+=2
+            if (i == 0) i += 2
             else i++;
         }
     })
-
-
-
 });

@@ -215,16 +215,13 @@ class Player {
     hasPlayable(card) {
         if (!card) return false;
 
-        this.hand.map(c => { console.log(c._value == card._value || c._color == card._color || c._value > 12, c) });
         return this.hand.some(
             (c) => c._value == card._value || c._color == card._color || c._value > 12,
         );
     }
 
     hasPlayableDodgeDraw(card) {
-        console.log(card);
         if (!card) return false;
-        this.hand.map(c => { console.log(c._value == card._value || c._value == Value.WILD_DRAW_FOUR, c) });
         return this.hand.some(
             (c) => c._value == card._value || c._value == Value.WILD_DRAW_FOUR,
         );
@@ -237,9 +234,6 @@ class Player {
             if (e._color == card._color && e._value == card._value)
                 i = v;
         });
-
-        // let i = this.hand.indexOf(card);
-        console.log("RemoveCard", i);
         x.splice(i, 1);
         this.hand = x
         return x;
@@ -336,9 +330,8 @@ class Game {
         }
         else {
             idx--;
-            if (idx == -1) idx = this._players.length;
+            if (idx == -1) idx = this._players.length - 1;
         }
-        console.log('player idx dans nexttplayer', this._players[idx])
         return this._players[idx];
     }
 
@@ -364,23 +357,17 @@ class Game {
     }
 
     play(card) {
-        console.log('je proc dans play');
         let currentPlayer = this._currentPlayer;
         let cards = new Card(card.value, card.color);
         if (!cards.matches(this._discardedCard)) {
-            console.log('Deny');
-            centralizeEvents("CardDenyEvent", null, null, null);
             return;
         }
-
         this._currentPlayer.removeCard(card);
         if (this.round == 0)
             this._players[this._currentPlayer._pos].hand = this._currentPlayer.hand;
-        console.log(this._currentPlayer);
         this.drawPile.drawpile.push(this._discardedCard);
         this._discardedCard = card;
         if (currentPlayer.hand.length == 0) {
-            centralizeEvents("GameEndEvent", null, null, null);
             return;
         }
 
@@ -390,14 +377,12 @@ class Game {
                 if (document.getElementById('siege0').dataset.pos == this._currentPlayer._pos)
                     $('#changeColor').modal('show');
                 if (!this.getNextPlayer().hasPlayableDodgeDraw(this._discardedCard)) {
-                    console.log('Chain');
                     this.privateDraw(this.getNextPlayer(), this.cumulativeamount + 4);
                     this.cumulativeamount = 0;
                     this._currentPlayer = this.getNextPlayer();
                 }
                 else {
                     this.cumulativeamount += 4;
-                    console.log("Cumul");
                 }
                 break;
             case Value.WILD:
@@ -409,14 +394,12 @@ class Game {
 
             case Value.DRAW_TWO:
                 if (!this.getNextPlayer().hasPlayableDodgeDraw(this._discardedCard)) {
-                    console.log('Chain');
                     this.privateDraw(this.getNextPlayer(), this.cumulativeamount + 2);
                     this.cumulativeamount = 0;
                     this.goToNextPlayer();
                 }
                 else {
                     this.cumulativeamount += 2;
-                    console.log("Cumul");
                 }
                 break;
             case Value.SKIP:
@@ -426,7 +409,7 @@ class Game {
                 if (this.NUMBER_OF_PLAYER > 2)
                     this.reverseGame();
                 else
-                this._currentPlayer = this.getNextPlayer();
+                    this._currentPlayer = this.getNextPlayer();
                 break;
             default:
                 break;
@@ -435,26 +418,17 @@ class Game {
         if (this.choice) {
             this.goToNextPlayer();
             this.round++;
-
             this._players.map((e, i) => {
                 this._players[i].hand.sort(function (a, b) {
                     return ((a.value + a.color * 15) > (b.color * 15 + b.value)) ? 1 : -1
                 })
             })
-            console.log('dans game.play le discarded card et le currentplayer', this);
         }
     }
 
     privateDraw(player, amount) {
         let cards = this.drawPile.draw(amount);
-        console.log('card apres cards', cards);
-        console.log('amount', amount);
-        console.log('wtf player draw', player);
-        player.hand = (player.hand.concat(cards)).sort(function (a, b) {
-            return ((a.value + a.color * 15) > (b.color * 15 + b.value)) ? 1 : -1
-        });
-        console.log('player apres sort draw', player)
-        centralizeEvents("DrawEvent", null, null, player._pos);
+        player.hand = (player.hand.concat(cards)).sort(function (a, b) { return ((a.value + a.color * 15) > (b.color * 15 + b.value)) ? 1 : -1 });
         this.drawn = true;
     }
 
@@ -462,7 +436,6 @@ class Game {
         this.drawn = true;
         let card = this.drawPile.draw();
         this._currentPlayer.hand = (this._currentPlayer.hand.concat(card)).sort(function (a, b) { return ((a.value + a.color * 15) > (b.color * 15 + b.value)) ? 1 : -1 });
-        centralizeEvents("DrawEvent", null, null, this._currentPlayer._pos);
         if (!card.matches(this._discardedCard))
             this.goToNextPlayer();
     }
@@ -471,17 +444,5 @@ class Game {
         if (this._players[player] == this._currentPlayer)
             this.goToNextPlayer();
         this._players.splice(player, 1);
-
-    }
-}
-
-class Discuss {
-    constructor(string, currentPlayer, drawPlayer, cards, nextPlayer, price) {
-        this.string = string;
-        this.currentPlayer = currentPlayer;
-        this.drawPlayer = drawPlayer;
-        this.cards = cards;
-        this.nextPlayer = nextPlayer;
-        this.price = price;
     }
 }

@@ -92,3 +92,8 @@ ul {
     display:flex;
     justify-content: space-between;
 }
+
+#popupContainer {
+    display:flex;
+    justify-content: space-between;
+}
