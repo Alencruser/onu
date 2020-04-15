@@ -134,6 +134,20 @@ socket.on('setup', (session) => {
             }
         }
     }
+    game._players.map(e=>{
+        let pos = e._pos;
+        for(i=0;i<15;){
+            let div = document.getElementById('siege'+i);
+            //si la main que je regarde est dans cette div
+            
+            if(div.dataset.pos == game._currentPlayer._pos){
+                div.style.border = "2px solid black";
+
+            }
+            if(i==0)i+=2
+            else i++
+        }
+    });
     console.log(session);
 })
 
@@ -145,9 +159,10 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
     let siege0 = document.getElementById('siege0');
     console.log(current, game._currentPlayer._pos, document.getElementById('siege0').dataset.pos);
     if (previousPos == siege0.dataset.pos) {
-        console.log("Hey");
-        console.log(new Card(card.value, card.color));
         for (let i = 0; i < Object.keys(game._currentPlayer.hand).length; i++) {
+            console.log('i au moment suppress',i);
+            console.log('le siege 0',siege0);
+            console.log('les children de i')
             let car = new Card(siege0.children[i].dataset.attr.split(',')[1], siege0.children[i].dataset.attr.split(',')[0]);
             if (car.is(card.value, card.color)) {
                 siege0.removeChild(siege0.children[i]);
@@ -162,15 +177,16 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
         for (let i = 2; i < 15; i++) {
             let siege = document.getElementById('siege' + i);
             if (previousPos == siege.dataset.pos) {
+                
+                siege.style.border = "none";
+    
+                
                 console.log("C'est le siége " + i);
                 siege.removeChild(siege.children[0]);
             }
         }
         //let currentpos = game._currentPlayer._pos;
-        console.log('ma game avant que lautre ne joue', game);
         game.play(new Card(card.value, card.color));
-        console.log('ma game une fois que lautre joueur a joué', game);
-        console.log('ma pos sa grand mère la pute', document.getElementById('siege0').dataset.pos);
 
 
         //série de if pour check les events
@@ -182,15 +198,18 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
 
     }
 
+    console.log('game après la modif de ttous les joueurs',game);
+
     game._players.map(e=>{
         let pos = e._pos;
         for(i=0;i<15;){
             let div = document.getElementById('siege'+i);
             //si la main que je regarde est dans cette div
+            
             if(div.dataset.pos == pos){
                 console.log(' le joueur pos : '+pos+' est au siege '+i);
                 //je check si le nombre de cartes est similaire
-                if(div.children.length < e.hand.length){
+                if(div.children.length != e.hand.length){
                     console.log('le joueur '+ pos +' a : '+e.hand.length+' et moi jai x images : '+div.children.length);
                     //je vide les cartes du joueur déphasé
                     div.innerHTML = "";
@@ -200,21 +219,29 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
                         //prendre la combinaison value color pour aller chercher la bonne carte cf : le ternaire de fou
                         img.src = i==0?("img/card/" + colKeys[colVal.indexOf(y._color)] + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(y._value)])) ? convertValue[valKeys[valVal.indexOf(y._value)]] : valKeys[valVal.indexOf(y._value)]) + ".png"):"img/Card/default_back.png";
                         //append à div mon img
+                        img.dataset.attr = y._color + ',' + y._value;
+                        if(i==0)img.addEventListener("click", function () { centralizeEvents("clickcardEvent", y._value, y._color, null); });
                         div.append(img);
                     })
                     //je redonne les cartes;
                 }
 
             }
-            if(i==0)i+=2
-            else i++;
-        }
-    })
+            if(div.dataset.pos == game._currentPlayer._pos){
+                div.style.border = "2px solid black";
 
+            }
+            if(i==0)i+=2
+            else i++
+        }
+    });
+
+    
 
 });
 
 function centralizeEvents(Message, value, color, player) {
+    siege0.style.border = "none";
     if (siege0.dataset.pos == game._currentPlayer._pos) {
         switch (Message) {
             case "clickcardEvent":
@@ -235,17 +262,67 @@ function centralizeEvents(Message, value, color, player) {
 $('.color').click((e) => {
     game._discardedCard.color = Color[e.target.dataset.color.toUpperCase()];
     //console log de la nouvelle couleur
-    console.log(game._discardedCard);
-    //envoyer l'event aux autres
+  //  console.log(game._discardedCard);
+   // envoyer l'event aux autres
     socket.emit('Change Color', game._discardedCard.color);
 })
 
 socket.on('Change Color', (color) => {
     game._discardedCard.color = color;
+    game.choice = 1;
+    game._players.map(e=>{
+        let pos = e._pos;
+        for(i=0;i<15;){
+            let div = document.getElementById('siege'+i);
+            //si la main que je regarde est dans cette div
+            if(div.dataset.pos == game._currentPlayer._pos){
+                div.style.border = "2px solid black";
+
+            }
+            if(i==0)i+=2
+            else i++
+        }
+    });
+    game.goToNextPlayer();
+    game.round++;
     console.log(game);
-});
 
 
-socket.on('draw',(player,discardedCard,players)=>{
-    
+    game._players.map(e=>{
+        let pos = e._pos;
+        for(i=0;i<15;){
+            let div = document.getElementById('siege'+i);
+            //si la main que je regarde est dans cette div
+            if(div.dataset.pos == pos){
+                console.log(' le joueur pos : '+pos+' est au siege '+i);
+                //je check si le nombre de cartes est similaire
+                if(div.children.length != e.hand.length){
+                    console.log('le joueur '+ pos +' a : '+e.hand.length+' et moi jai x images : '+div.children.length);
+                    //je vide les cartes du joueur déphasé
+                    div.innerHTML = "";
+                    e.hand.map(y=>{
+                        //creer une variable image
+                        let img = document.createElement('img')
+                        //prendre la combinaison value color pour aller chercher la bonne carte cf : le ternaire de fou
+                        img.src = i==0?("img/card/" + colKeys[colVal.indexOf(y._color)] + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(y._value)])) ? convertValue[valKeys[valVal.indexOf(y._value)]] : valKeys[valVal.indexOf(y._value)]) + ".png"):"img/Card/default_back.png";
+                        //append à div mon img
+                        img.dataset.attr = y._color + ',' + y._value;
+                        if(i==0)img.addEventListener("click", function () { centralizeEvents("clickcardEvent", y._value, y._color, null); });
+                        div.append(img);
+                    })
+                    //je redonne les cartes;
+                }
+
+            }
+            if(div.dataset.pos == game._currentPlayer._pos){
+                div.style.border = "2px solid black";
+
+            }
+            if(i==0)i+=2
+            else i++;
+        }
+    })
+
+
+
 });

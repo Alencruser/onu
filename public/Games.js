@@ -215,7 +215,7 @@ class Player {
     hasPlayable(card) {
         if (!card) return false;
 
-        this.hand.map(c => { console.log(c.value == card.value || c.color == card.color || c.value > 12,c) });
+        this.hand.map(c => { console.log(c._value == card._value || c._color == card._color || c._value > 12, c) });
         return this.hand.some(
             (c) => c._value == card._value || c._color == card._color || c._value > 12,
         );
@@ -266,6 +266,7 @@ class Game {
     NUMBER_OF_PLAYER;
     cumulativeamount = 0;
     round = 0;
+    choice = 1;
 
     constructor(NUMBER_OF_PLAYER, price) {
         this.NUMBER_OF_PLAYER = NUMBER_OF_PLAYER;
@@ -280,7 +281,7 @@ class Game {
         this.drawPile = new Deck();
         this.direction = GameDirection.CLOCKWISE;
         this._players.forEach(
-            (p) => (p.hand = (this.drawPile.draw(CARDS_PER_PLAYER)).sort(function (a, b) { return ((a.value + a.color * 15) < (b.color * 15 + b.value)) ? 1 : -1 })),
+            (p) => (p.hand = (this.drawPile.draw(CARDS_PER_PLAYER)).sort(function (a, b) { return ((a.value + a.color * 15) > (b.color * 15 + b.value)) ? 1 : -1 })),
         );
 
         do {
@@ -357,7 +358,7 @@ class Game {
 
     candraw() {
         if (!this._currentPlayer.hasPlayable(this._discardedCard))
-            this.privateDraw(this._currentPlayer,1);
+            this.privateDraw(this._currentPlayer, 1);
         if (!this._currentPlayer.hasPlayable(this._discardedCard))
             this.goToNextPlayer();
     }
@@ -371,9 +372,9 @@ class Game {
             centralizeEvents("CardDenyEvent", null, null, null);
             return;
         }
-        
+
         this._currentPlayer.removeCard(card);
-        if(this.round == 0)
+        if (this.round == 0)
             this._players[this._currentPlayer._pos].hand = this._currentPlayer.hand;
         console.log(this._currentPlayer);
         this.drawPile.drawpile.push(this._discardedCard);
@@ -385,13 +386,14 @@ class Game {
 
         switch (this._discardedCard.value) {
             case Value.WILD_DRAW_FOUR:
+                this.choice = 0;
                 if (document.getElementById('siege0').dataset.pos == this._currentPlayer._pos)
                     $('#changeColor').modal('show');
                 if (!this.getNextPlayer().hasPlayableDodgeDraw(this._discardedCard)) {
                     console.log('Chain');
                     this.privateDraw(this.getNextPlayer(), this.cumulativeamount + 4);
                     this.cumulativeamount = 0;
-                    game.goToNextPlayer();
+                    this._currentPlayer = this.getNextPlayer();
                 }
                 else {
                     this.cumulativeamount += 4;
@@ -399,9 +401,12 @@ class Game {
                 }
                 break;
             case Value.WILD:
-                if (document.getElementById('siege0').dataset.pos == this._currentPlayer._pos)
+                this.choice = 0;
+                if (document.getElementById('siege0').dataset.pos == this._currentPlayer._pos) {
                     $('#changeColor').modal('show');
+                }
                 break;
+
             case Value.DRAW_TWO:
                 if (!this.getNextPlayer().hasPlayableDodgeDraw(this._discardedCard)) {
                     console.log('Chain');
@@ -415,24 +420,40 @@ class Game {
                 }
                 break;
             case Value.SKIP:
-                this.goToNextPlayer();
+                this._currentPlayer = this.getNextPlayer();
                 break;
             case Value.REVERSE:
                 if (this.NUMBER_OF_PLAYER > 2)
                     this.reverseGame();
                 else
-                    this.goToNextPlayer();
+                this._currentPlayer = this.getNextPlayer();
                 break;
             default:
                 break;
         }
-        this.goToNextPlayer();
-        this.round++;
+
+        if (this.choice) {
+            this.goToNextPlayer();
+            this.round++;
+
+            this._players.map((e, i) => {
+                this._players[i].hand.sort(function (a, b) {
+                    return ((a.value + a.color * 15) > (b.color * 15 + b.value)) ? 1 : -1
+                })
+            })
+            console.log('dans game.play le discarded card et le currentplayer', this);
+        }
     }
 
     privateDraw(player, amount) {
         let cards = this.drawPile.draw(amount);
-        player.hand = (player.hand.concat(cards)).sort(function (a, b) { return ((a.value + a.color * 15) < (b.color * 15 + b.value)) ? 1 : -1 });
+        console.log('card apres cards', cards);
+        console.log('amount', amount);
+        console.log('wtf player draw', player);
+        player.hand = (player.hand.concat(cards)).sort(function (a, b) {
+            return ((a.value + a.color * 15) > (b.color * 15 + b.value)) ? 1 : -1
+        });
+        console.log('player apres sort draw', player)
         centralizeEvents("DrawEvent", null, null, player._pos);
         this.drawn = true;
     }
@@ -440,7 +461,7 @@ class Game {
     voluntaryDraw() {
         this.drawn = true;
         let card = this.drawPile.draw();
-        this._currentPlayer.hand = (this._currentPlayer.hand.concat(card)).sort(function (a, b) { return ((a.value + a.color * 15) < (b.color * 15 + b.value)) ? 1 : -1 });
+        this._currentPlayer.hand = (this._currentPlayer.hand.concat(card)).sort(function (a, b) { return ((a.value + a.color * 15) > (b.color * 15 + b.value)) ? 1 : -1 });
         centralizeEvents("DrawEvent", null, null, this._currentPlayer._pos);
         if (!card.matches(this._discardedCard))
             this.goToNextPlayer();
