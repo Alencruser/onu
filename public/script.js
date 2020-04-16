@@ -140,7 +140,7 @@ socket.on('setup', (session) => {
         for (i = 0; i < 15;) {
             let div = document.getElementById('siege' + i);
             //si la main que je regarde est dans cette div
-           
+
             if (i == 0) i += 2
             else i++
         }
@@ -172,6 +172,8 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
         }
         game.play(new Card(card.value, card.color));
     }
+    let currentPseudo;
+
     game._players.map(e => {
         let pos = e._pos;
         for (i = 0; i < 15;) {
@@ -182,10 +184,10 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
                 if (div.children.length != e.hand.length) {
                     //je vide les cartes du joueur déphasé
                     div.innerHTML = "";
-                    if(i!=0)div.textContent = div.dataset.pseudo;
+                    if (i != 0) div.textContent = div.dataset.pseudo;
                     //tentative de sort au dernier moment (après pioche)
                     let m = e.hand.slice();
-                    m.sort((a,b)=>{
+                    m.sort((a, b) => {
                         return ((((+a._value) + (+a._color) * 15) > ((+b._color) * 15 + (+b._value))) ? 1 : -1);
                     });
                     m.map(y => {
@@ -205,14 +207,14 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
                     //je redonne les cartes;
                 }
             }
-            
-            if(!e.hand.length && pos == div.dataset.pos)document.getElementById('popupContainer').innerHTML = "<p><b>"+ div.dataset.pseudo +"</b> gagne la partie !</p>"
+            if (div.dataset.pos == game.currentPlayer._pos) currentPseudo = div.dataset.pseudo;
+            if (!e.hand.length && pos == div.dataset.pos) document.getElementById('popupContainer').innerHTML = "<p><b>" + div.dataset.pseudo + "</b> gagne la partie !</p>"
             if (i == 0) i += 2
             else i++
         }
 
         //Fin de partie
-        if(!e.hand.length)$('#popup').modal('show');
+        if (!e.hand.length) $('#popup').modal('show');
 
     });
 
@@ -223,10 +225,10 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
                 valKeys[valVal.indexOf(card.value)]) + ".png";
 
     let p = document.createElement('p');
-    p.textContent = "C'est au tour de " + playersPseudo[game._currentPlayer._pos];
+    p.textContent = "C'est au tour de " + currentPseudo;
     document.getElementById('discardedCard').removeChild(document.getElementById('discardedCard').lastChild);
     document.getElementById('discardedCard').append(p);
-    
+
 });
 
 function centralizeEvents(Message, value, color, player) {
@@ -249,6 +251,7 @@ $('.color').click((e) => {
 })
 
 socket.on('Change Color', (color) => {
+    let currentPseudo;
     game._discardedCard.color = color;
     document.getElementById('discard').src = document.getElementById('discard').src.replace('undefined', colKeys[colVal.indexOf(color)]);
     game.choice = 1;
@@ -277,13 +280,43 @@ socket.on('Change Color', (color) => {
                     //je redonne les cartes;
                 }
             }
+            if (div.dataset.pos == game.currentPlayer._pos) currentPseudo = div.dataset.pseudo;
             if (i == 0) i += 2
             else i++;
         }
     })
 
     let p = document.createElement('p');
-    p.textContent = "C'est au tour de " + playersPseudo[game._currentPlayer._pos];
+    p.textContent = "C'est au tour de " + currentPseudo;
     document.getElementById('discardedCard').removeChild(document.getElementById('discardedCard').lastChild);
     document.getElementById('discardedCard').append(p);
 });
+
+
+socket.on('disconnected', (pos) => {
+
+    let currentPseudo;
+    game.playerLeave(pos);
+
+    for (var i = 0; i < 15;) {
+        let div = document.getElementById('siege' + i).dataset.pos;
+        if (div > pos) {
+            document.getElementById('siege' + i).dataset.pos = div - 1
+        } else if (div == pos) {
+            document.getElementById('siege' + i).dataset.pos = "-9999999"
+        }
+        if (i == 0) i += 2;
+        else i++;
+    }
+    for (var i = 0; i < 15;) {
+        let div = document.getElementById('siege' + i).dataset.pos;
+        if (div == game.currentPlayer._pos) currentPseudo = document.getElementById('siege' + i).dataset.pseudo;
+        if(i==0) i+=2;
+        else i++;
+    }
+
+    let p = document.createElement('p');
+    p.textContent = "C'est au tour de " + currentPseudo;
+    document.getElementById('discardedCard').removeChild(document.getElementById('discardedCard').lastChild);
+    document.getElementById('discardedCard').append(p);
+})

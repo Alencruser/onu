@@ -322,15 +322,15 @@ class Game {
                 : GameDirection.CLOCKWISE;
     }
 
-    getNextPlayer() {
+    getNextPlayer(pos=this._currentPlayer._pos) {
         let idx = this._currentPlayer._pos;
         if (this.direction == GameDirection.CLOCKWISE) {
             idx++;
-            if (idx == this._players.length) idx = 0;
+            if (idx >= this.NUMBER_OF_PLAYER) idx = 0;
         }
         else {
             idx--;
-            if (idx == -1) idx = this._players.length - 1;
+            if (idx == -1) idx = this.NUMBER_OF_PLAYER - 1;
         }
         return this._players[idx];
     }
@@ -346,6 +346,11 @@ class Game {
     goToNextPlayer() {
         this.drawn = false;
         this._currentPlayer = this.getNextPlayer();
+        this.candraw();
+    }
+    goToNextPlayerLeave(pos) {
+        this.drawn = false;
+        this._currentPlayer = this.getNextPlayer(pos);
         this.candraw();
     }
 
@@ -447,9 +452,19 @@ class Game {
     }
 
     playerLeave(player) {
-        if (this._players[player] == this._currentPlayer)
-            this.goToNextPlayer();
+        let skip = false;
+        if (this._players[player]._pos == this._currentPlayer._pos)
+            skip = true;
+        for (let i = 0; i < this.NUMBER_OF_PLAYER; i++) {
+            if (this._players[i]._pos > player)
+                this._players[i]._pos -= 1;
+        }
         this._players.splice(player, 1);
+        this.NUMBER_OF_PLAYER -= 1;
+        if (skip) {
+            this.goToNextPlayerLeave(player);
+            skip = false;
+        }
     }
 
     uno(playerPos) {

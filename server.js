@@ -42,9 +42,10 @@ function blbl(str) {
 };
 
 let sess;
-
+let allClients = [];
 io.on('connection', (socket) => {
     console.log('user connected');
+    allClients.push(socket.id);
     let room;
     socket.on('createGroup', (pseudo) => {
         socket.pseudo = pseudo
@@ -95,6 +96,7 @@ io.on('connection', (socket) => {
         let room = socket.roomId;
         let players = Object.keys(io.sockets.adapter.rooms[room].sockets);
         players.sort();
+        allClients.sort();
         let placement = {};
         players.map(e => {
             placement[players.indexOf(e)] = io.sockets.connected[e].pseudo
@@ -105,19 +107,24 @@ io.on('connection', (socket) => {
         //envoyer les infos aux joueurs
     });
 
-    socket.on('PlayedEvent', (card,current,previousPos) => {
+    socket.on('PlayedEvent', (card, current, previousPos) => {
         let room = socket.roomId;
-        io.to(room).emit('PlayedEvent',card,current,previousPos);
+        io.to(room).emit('PlayedEvent', card, current, previousPos);
     }
     );
 
     socket.on('Change Color', (color) => {
         let room = socket.roomId;
-        io.to(room).emit('Change Color',color);
+        io.to(room).emit('Change Color', color);
     });
 
     socket.on('disconnect', () => {
-        console.log('user ' + socket.id + ' disconnected');
+        let room = socket.roomId;
+        let i = allClients.indexOf(socket.id);
+        allClients.splice(i, 1);
+        let pos = i;
+        io.to(room).emit('disconnected', pos);
+        console.log('user ' + socket.pseudo + ' disconnected');
     })
 
 })
@@ -147,13 +154,13 @@ app.get('/', (req, res) => {
     }
 });
 
-app.post('/room',(req,res)=>{
+app.post('/room', (req, res) => {
     sess = req.session;
-    if(!sess.pseudo)return res.redirect('/');
+    if (!sess.pseudo) return res.redirect('/');
     sess.gameRoom = req.body.id;
     sess.gameNumber = req.body.groupSize;
     sess.gamePrice = req.body.groupPrice;
-    return res.render('room',{pseudo:sess.pseudo,roomId:sess.gameRoom,number:sess.gameNumber,price:sess.groupPrice});
+    return res.render('room', { pseudo: sess.pseudo, roomId: sess.gameRoom, number: sess.gameNumber, price: sess.groupPrice });
 });
 
 //create an account
