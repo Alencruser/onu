@@ -451,4 +451,11 @@ class Game {
             this.goToNextPlayer();
         this._players.splice(player, 1);
     }
+
+    uno(playerPos) {
+        for (i = 0; i < this.NUMBER_OF_PLAYER; i++) {
+            if (this._players[i].length() == 1 && this._players[i]._pos != playerPos)
+                privateDraw(this._players[i], 2);
+        }
+    }
 }
