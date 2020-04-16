@@ -107,7 +107,7 @@ ul {
     padding-bottom: 2vh;
 }
 
-#popup .modal-content {
+#discard .modal-content, #popup .modal-content {
     background-image: url('img/profil_background.png');
     background-size: 100% 100%;
     background-repeat: no-repeat;

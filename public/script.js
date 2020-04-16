@@ -70,7 +70,6 @@ socket.on('setup', (session) => {
             case 'drawPile':
                 game[property] = $.extend(true, Object.create(Object.getPrototypeOf(new Deck())), session.game.drawPile)
                 break;
-
         }
     }
     let placement = session.pos;
@@ -106,7 +105,7 @@ socket.on('setup', (session) => {
                 if (numberOfPlayers == 2) {
                     actualPlayer = 1 - player;
                 } else {
-                    actualPlayer = (+player + i)%numberOfPlayers;
+                    actualPlayer = (+player + i) % numberOfPlayers;
                 }
 
                 //ici assigner les places avec un while
@@ -132,7 +131,6 @@ socket.on('setup', (session) => {
                         //placed passe true
                         placed = true;
                     }
-
                 }
             }
         }
@@ -147,7 +145,10 @@ socket.on('setup', (session) => {
             else i++
         }
     });
-   
+
+    let p = document.createElement('p');
+    p.textContent = "C'est au tour de " + playersPseudo[game._currentPlayer._pos];
+    document.getElementById('discardedCard').append(p);
 })
 
 socket.on('PlayedEvent', (card, current, previousPos) => {
@@ -194,11 +195,11 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
                         img.src = i == 0 ? ("img/card/" + colKeys[colVal.indexOf(y._color)] + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(y._value)])) ? convertValue[valKeys[valVal.indexOf(y._value)]] : valKeys[valVal.indexOf(y._value)]) + ".png") : "img/Card/default_back.png";
                         //append à div mon img
                         img.dataset.attr = y._color + ',' + y._value;
-                        if (i == 0){
+                        if (i == 0) {
                             img.addEventListener("click", function () { centralizeEvents("clickcardEvent", y._value, y._color, null); });
-                            if(e.hand.length>10)
-                            img.style.height ='20'-(e.hand.length-10)+'vh';
-                        } 
+                            if (e.hand.length > 10)
+                                img.style.height = '20' - (e.hand.length - 10) + 'vh';
+                        }
                         div.append(img);
                     })
                     //je redonne les cartes;
@@ -214,15 +215,18 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
         if(!e.hand.length)$('#popup').modal('show');
 
     });
-    
-    if (card.value == game._discardedCard._value && card.color == game._discardedCard._color){
 
+    if (card.value == game._discardedCard._value && card.color == game._discardedCard._color)
         document.getElementById('discard').src = "img/card/" + colKeys[colVal.indexOf(card.color)] + '_' +
-        ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(card.value)])) ?
-        convertValue[valKeys[valVal.indexOf(card.value)]] :
-        valKeys[valVal.indexOf(card.value)]) + ".png";
-       
-    }
+            ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(card.value)])) ?
+                convertValue[valKeys[valVal.indexOf(card.value)]] :
+                valKeys[valVal.indexOf(card.value)]) + ".png";
+
+    let p = document.createElement('p');
+    p.textContent = "C'est au tour de " + playersPseudo[game._currentPlayer._pos];
+    document.getElementById('discardedCard').removeChild(document.getElementById('discardedCard').lastChild);
+    document.getElementById('discardedCard').append(p);
+    
 });
 
 function centralizeEvents(Message, value, color, player) {
@@ -246,7 +250,7 @@ $('.color').click((e) => {
 
 socket.on('Change Color', (color) => {
     game._discardedCard.color = color;
-    document.getElementById('discard').src = document.getElementById('discard').src.replace('undefined',colKeys[colVal.indexOf(color)]) ;
+    document.getElementById('discard').src = document.getElementById('discard').src.replace('undefined', colKeys[colVal.indexOf(color)]);
     game.choice = 1;
     game.goToNextPlayer();
     game.round++;
@@ -276,6 +280,10 @@ socket.on('Change Color', (color) => {
             if (i == 0) i += 2
             else i++;
         }
-    });
-    
+    })
+
+    let p = document.createElement('p');
+    p.textContent = "C'est au tour de " + playersPseudo[game._currentPlayer._pos];
+    document.getElementById('discardedCard').removeChild(document.getElementById('discardedCard').lastChild);
+    document.getElementById('discardedCard').append(p);
 });
