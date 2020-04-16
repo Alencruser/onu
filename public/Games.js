@@ -134,6 +134,7 @@ function createUnoDeck() {
         return cards;
     };
 
+    
     colors.forEach((color) => {
         deck.push.apply(deck, createCards(1, Value.ZERO, color));
         for (let n = Value.ONE; n <= Value.NINE; n++) {
@@ -161,24 +162,24 @@ class Deck {
             i = Math.floor(Math.random() * m--);
             [this.drawpile[m], this.drawpile[i]] = [this.drawpile[i], this.drawpile[m]];
         }
-        this.drawpile.push(new Card(1, Value.DECKEPTION));
+        this.drawpile.push(new Card(Value.DECKEPTION));
     }
 
     draw(num = 1) {
         let cards = [];
         let top;
         for (let i = 0; i < num; i++) {
-            if (this.drawpile[0].value == Value.DECKEPTION) {
+            if (this.drawpile[0]._value == Value.DECKEPTION) {
                 this.drawpile.shift();
                 let m = this.size(), i;
                 while (m) {
                     i = Math.floor(Math.random() * m--);
                     [this.drawpile[m], this.drawpile[i]] = [this.drawpile[i], this.drawpile[m]];
                 }
-                this.drawpile.push(new Card(1, Value.DECKEPTION));
+                this.drawpile.push(new Card(Value.DECKEPTION));
             }
             top = this.drawpile[0];
-            this.drawpile.shift()
+            this.drawpile.shift();
             cards.push(top);
         }
         return cards;
