@@ -52,10 +52,11 @@
 
       <div class="modal fade" id="popup" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
-          <div class="modal-content">
+          <div class="modal-content text-center">
             <div class="modal-body" id="popupContainer">
-
+                <p>test a remporté la partie</p>
             </div>
+            <a href="/"><button class="btn btn-primary">Retourner au menu</button></a>
           </div>
         </div>
       </div>
@@ -87,9 +88,9 @@
         }
     });
 
-    // document.onkeydown = fkey;
-    // document.onkeypress = fkey
-    // document.onkeyup = fkey;
+    document.onkeydown = fkey;
+    document.onkeypress = fkey
+    document.onkeyup = fkey;
 
     var wasPressed = false;
 
@@ -98,7 +99,11 @@
        if( wasPressed ) return; 
 
         if (e.keyCode == 116) {
-            window.location.href= window.location.href.replace('/room','');
+            // let form = document.createElement('form');
+            // form.action="/";
+            // form.method = "get";
+            // document.body.append(form);
+            // form.submit();
             wasPressed = true;
         }
     }

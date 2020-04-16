@@ -95,5 +95,20 @@ ul {
 
 #popupContainer {
     display:flex;
-    justify-content: space-between;
+    justify-content: center;
+}
+
+#popupContainer p {
+    padding-top:10vh;
+    padding-bottom: 10vh;
+}
+
+#popup a {
+    padding-bottom: 2vh;
+}
+
+#popup .modal-content {
+    background-image: url('img/profil_background.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
 }

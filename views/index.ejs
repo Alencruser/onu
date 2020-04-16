@@ -16,7 +16,7 @@
         <div class="carousel-inner">
             <div class="carousel-item active">
                 <div class="row">
-                    <h5 class="mx-auto screen-title">JOUER</h5>
+                    <h5 class="mx-auto screen-title">A ton tour de mettre des +4 ! #Macron</h5>
                 </div>
                 <div class=" align-self-center container-fluid row text-center " id="room-cards">
                     <div class="col-sm-2 offset-sm-3">
@@ -143,20 +143,46 @@
 
         //create a party for friends
         socket.on('party created', (roomName, party) => {
+
+
+
             let div = document.getElementById('inviteFriend');
-            div.removeChild(div.lastElementChild);
-            let input = document.createElement('input');
-            input.value = window.location.href + '?party=' + roomName;
-            let button = document.createElement('button');
-            button.classList.add('btn', 'btn-primary');
-            button.id = "launchCustom";
-            button.textContent = "Lancer une partie privée";
+            div.innerHTML = `
+            <button class="btn btn-primary" id="launchCustom">Lancer une partie privée</button>
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" id="customLink">
+                <div class="input-group-append">
+                    <button id="customButtonLaunch" title="Copier dans le presse papier" class="btn btn-primary"><i class="far fa-copy"></i></button>
+                </div>
+            </div>
+            `;
+
             //fire a function to create a custom game
+            let customLink = document.getElementById('customLink');
+            customLink.dataset.link = window.location.href + '?party=' + roomName;
+            customLink.value = "Lien caché";
+            customLink.addEventListener('mouseover', () => {
+                customLink.value = customLink.dataset.link;
+            });
+            customLink.addEventListener('mouseout', () => {
+                customLink.value = "Lien caché";
+            })
+            let button = document.getElementById('launchCustom');
             button.addEventListener('click', () => {
                 launchCustom();
             });
-            div.append(button);
-            div.append(input);
+            document.getElementById('customButtonLaunch').addEventListener('click', () => {
+                let str = document.getElementById('customLink').dataset.link;
+                const el = document.createElement('textarea');
+                el.value = str;
+                el.setAttribute('readonly', '');
+                el.style.position = 'absolute';
+                el.style.left = '-9999px';
+                document.body.appendChild(el);
+                el.select();
+                document.execCommand('copy');
+                document.body.removeChild(el);
+            });
             document.getElementById('currentParty').textContent = "Joueur(s) dans votre groupe : " + party.join(', ');
         })
 
@@ -187,7 +213,7 @@
 
 
     </script>
-    <div class="modal" tabindex="-1" role="dialog" id="connect"  data-backdrop="static" data-keyboard="false">
+    <div class="modal" tabindex="-1" role="dialog" id="connect" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header" style="display:flex;justify-content:space-around">
@@ -212,7 +238,7 @@
             </div>
         </div>
     </div>
-    <div class="modal" tabindex="-1" role="dialog" id="register"  data-backdrop="static" data-keyboard="false">
+    <div class="modal" tabindex="-1" role="dialog" id="register" data-backdrop="static" data-keyboard="false">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header" style="display:flex;justify-content:space-around">
@@ -259,7 +285,7 @@
     </div>
     <script>
 
-        
+
 
         document.getElementById('signupButton').addEventListener('click', () => {
             $('#connect').modal('hide');

@@ -79,6 +79,7 @@ socket.on('setup', (session) => {
         if (mypseudo == placement[player]) {
             let numberOfPlayers = session.players.length;
             document.getElementById('siege0').dataset.pos = player;
+            document.getElementById('siege0').dataset.pseudo = mypseudo;
             //placement de la carte du haut de pile
             let discarded = document.createElement('img');
             discarded.src = "img/card/" + colKeys[colVal.indexOf(session.discardedCard._color)] + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(session.discardedCard._value)])) ? convertValue[valKeys[valVal.indexOf(session.discardedCard._value)]] : valKeys[valVal.indexOf(session.discardedCard._value)]) + ".png";
@@ -120,6 +121,7 @@ socket.on('setup', (session) => {
                     if (permit.includes(numberOfPlayers.toString())) {
                         //assigner la place au siege
                         document.getElementById('siege' + siegeIndex).textContent = placement[actualPlayer];
+                        document.getElementById('siege' + siegeIndex).dataset.pseudo = placement[actualPlayer];
                         document.getElementById('siege' + siegeIndex).dataset.pos = actualPlayer;
                         for (x = 0; x < session.players[actualPlayer].hand.length; x++) {
                             let img = document.createElement('img');
@@ -140,15 +142,12 @@ socket.on('setup', (session) => {
         for (i = 0; i < 15;) {
             let div = document.getElementById('siege' + i);
             //si la main que je regarde est dans cette div
-
-            if (div.dataset.pos == game._currentPlayer._pos) {
-                div.style.border = "2px solid black";
-
-            }
+           
             if (i == 0) i += 2
             else i++
         }
     });
+   
 })
 
 socket.on('PlayedEvent', (card, current, previousPos) => {
@@ -156,7 +155,7 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
     if (previousPos == siege0.dataset.pos) {
         for (let i = 0; i < Object.keys(game._currentPlayer.hand).length; i++) {
             let car = new Card(siege0.children[i].dataset.attr.split(',')[1], siege0.children[i].dataset.attr.split(',')[0]);
-            if (car.is(card.value, card.color)) {
+            if (car.is(card.value, card.color) && (card.value == game._discardedCard._value && card.color == game._discardedCard._color)) {
                 siege0.removeChild(siege0.children[i]);
                 break;
             }
@@ -182,7 +181,13 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
                 if (div.children.length != e.hand.length) {
                     //je vide les cartes du joueur déphasé
                     div.innerHTML = "";
-                    e.hand.map(y => {
+                    if(i!=0)div.textContent = div.dataset.pseudo;
+                    //tentative de sort au dernier moment (après pioche)
+                    let m = e.hand.slice();
+                    m.sort((a,b)=>{
+                        return ((((+a._value) + (+a._color) * 15) > ((+b._color) * 15 + (+b._value))) ? 1 : -1);
+                    });
+                    m.map(y => {
                         //creer une variable image
                         let img = document.createElement('img')
                         //prendre la combinaison value color pour aller chercher la bonne carte cf : le ternaire de fou
@@ -199,18 +204,25 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
                     //je redonne les cartes;
                 }
             }
-            if (div.dataset.pos == game._currentPlayer._pos) {
-                div.style.border = "2px solid black";
-            }
+            
+            if(!e.hand.length && pos == div.dataset.pos)document.getElementById('popupContainer').innerHTML = "<p><b>"+ div.dataset.pseudo +"</b> gagne la partie !</p>"
             if (i == 0) i += 2
             else i++
         }
+
+        //Fin de partie
+        if(!e.hand.length)$('#popup').modal('show');
+
     });
-    if (card.value == game._discardedCard._value && card.color == game._discardedCard._color)
+    
+    if (card.value == game._discardedCard._value && card.color == game._discardedCard._color){
+
         document.getElementById('discard').src = "img/card/" + colKeys[colVal.indexOf(card.color)] + '_' +
-            ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(card.value)])) ?
-                convertValue[valKeys[valVal.indexOf(card.value)]] :
-                valKeys[valVal.indexOf(card.value)]) + ".png";
+        ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(card.value)])) ?
+        convertValue[valKeys[valVal.indexOf(card.value)]] :
+        valKeys[valVal.indexOf(card.value)]) + ".png";
+       
+    }
 });
 
 function centralizeEvents(Message, value, color, player) {
@@ -236,19 +248,6 @@ socket.on('Change Color', (color) => {
     game._discardedCard.color = color;
     document.getElementById('discard').src = document.getElementById('discard').src.replace('undefined',colKeys[colVal.indexOf(color)]) ;
     game.choice = 1;
-    game._players.map(e => {
-        let pos = e._pos;
-        for (i = 0; i < 15;) {
-            let div = document.getElementById('siege' + i);
-            //si la main que je regarde est dans cette div
-            if (div.dataset.pos == game._currentPlayer._pos) {
-                div.style.border = "2px solid black";
-
-            }
-            if (i == 0) i += 2
-            else i++
-        }
-    });
     game.goToNextPlayer();
     game.round++;
     game._players.map(e => {
@@ -274,12 +273,9 @@ socket.on('Change Color', (color) => {
                     //je redonne les cartes;
                 }
             }
-            if (div.dataset.pos == game._currentPlayer._pos) {
-                div.style.border = "2px solid black";
-
-            }
             if (i == 0) i += 2
             else i++;
         }
-    })
+    });
+    
 });
