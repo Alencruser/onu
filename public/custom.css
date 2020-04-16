@@ -107,7 +107,22 @@ ul {
     padding-bottom: 2vh;
 }
 
-#discard .modal-content, #popup .modal-content {
+#discardedCard {
+    background-image: url('img/profil_background.png');
+    background-size:25% 43%;
+    background-position: 50% 0;
+    background-repeat: no-repeat;
+}
+
+#discardedCard img{
+    margin-top:1vh
+}
+
+#discardedCard p{
+    color:black;
+}
+
+#popup .modal-content {
     background-image: url('img/profil_background.png');
     background-size: 100% 100%;
     background-repeat: no-repeat;
