@@ -86,6 +86,7 @@ socket.on('setup', (session) => {
             //placement de la carte du haut de pile
             let discarded = document.createElement('img');
             discarded.src = "img/card/" + colKeys[colVal.indexOf(session.discardedCard._color)].toLowerCase() + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(session.discardedCard._value)])) ? convertValue[valKeys[valVal.indexOf(session.discardedCard._value)]] : valKeys[valVal.indexOf(session.discardedCard._value)]) + ".png";
+            discarded.src = discarded.src.toLowerCase();
             discarded.id = "discard";
             if (document.getElementById('discardedCard').children.length) document.getElementById('discardedCard').removeChild(document.getElementById('discardedCard').lastElementChild);
             document.getElementById('discardedCard').append(discarded);
@@ -94,7 +95,7 @@ socket.on('setup', (session) => {
             session.players[player].hand.map(e => {
                 let src = "img/card/" + colKeys[colVal.indexOf(e._color)].toLowerCase() + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(e._value)])) ? convertValue[valKeys[valVal.indexOf(e._value)]] : valKeys[valVal.indexOf(e._value)]) + ".png";
                 let img = document.createElement('img');
-                img.src = src;
+                img.src = src.toLowerCase();
                 img.dataset.attr = e._color + ',' + e._value;
                 document.getElementById('siege0').append(img);
                 img.addEventListener("click", function () { centralizeEvents("clickcardEvent", e._value, e._color, null); });
@@ -129,7 +130,7 @@ socket.on('setup', (session) => {
                         document.getElementById('siege' + siegeIndex).dataset.pos = actualPlayer;
                         for (x = 0; x < session.players[actualPlayer].hand.length; x++) {
                             let img = document.createElement('img');
-                            img.src = "img/Card/default_back.png";
+                            img.src = "img/Card/default_back.png".toLowerCase();
                             document.getElementById('siege' + siegeIndex).append(img);
                         }
                         document.getElementById('siege' + siegeIndex).append(p);
@@ -162,6 +163,7 @@ socket.on('setup', (session) => {
                         //prendre la combinaison value color pour aller chercher la bonne carte cf : le ternaire de fou
                         img.src = i == 0 ? ("img/card/" + colKeys[colVal.indexOf(y._color)].toLowerCase() + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(y._value)])) ? convertValue[valKeys[valVal.indexOf(y._value)]] : valKeys[valVal.indexOf(y._value)]) + ".png") : "img/Card/default_back.png";
                         //append à div mon img
+                        img.src= img.src.toLowerCase();
                         img.dataset.attr = y._color + ',' + y._value;
                         if (i == 0) {
                             img.addEventListener("click", function () { centralizeEvents("clickcardEvent", y._value, y._color, null); });
@@ -230,6 +232,7 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
                         //prendre la combinaison value color pour aller chercher la bonne carte cf : le ternaire de fou
                         img.src = i == 0 ? ("img/card/" + colKeys[colVal.indexOf(y._color)].toLowerCase() + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(y._value)])) ? convertValue[valKeys[valVal.indexOf(y._value)]] : valKeys[valVal.indexOf(y._value)]) + ".png") : "img/Card/default_back.png";
                         //append à div mon img
+                        img.src = img.src.toLowerCase() ;
                         img.dataset.attr = y._color + ',' + y._value;
                         if (i == 0) {
                             img.addEventListener("click", function () { centralizeEvents("clickcardEvent", y._value, y._color, null); });
@@ -280,10 +283,10 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
     });
 
     if (card.value == game._discardedCard._value && card.color == game._discardedCard._color)
-        document.getElementById('discard').src = "img/card/" + colKeys[colVal.indexOf(card.color)].toLowerCase() + '_' +
+        document.getElementById('discard').src = ("img/card/" + colKeys[colVal.indexOf(card.color)].toLowerCase() + '_' +
             ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(card.value)])) ?
                 convertValue[valKeys[valVal.indexOf(card.value)]] :
-                valKeys[valVal.indexOf(card.value)]) + ".png";
+                valKeys[valVal.indexOf(card.value)]) + ".png").toLowerCase();
 
     let p = document.createElement('p');
     p.textContent = "C'est au tour de " + currentPseudo;
@@ -336,6 +339,7 @@ socket.on('Change Color', (color, previousPos) => {
                         //prendre la combinaison value color pour aller chercher la bonne carte cf : le ternaire de fou
                         img.src = i == 0 ? ("img/card/" + colKeys[colVal.indexOf(y._color)].toLowerCase() + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(y._value)])) ? convertValue[valKeys[valVal.indexOf(y._value)]] : valKeys[valVal.indexOf(y._value)]) + ".png") : "img/Card/default_back.png";
                         //append à div mon img
+                        img.src = img.src.toLowerCase();
                         img.dataset.attr = y._color + ',' + y._value;
                         if (i == 0) img.addEventListener("click", function () { centralizeEvents("clickcardEvent", y._value, y._color, null); });
                         div.append(img);
@@ -405,8 +409,9 @@ socket.on('uno', (type, pos) => {
                             //creer une variable image
                             let img = document.createElement('img')
                             //prendre la combinaison value color pour aller chercher la bonne carte cf : le ternaire de fou
-                            img.src = i == 0 ? ("img/card/" + colKeys[colVal.indexOf(y._color)].toLowerCase() + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(y._value)])) ? convertValue[valKeys[valVal.indexOf(y._value)]] : valKeys[valVal.indexOf(y._value)]) + ".png") : "img/Card/default_back.png";
+                            img.src = i == 0 ? ("img/card/" + colKeys[colVal.indexOf(y._color)] + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(y._value)])) ? convertValue[valKeys[valVal.indexOf(y._value)]] : valKeys[valVal.indexOf(y._value)]) + ".png".).toLowerCase() : "img/Card/default_back.png".toLowerCase();
                             //append à div mon img
+                            img.src = img.src.toLowerCase();
                             img.dataset.attr = y._color + ',' + y._value;
                             if (i == 0) img.addEventListener("click", function () { centralizeEvents("clickcardEvent", y._value, y._color, null); });
                             div.append(img);
