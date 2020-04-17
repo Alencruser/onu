@@ -1,4 +1,4 @@
-const CARDS_PER_PLAYER = 2;
+const CARDS_PER_PLAYER = 7;
 const NUMBER_OF_DRAW_TWO = 2;
 const NUMBER_OF_REVERSE = 2;
 const NUMBER_OF_SKIP = 2;
@@ -366,7 +366,6 @@ class Game {
                 return;
             }
         }
-        console.log("Play the card", card);
         this._currentPlayer.removeCard(card);
         if (this.round == 0)
             this._players[this._currentPlayer._pos].hand = this._currentPlayer.hand;

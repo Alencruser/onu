@@ -74,7 +74,8 @@ socket.on('setup', (session) => {
     }
     do {
         game.candraw();
-    } while (!game._currentPlayer.hasPlayable(game._discardedCard))
+    } while (!game._currentPlayer.hasPlayable(game._discardedCard));
+    console.log(game);
     let placement = session.pos;
     playersPseudo = session.pos;
     for (var player in placement) {
@@ -139,12 +140,42 @@ socket.on('setup', (session) => {
             }
         }
     }
+    let currentPseudo;
     game._players.map(e => {
         let pos = e._pos;
         for (i = 0; i < 15;) {
             let div = document.getElementById('siege' + i);
             //si la main que je regarde est dans cette div
-
+            if (div.dataset.pos == pos) {
+                //je check si le nombre de cartes est similaire
+                if (div.children.length != e.hand.length) {
+                    //je vide les cartes du joueur déphasé
+                    div.innerHTML = "";
+                    //tentative de sort au dernier moment (après pioche)
+                    let m = e.hand.slice();
+                    m.sort((a, b) => {
+                        return ((((+a._value) + (+a._color) * 15) > ((+b._color) * 15 + (+b._value))) ? 1 : -1);
+                    });
+                    m.map(y => {
+                        //creer une variable image
+                        let img = document.createElement('img')
+                        //prendre la combinaison value color pour aller chercher la bonne carte cf : le ternaire de fou
+                        img.src = i == 0 ? ("img/card/" + colKeys[colVal.indexOf(y._color)] + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(y._value)])) ? convertValue[valKeys[valVal.indexOf(y._value)]] : valKeys[valVal.indexOf(y._value)]) + ".png") : "img/Card/default_back.png";
+                        //append à div mon img
+                        img.dataset.attr = y._color + ',' + y._value;
+                        if (i == 0) {
+                            img.addEventListener("click", function () { centralizeEvents("clickcardEvent", y._value, y._color, null); });
+                            if (e.hand.length > 10)
+                                img.style.height = '20' - (e.hand.length - 10) + 'vh';
+                        }
+                        div.append(img);
+                    })
+                    //je redonne les cartes;
+                    let p = document.createElement('p');
+                    p.textContent = div.dataset.pseudo
+                    if (i != 0) div.append(p);
+                }
+            }
             if (i == 0) i += 2
             else i++
         }
@@ -177,7 +208,7 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
         game.play(new Card(card.value, card.color));
     }
     let currentPseudo;
-
+    console.log('game avant map',game);
     game._players.map(e => {
         let pos = e._pos;
         for (i = 0; i < 15;) {
@@ -185,7 +216,7 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
             //si la main que je regarde est dans cette div
             if (div.dataset.pos == pos) {
                 //je check si le nombre de cartes est similaire
-                if (div.children.length != e.hand.length) {
+                if ((div.children.length != e.hand.length && i==0) || (div.children.length-1 != e.hand.length && i!=0)) {
                     //je vide les cartes du joueur déphasé
                     div.innerHTML = "";
                     //tentative de sort au dernier moment (après pioche)
@@ -203,10 +234,11 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
                         if (i == 0) {
                             img.addEventListener("click", function () { centralizeEvents("clickcardEvent", y._value, y._color, null); });
                             if (e.hand.length > 10)
-                                img.style.height = '20' - (e.hand.length - 10) + 'vh';
+                            img.style.height = '20' - (e.hand.length - 10) + 'vh';
                         }
                         div.append(img);
                     })
+                    console.log('playedevent game',game)
                     //je redonne les cartes;
                     let p = document.createElement('p');
                     p.textContent = div.dataset.pseudo
@@ -298,6 +330,8 @@ socket.on('Change Color', (color, previousPos) => {
                     div.innerHTML = "";
                     e.hand.map(y => {
                         //creer une variable image
+                        console.log('ligne 333 card',y);
+
                         let img = document.createElement('img')
                         //prendre la combinaison value color pour aller chercher la bonne carte cf : le ternaire de fou
                         img.src = i == 0 ? ("img/card/" + colKeys[colVal.indexOf(y._color)] + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(y._value)])) ? convertValue[valKeys[valVal.indexOf(y._value)]] : valKeys[valVal.indexOf(y._value)]) + ".png") : "img/Card/default_back.png";
