@@ -1,0 +1,132 @@
+#signupButton,#signinButton1 {
+    cursor:pointer;
+}
+
+#signinButton,#signupButton1 {
+    padding-bottom:8px;
+    border-bottom: solid 2px #58c8ff;
+}
+
+body,html {
+    height: 100%;
+}
+
+body {
+    margin-left:0 !important;
+    margin-right:0 !important;
+    background-image: url('img/background.png');
+}
+
+.screen-title {
+    color:white;
+    margin-bottom:10vh;
+    margin-top: 5vh;
+}
+
+.carousel {
+    position:initial;
+}
+
+#carouselExampleIndicators {
+    height:60%;
+    background-repeat: no-repeat;
+    background-size:80% 100% ;
+    background-position:center;
+}
+
+.img-text{
+    display:flex;
+    align-items:center;
+    justify-content: center;
+}
+
+ul {
+    list-style-type: none;
+}
+
+#room-cards {
+    margin-bottom:5vh;
+}
+
+#launchCustom {
+    margin-right:5%;
+}
+
+#discardedCard {
+    align-items: flex-start;
+}
+
+#discardedCard img {
+    height:33%;
+}
+
+
+#tableGame .row {
+    margin-right:0 !important;
+}
+
+#siege0 {
+    display: flex;
+    justify-content: center;
+}
+
+#siege0 img {
+    height:20vh;
+}
+
+
+
+.img-socket img {
+    height:5vh;
+}
+
+.color {
+    width:20vh;
+    height:20vh;
+    cursor: pointer;
+}
+
+#colorContainer {
+    display:flex;
+    justify-content: space-between;
+}
+
+#popupContainer {
+    display:flex;
+    justify-content: center;
+}
+
+#popupContainer p {
+    padding-top:10vh;
+    padding-bottom: 10vh;
+}
+
+#popup a {
+    padding-bottom: 2vh;
+}
+
+#discardedCard {
+    background-image: url('img/profil_background.png');
+    background-size:70% 43%;
+    background-position: 50% 0;
+    background-repeat: no-repeat;
+}
+
+#discardedCard img{
+    margin-top:1vh
+}
+
+#discardedCard p{
+    color:black;
+}
+
+#popup .modal-content {
+    background-image: url('img/profil_background.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}
+
+#unoDiv0 img,#unoDiv1 img,#unoDiv2 img,#unoDiv3 img,#unoDiv4 img,#unoDiv5 img,#unoDiv6 img,#unoDiv7 img {
+    height:50%;
+    z-index: 9999;
+}
