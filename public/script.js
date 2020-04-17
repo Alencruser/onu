@@ -1,12 +1,64 @@
 //variable stocke la game
 let game;
 let playersPseudo = [];
+
+const Color = {
+    RED: 1,
+    BLUE: 2,
+    GREEN: 3,
+    YELLOW: 4,
+}
+
+const colors = [
+    Color.RED,
+    Color.BLUE,
+    Color.GREEN,
+    Color.YELLOW
+];
+
+const Value = {
+    ZERO: 0,
+    ONE: 1,
+    TWO: 2,
+    THREE: 3,
+    FOUR: 4,
+    FIVE: 5,
+    SIX: 6,
+    SEVEN: 7,
+    EIGHT: 8,
+    NINE: 9,
+    DRAW_TWO: 10,
+    REVERSE: 11,
+    SKIP: 12,
+    WILD: 13,
+    WILD_DRAW_FOUR: 14,
+    DECKEPTION: 15,
+};
+
+const values = [
+    Value.ZERO,
+    Value.ONE,
+    Value.TWO,
+    Value.THREE,
+    Value.FOUR,
+    Value.FIVE,
+    Value.SIX,
+    Value.SEVEN,
+    Value.EIGHT,
+    Value.NINE,
+    Value.DRAW_TWO,
+    Value.REVERSE,
+    Value.SKIP,
+    Value.WILD,
+    Value.WILD_DRAW_FOUR,
+    Value.DECKEPTION,
+];
 //variables pour echanger les valeurs en couleur ou valeur
-let colKeys = Object.keys(Color),
-    colVal = Object.values(Color),
-    valKeys = Object.keys(Value),
-    valVal = Object.values(Value),
-    convertValue = {
+let colKeys = Object.keys(Color);
+let colVal = Object.values(Color);
+let valKeys = Object.keys(Value);
+let valVal = Object.values(Value);
+let convertValue = {
         ZERO: 0,
         ONE: 1,
         TWO: 2,
@@ -24,7 +76,7 @@ function launchCustom() {
 }
 
 socket.on('group size', (size, room, price) => {
-    if (size > 1) {
+    if (size > 1 && size < 9) {
         let form = document.createElement('form');
         form.action = "/room";
         form.method = 'POST';
@@ -85,7 +137,7 @@ socket.on('setup', (session) => {
             document.getElementById('siege0').dataset.pseudo = mypseudo;
             //placement de la carte du haut de pile
             let discarded = document.createElement('img');
-            discarded.src = "img/card/" + colKeys[colVal.indexOf(session.discardedCard._color)].toLowerCase() + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(session.discardedCard._value)])) ? convertValue[valKeys[valVal.indexOf(session.discardedCard._value)]] : valKeys[valVal.indexOf(session.discardedCard._value)]) + ".png";
+            discarded.src = "img/card/" + colKeys[colVal.indexOf(session.discardedCard._color)] + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(session.discardedCard._value)])) ? convertValue[valKeys[valVal.indexOf(session.discardedCard._value)]] : valKeys[valVal.indexOf(session.discardedCard._value)]) + ".png";
             discarded.src = discarded.src.toLowerCase();
             discarded.id = "discard";
             if (document.getElementById('discardedCard').children.length) document.getElementById('discardedCard').removeChild(document.getElementById('discardedCard').lastElementChild);
@@ -93,7 +145,7 @@ socket.on('setup', (session) => {
             //placer joueur principal ett ses cartes
             document.getElementById('siege0').innerHTML = "";
             session.players[player].hand.map(e => {
-                let src = "img/card/" + colKeys[colVal.indexOf(e._color)].toLowerCase() + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(e._value)])) ? convertValue[valKeys[valVal.indexOf(e._value)]] : valKeys[valVal.indexOf(e._value)]) + ".png";
+                let src = "img/card/" + colKeys[colVal.indexOf(e._color)] + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(e._value)])) ? convertValue[valKeys[valVal.indexOf(e._value)]] : valKeys[valVal.indexOf(e._value)]) + ".png";
                 let img = document.createElement('img');
                 img.src = src.toLowerCase();
                 img.dataset.attr = e._color + ',' + e._value;
@@ -104,7 +156,7 @@ socket.on('setup', (session) => {
 
             //placer autres joueurs
             let siegeIndex = 1;
-            for (i = 1; i < numberOfPlayers; i++) {
+            for (let i = 1; i < numberOfPlayers; i++) {
                 let actualPlayer;
                 let placed = false;
                 if (numberOfPlayers == 2) {
@@ -128,7 +180,7 @@ socket.on('setup', (session) => {
                         p.textContent = placement[actualPlayer];
                         document.getElementById('siege' + siegeIndex).dataset.pseudo = placement[actualPlayer];
                         document.getElementById('siege' + siegeIndex).dataset.pos = actualPlayer;
-                        for (x = 0; x < session.players[actualPlayer].hand.length; x++) {
+                        for (let x = 0; x < session.players[actualPlayer].hand.length; x++) {
                             let img = document.createElement('img');
                             img.src = "img/Card/default_back.png".toLowerCase();
                             document.getElementById('siege' + siegeIndex).append(img);
@@ -144,7 +196,7 @@ socket.on('setup', (session) => {
     let currentPseudo;
     game._players.map(e => {
         let pos = e._pos;
-        for (i = 0; i < 15;) {
+        for (let i = 0; i < 15;) {
             let div = document.getElementById('siege' + i);
             //si la main que je regarde est dans cette div
             if (div.dataset.pos == pos) {
@@ -161,7 +213,7 @@ socket.on('setup', (session) => {
                         //creer une variable image
                         let img = document.createElement('img')
                         //prendre la combinaison value color pour aller chercher la bonne carte cf : le ternaire de fou
-                        img.src = i == 0 ? ("img/card/" + colKeys[colVal.indexOf(y._color)].toLowerCase() + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(y._value)])) ? convertValue[valKeys[valVal.indexOf(y._value)]] : valKeys[valVal.indexOf(y._value)]) + ".png") : "img/Card/default_back.png";
+                        img.src = i == 0 ? ("img/card/" + colKeys[colVal.indexOf(y._color)] + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(y._value)])) ? convertValue[valKeys[valVal.indexOf(y._value)]] : valKeys[valVal.indexOf(y._value)]) + ".png") : "img/Card/default_back.png";
                         //append à div mon img
                         img.src= img.src.toLowerCase();
                         img.dataset.attr = y._color + ',' + y._value;
@@ -213,7 +265,7 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
     console.log('game avant map',game);
     game._players.map(e => {
         let pos = e._pos;
-        for (i = 0; i < 15;) {
+        for (let i = 0; i < 15;) {
             let div = document.getElementById('siege' + i);
             //si la main que je regarde est dans cette div
             if (div.dataset.pos == pos) {
@@ -230,7 +282,7 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
                         //creer une variable image
                         let img = document.createElement('img')
                         //prendre la combinaison value color pour aller chercher la bonne carte cf : le ternaire de fou
-                        img.src = i == 0 ? ("img/card/" + colKeys[colVal.indexOf(y._color)].toLowerCase() + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(y._value)])) ? convertValue[valKeys[valVal.indexOf(y._value)]] : valKeys[valVal.indexOf(y._value)]) + ".png") : "img/Card/default_back.png";
+                        img.src = i == 0 ? ("img/card/" + colKeys[colVal.indexOf(y._color)] + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(y._value)])) ? convertValue[valKeys[valVal.indexOf(y._value)]] : valKeys[valVal.indexOf(y._value)]) + ".png") : "img/Card/default_back.png";
                         //append à div mon img
                         img.src = img.src.toLowerCase() ;
                         img.dataset.attr = y._color + ',' + y._value;
@@ -283,7 +335,7 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
     });
 
     if (card.value == game._discardedCard._value && card.color == game._discardedCard._color)
-        document.getElementById('discard').src = ("img/card/" + colKeys[colVal.indexOf(card.color)].toLowerCase() + '_' +
+        document.getElementById('discard').src = ("img/card/" + colKeys[colVal.indexOf(card.color)] + '_' +
             ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(card.value)])) ?
                 convertValue[valKeys[valVal.indexOf(card.value)]] :
                 valKeys[valVal.indexOf(card.value)]) + ".png").toLowerCase();
@@ -317,13 +369,13 @@ $('.color').click((e) => {
 socket.on('Change Color', (color, previousPos) => {
     let currentPseudo;
     game._discardedCard.color = color;
-    document.getElementById('discard').src = document.getElementById('discard').src.replace('undefined', colKeys[colVal.indexOf(color)].toLowerCase());
+    document.getElementById('discard').src = document.getElementById('discard').src.replace('undefined', colKeys[colVal.indexOf(color)]).toLowerCase();
     game.choice = 1;
     game.goToNextPlayer();
     game.round++;
     game._players.map(e => {
         let pos = e._pos;
-        for (i = 0; i < 15;) {
+        for (let i = 0; i < 15;) {
             let div = document.getElementById('siege' + i);
             //si la main que je regarde est dans cette div
             if (div.dataset.pos == pos) {
@@ -337,7 +389,7 @@ socket.on('Change Color', (color, previousPos) => {
 
                         let img = document.createElement('img')
                         //prendre la combinaison value color pour aller chercher la bonne carte cf : le ternaire de fou
-                        img.src = i == 0 ? ("img/card/" + colKeys[colVal.indexOf(y._color)].toLowerCase() + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(y._value)])) ? convertValue[valKeys[valVal.indexOf(y._value)]] : valKeys[valVal.indexOf(y._value)]) + ".png") : "img/Card/default_back.png";
+                        img.src = i == 0 ? ("img/card/" + colKeys[colVal.indexOf(y._color)] + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(y._value)])) ? convertValue[valKeys[valVal.indexOf(y._value)]] : valKeys[valVal.indexOf(y._value)]) + ".png") : "img/Card/default_back.png";
                         //append à div mon img
                         img.src = img.src.toLowerCase();
                         img.dataset.attr = y._color + ',' + y._value;
@@ -389,7 +441,7 @@ socket.on('Change Color', (color, previousPos) => {
 
 
 socket.on('uno', (type, pos) => {
-    for (i = 0; i < 8; i++) {
+    for (let i = 0; i < 8; i++) {
         document.getElementById('unoDiv' + i).innerHTML = "";
     }
     if (type == 'contreuno') {
@@ -397,7 +449,7 @@ socket.on('uno', (type, pos) => {
         let currentPseudo;
         game._players.map(e => {
             let pos = e._pos;
-            for (i = 0; i < 15;) {
+            for (let i = 0; i < 15;) {
                 let div = document.getElementById('siege' + i);
                 //si la main que je regarde est dans cette div
                 if (div.dataset.pos == pos) {
@@ -409,7 +461,7 @@ socket.on('uno', (type, pos) => {
                             //creer une variable image
                             let img = document.createElement('img')
                             //prendre la combinaison value color pour aller chercher la bonne carte cf : le ternaire de fou
-                            img.src = i == 0 ? ("img/card/" + colKeys[colVal.indexOf(y._color)] + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(y._value)])) ? convertValue[valKeys[valVal.indexOf(y._value)]] : valKeys[valVal.indexOf(y._value)]) + ".png").toLowerCase() : "img/Card/default_back.png".toLowerCase();
+                            img.src = i == 0 ? ("img/card/" + colKeys[colVal.indexOf(y._color)] + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(y._value)])) ? convertValue[valKeys[valVal.indexOf(y._value)]] : valKeys[valVal.indexOf(y._value)]) + ".png") : "img/Card/default_back.png";
                             //append à div mon img
                             img.src = img.src.toLowerCase();
                             img.dataset.attr = y._color + ',' + y._value;

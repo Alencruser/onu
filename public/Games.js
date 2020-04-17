@@ -5,21 +5,21 @@ const NUMBER_OF_SKIP = 2;
 const NUMBER_OF_WILD = 4;
 const NUMBER_OF_WILD_DRAW_FOUR = 4;
 
-Color = {
+const Color = {
     RED: 1,
     BLUE: 2,
     GREEN: 3,
     YELLOW: 4,
 }
 
-colors = [
+const colors = [
     Color.RED,
     Color.BLUE,
     Color.GREEN,
     Color.YELLOW
 ];
 
-Value = {
+const Value = {
     ZERO: 0,
     ONE: 1,
     TWO: 2,
@@ -38,7 +38,7 @@ Value = {
     DECKEPTION: 15,
 };
 
-values = [
+const values = [
     Value.ZERO,
     Value.ONE,
     Value.TWO,
@@ -61,7 +61,7 @@ function isWild(value) {
     return value === Value.WILD || value === Value.WILD_DRAW_FOUR;
 }
 
-GameDirection = {
+const GameDirection = {
     CLOCKWISE: 1,
     COUNTER_CLOCKWISE: 2,
 };
