@@ -134,7 +134,7 @@ function createUnoDeck() {
         return cards;
     };
 
-    
+
     colors.forEach((color) => {
         deck.push.apply(deck, createCards(1, Value.ZERO, color));
         for (let n = Value.ONE; n <= Value.NINE; n++) {
@@ -448,15 +448,22 @@ class Game {
     }
 
     playerLeave(player) {
+        let skip = false;
         if (this._players[player] == this._currentPlayer)
-            this.goToNextPlayer();
+            skip = true;
+        for (let i = 0; i < this.NUMBER_OF_PLAYER; i++) {
+            if (this._players[i]._pos > player)
+                this._players[i]._pos -= 1;
+        }
         this._players.splice(player, 1);
+        this.NUMBER_OF_PLAYER -= 1;
+        if (skip) {
+            this.goToNextPlayer();
+            skip = false;
+        }
     }
 
-    uno(playerPos) {
-        for (i = 0; i < this.NUMBER_OF_PLAYER; i++) {
-            if (this._players[i].length() == 1 && this._players[i]._pos != playerPos)
-                privateDraw(this._players[i], 2);
-        }
+    uno(PlayerUno) {
+        privateDraw(this._players[PlayerUno], 2);
     }
 }
