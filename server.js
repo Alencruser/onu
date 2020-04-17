@@ -113,10 +113,14 @@ io.on('connection', (socket) => {
     }
     );
 
-    socket.on('Change Color', (color) => {
+    socket.on('Change Color', (color,previousPos) => {
         let room = socket.roomId;
-        io.to(room).emit('Change Color', color);
+        io.to(room).emit('Change Color', color,previousPos);
     });
+
+    socket.on('uno',(type,pos)=>{
+        io.to(socket.roomId).emit('uno',type,pos);
+    })
 
     socket.on('disconnect', () => {
         let room = socket.roomId;

@@ -161,22 +161,12 @@ class Deck {
             i = Math.floor(Math.random() * m--);
             [this.drawpile[m], this.drawpile[i]] = [this.drawpile[i], this.drawpile[m]];
         }
-        this.drawpile.push(new Card(1, Value.DECKEPTION));
     }
 
     draw(num = 1) {
         let cards = [];
         let top;
         for (let i = 0; i < num; i++) {
-            if (this.drawpile[0].value == Value.DECKEPTION) {
-                this.drawpile.shift();
-                let m = this.size(), i;
-                while (m) {
-                    i = Math.floor(Math.random() * m--);
-                    [this.drawpile[m], this.drawpile[i]] = [this.drawpile[i], this.drawpile[m]];
-                }
-                this.drawpile.push(new Card(1, Value.DECKEPTION));
-            }
             top = this.drawpile[0];
             this.drawpile.shift()
             cards.push(top);
@@ -467,10 +457,7 @@ class Game {
         }
     }
 
-    uno(playerPos) {
-        for (i = 0; i < this.NUMBER_OF_PLAYER; i++) {
-            if (this._players[i].length() == 1 && this._players[i]._pos != playerPos)
-                privateDraw(this._players[i], 2);
-        }
+    uno(PlayerUno) {
+        this.privateDraw(this._players[PlayerUno], 2);
     }
 }

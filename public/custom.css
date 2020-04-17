@@ -74,9 +74,7 @@ ul {
     height:20vh;
 }
 
-.img-socket {
-    display: flex;
-}
+
 
 .img-socket img {
     height:5vh;
@@ -109,7 +107,7 @@ ul {
 
 #discardedCard {
     background-image: url('img/profil_background.png');
-    background-size:25% 43%;
+    background-size:70% 43%;
     background-position: 50% 0;
     background-repeat: no-repeat;
 }
@@ -126,4 +124,9 @@ ul {
     background-image: url('img/profil_background.png');
     background-size: 100% 100%;
     background-repeat: no-repeat;
+}
+
+#unoDiv0 img,#unoDiv1 img,#unoDiv2 img,#unoDiv3 img,#unoDiv4 img,#unoDiv5 img,#unoDiv6 img,#unoDiv7 img {
+    height:50%;
+    z-index: 9999;
 }
