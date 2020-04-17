@@ -409,7 +409,7 @@ socket.on('uno', (type, pos) => {
                             //creer une variable image
                             let img = document.createElement('img')
                             //prendre la combinaison value color pour aller chercher la bonne carte cf : le ternaire de fou
-                            img.src = i == 0 ? ("img/card/" + colKeys[colVal.indexOf(y._color)] + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(y._value)])) ? convertValue[valKeys[valVal.indexOf(y._value)]] : valKeys[valVal.indexOf(y._value)]) + ".png".).toLowerCase() : "img/Card/default_back.png".toLowerCase();
+                            img.src = i == 0 ? ("img/card/" + colKeys[colVal.indexOf(y._color)] + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(y._value)])) ? convertValue[valKeys[valVal.indexOf(y._value)]] : valKeys[valVal.indexOf(y._value)]) + ".png").toLowerCase() : "img/Card/default_back.png".toLowerCase();
                             //append à div mon img
                             img.src = img.src.toLowerCase();
                             img.dataset.attr = y._color + ',' + y._value;
