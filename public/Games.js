@@ -1,4 +1,4 @@
-const CARDS_PER_PLAYER = 7;
+const CARDS_PER_PLAYER = 2;
 const NUMBER_OF_DRAW_TWO = 2;
 const NUMBER_OF_REVERSE = 2;
 const NUMBER_OF_SKIP = 2;
@@ -313,7 +313,7 @@ class Game {
                 : GameDirection.CLOCKWISE;
     }
 
-    getNextPlayer(pos=this._currentPlayer._pos) {
+    getNextPlayer(pos = this._currentPlayer._pos) {
         let idx = this._currentPlayer._pos;
         if (this.direction == GameDirection.CLOCKWISE) {
             idx++;
@@ -346,8 +346,11 @@ class Game {
     }
 
     candraw() {
-        if (!this._currentPlayer.hasPlayable(this._discardedCard))
+        if (!this._currentPlayer.hasPlayable(this._discardedCard)) {
             this.privateDraw(this._currentPlayer, 1);
+            if (this.round == 0)
+                this._players[this._currentPlayer._pos].hand = this._currentPlayer.hand;
+        }
         if (!this._currentPlayer.hasPlayable(this._discardedCard))
             this.goToNextPlayer();
     }
