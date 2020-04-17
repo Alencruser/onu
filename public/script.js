@@ -119,7 +119,8 @@ socket.on('setup', (session) => {
 
                     if (permit.includes(numberOfPlayers.toString())) {
                         //assigner la place au siege
-                        document.getElementById('siege' + siegeIndex).textContent = placement[actualPlayer];
+                        let p = document.createElement('p');
+                            p.textContent = placement[actualPlayer];
                         document.getElementById('siege' + siegeIndex).dataset.pseudo = placement[actualPlayer];
                         document.getElementById('siege' + siegeIndex).dataset.pos = actualPlayer;
                         for (x = 0; x < session.players[actualPlayer].hand.length; x++) {
@@ -127,7 +128,7 @@ socket.on('setup', (session) => {
                             img.src = "img/Card/default_back.png";
                             document.getElementById('siege' + siegeIndex).append(img);
                         }
-
+                        document.getElementById('siege'+siegeIndex).append(p);
                         //placed passe true
                         placed = true;
                     }
@@ -140,7 +141,7 @@ socket.on('setup', (session) => {
         for (i = 0; i < 15;) {
             let div = document.getElementById('siege' + i);
             //si la main que je regarde est dans cette div
-           
+
             if (i == 0) i += 2
             else i++
         }
@@ -172,6 +173,8 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
         }
         game.play(new Card(card.value, card.color));
     }
+    let currentPseudo;
+
     game._players.map(e => {
         let pos = e._pos;
         for (i = 0; i < 15;) {
@@ -182,10 +185,9 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
                 if (div.children.length != e.hand.length) {
                     //je vide les cartes du joueur déphasé
                     div.innerHTML = "";
-                    if(i!=0)div.textContent = div.dataset.pseudo;
                     //tentative de sort au dernier moment (après pioche)
                     let m = e.hand.slice();
-                    m.sort((a,b)=>{
+                    m.sort((a, b) => {
                         return ((((+a._value) + (+a._color) * 15) > ((+b._color) * 15 + (+b._value))) ? 1 : -1);
                     });
                     m.map(y => {
@@ -198,21 +200,47 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
                         if (i == 0) {
                             img.addEventListener("click", function () { centralizeEvents("clickcardEvent", y._value, y._color, null); });
                             if (e.hand.length > 10)
-                                img.style.height = '20' - (e.hand.length - 10) + 'vh';
+                            img.style.height = '20' - (e.hand.length - 10) + 'vh';
                         }
                         div.append(img);
                     })
                     //je redonne les cartes;
+                    let p = document.createElement('p');
+                            p.textContent = div.dataset.pseudo
+                    if (i != 0) div.append(p);
                 }
             }
-            
-            if(!e.hand.length && pos == div.dataset.pos)document.getElementById('popupContainer').innerHTML = "<p><b>"+ div.dataset.pseudo +"</b> gagne la partie !</p>"
+            if (div.dataset.pos == game.currentPlayer._pos) currentPseudo = div.dataset.pseudo;
+            if (!e.hand.length && pos == div.dataset.pos) document.getElementById('popupContainer').innerHTML = "<p><b>" + div.dataset.pseudo + "</b> gagne la partie !</p>"
             if (i == 0) i += 2
             else i++
         }
-
+        //uno event ? (si carte != changement couleur ou +4 )
+        if(e.hand.length == 1 && ![13,14].includes(card.value) && e._pos == previousPos){
+            console.log('uno event !')
+            if(document.getElementById('siege0').dataset.pos == e._pos){
+                //bouton uno pour le joueur concerné
+                console.log('je suis le joueur qui a uno');
+                let img = document.createElement('img');
+                img.src ="img/uno.png";
+                img.addEventListener('click',()=>{
+                    socket.emit('uno','uno');
+                })
+                document.getElementById('unoDiv0').append(img);
+            }else {
+                console.log('un autre joueur est en uno');
+                let i = Math.floor(Math.random() * Math.floor(8));
+                let img = document.createElement('img');
+                img.src ="img/contreUno.png";
+                let target = e._pos;
+                img.addEventListener('click',()=>{
+                    socket.emit('uno','contreuno',target);
+                })
+                document.getElementById('unoDiv'+i).append(img);
+            }
+        }
         //Fin de partie
-        if(!e.hand.length)$('#popup').modal('show');
+        if (!e.hand.length) $('#popup').modal('show');
 
     });
 
@@ -223,10 +251,10 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
                 valKeys[valVal.indexOf(card.value)]) + ".png";
 
     let p = document.createElement('p');
-    p.textContent = "C'est au tour de " + playersPseudo[game._currentPlayer._pos];
+    p.textContent = "C'est au tour de " + currentPseudo;
     document.getElementById('discardedCard').removeChild(document.getElementById('discardedCard').lastChild);
     document.getElementById('discardedCard').append(p);
-    
+
 });
 
 function centralizeEvents(Message, value, color, player) {
@@ -245,10 +273,11 @@ function centralizeEvents(Message, value, color, player) {
 //Choix couleur après +4 ou changement couleur
 $('.color').click((e) => {
     game._discardedCard.color = Color[e.target.dataset.color.toUpperCase()];
-    socket.emit('Change Color', game._discardedCard.color);
+    socket.emit('Change Color', game._discardedCard.color,document.getElementById('siege0').dataset.pos);
 })
 
-socket.on('Change Color', (color) => {
+socket.on('Change Color', (color,previousPos) => {
+    let currentPseudo;
     game._discardedCard.color = color;
     document.getElementById('discard').src = document.getElementById('discard').src.replace('undefined', colKeys[colVal.indexOf(color)]);
     game.choice = 1;
@@ -277,13 +306,119 @@ socket.on('Change Color', (color) => {
                     //je redonne les cartes;
                 }
             }
+            //uno event ? (si carte == changement couleur ou +4 )
+        
+            if (div.dataset.pos == game.currentPlayer._pos) currentPseudo = div.dataset.pseudo;
             if (i == 0) i += 2
             else i++;
         }
+        if(e.hand.length == 1 && e._pos == previousPos){
+            console.log('uno event !')
+            if(document.getElementById('siege0').dataset.pos == e._pos){
+                //bouton uno pour le joueur concerné
+                console.log('je suis le joueur qui a uno');
+                let img = document.createElement('img');
+                img.src ="img/uno.png";
+                img.addEventListener('click',()=>{
+                    socket.emit('uno','uno');
+                })
+                document.getElementById('unoDiv0').append(img);
+            }else {
+                console.log('un autre joueur est en uno');
+                let i = Math.floor(Math.random() * Math.floor(8));
+                let img = document.createElement('img');
+                img.src ="img/contreUno.png";
+                let target = e._pos;
+                img.addEventListener('click',()=>{
+                    socket.emit('uno','contreuno',target);
+                })
+                document.getElementById('unoDiv'+i).append(img);
+            }
+        }
     })
 
+
+    //check le nombre de cartes de chaque main pour verifier uno
+
     let p = document.createElement('p');
-    p.textContent = "C'est au tour de " + playersPseudo[game._currentPlayer._pos];
+    p.textContent = "C'est au tour de " + currentPseudo;
     document.getElementById('discardedCard').removeChild(document.getElementById('discardedCard').lastChild);
     document.getElementById('discardedCard').append(p);
 });
+
+
+socket.on('uno',(type,pos)=>{
+    for(i=0;i<8;i++){
+        document.getElementById('unoDiv'+i).innerHTML = "";
+    }
+    if(type=='contreuno'){
+        game.uno(pos);
+        let currentPseudo;
+        game._players.map(e => {
+            let pos = e._pos;
+            for (i = 0; i < 15;) {
+                let div = document.getElementById('siege' + i);
+                //si la main que je regarde est dans cette div
+                if (div.dataset.pos == pos) {
+                    //je check si le nombre de cartes est similaire
+                    if (div.children.length != e.hand.length) {
+                        //je vide les cartes du joueur déphasé
+                        div.innerHTML = "";
+                        e.hand.map(y => {
+                            //creer une variable image
+                            let img = document.createElement('img')
+                            //prendre la combinaison value color pour aller chercher la bonne carte cf : le ternaire de fou
+                            img.src = i == 0 ? ("img/card/" + colKeys[colVal.indexOf(y._color)] + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(y._value)])) ? convertValue[valKeys[valVal.indexOf(y._value)]] : valKeys[valVal.indexOf(y._value)]) + ".png") : "img/Card/default_back.png";
+                            //append à div mon img
+                            img.dataset.attr = y._color + ',' + y._value;
+                            if (i == 0) img.addEventListener("click", function () { centralizeEvents("clickcardEvent", y._value, y._color, null); });
+                            div.append(img);
+                        })
+                        //je redonne les cartes;
+                        if (div.dataset.pos && i!=0) currentPseudo = div.dataset.pseudo;
+                        if(i!=0){
+                            let p = document.createElement('p');
+                            p.textContent = currentPseudo
+                            div.append(p);
+                        }
+                    }
+                }
+                //uno event ? (si carte == changement couleur ou +4 )
+                
+                
+                if (i == 0) i += 2
+                else i++;
+            }
+            
+        })
+    }
+})
+
+
+socket.on('disconnected', (pos) => {
+
+    let currentPseudo;
+    game.playerLeave(pos);
+
+    for (var i = 0; i < 15;) {
+        let div = document.getElementById('siege' + i).dataset.pos;
+        if (div > pos) {
+            document.getElementById('siege' + i).dataset.pos = div - 1
+        } else if (div == pos) {
+            document.getElementById('siege' + i).dataset.pos = "-9999999"
+        }
+        if (i == 0) i += 2;
+        else i++;
+    }
+    for (var i = 0; i < 15;) {
+        let div = document.getElementById('siege' + i).dataset.pos;
+        if (div == game.currentPlayer._pos) currentPseudo = document.getElementById('siege' + i).dataset.pseudo;
+        if(i==0) i+=2;
+        else i++;
+    }
+
+    let p = document.createElement('p');
+    p.textContent = "C'est au tour de " + currentPseudo;
+    document.getElementById('discardedCard').removeChild(document.getElementById('discardedCard').lastChild);
+    document.getElementById('discardedCard').append(p);
+})
