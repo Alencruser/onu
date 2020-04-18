@@ -8,8 +8,8 @@ let express = require('express'),
     bcrypt = require('bcrypt'),
     connection = mysql.createConnection({
         host: 'localhost',
-        user: 'root',
-        password: '',
+        user: 'onu',
+        password: '8i;25bbPh=Yi7P~8R;P)',
         database: 'onu'
     });
 
