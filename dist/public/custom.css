@@ -1,3 +1,10 @@
+#version {
+    position:absolute;
+    bottom:0;
+    right:0;
+    color:white;
+}
+
 #signupButton,#signinButton1 {
     cursor:pointer;
 }
@@ -21,6 +28,11 @@ body {
     color:white;
     margin-bottom:10vh;
     margin-top: 5vh;
+}
+
+#inviteFriend {
+    display:flex;
+    align-items: flex-start;
 }
 
 .carousel {
