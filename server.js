@@ -256,6 +256,6 @@ app.get('*', (req, res) => {
 })
 
 //Opening the server on the following port
-http.listen(process.env.PORT || 8080, () => {
+http.listen(process.env.PORT || 80, () => {
     console.log('listening on ' + (process.env.PORT || '8080'));
 });
