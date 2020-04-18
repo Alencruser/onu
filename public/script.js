@@ -127,7 +127,6 @@ socket.on('setup', (session) => {
     do {
         game.candraw();
     } while (!game._currentPlayer.hasPlayable(game._discardedCard));
-    console.log(game);
     let placement = session.pos;
     playersPseudo = session.pos;
     for (var player in placement) {
@@ -262,7 +261,6 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
         game.play(new Card(card.value, card.color));
     }
     let currentPseudo;
-    console.log('game avant map',game);
     game._players.map(e => {
         let pos = e._pos;
         for (let i = 0; i < 15;) {
@@ -293,7 +291,6 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
                         }
                         div.append(img);
                     })
-                    console.log('playedevent game',game)
                     //je redonne les cartes;
                     let p = document.createElement('p');
                     p.textContent = div.dataset.pseudo
@@ -307,10 +304,8 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
         }
         //uno event ? (si carte != changement couleur ou +4 )
         if (e.hand.length == 1 && ![13, 14].includes(card.value) && e._pos == previousPos) {
-            console.log('uno event !')
             if (document.getElementById('siege0').dataset.pos == e._pos) {
                 //bouton uno pour le joueur concerné
-                console.log('je suis le joueur qui a uno');
                 let img = document.createElement('img');
                 img.src = "img/uno.png";
                 img.addEventListener('click', () => {
@@ -318,7 +313,6 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
                 })
                 document.getElementById('unoDiv0').append(img);
             } else {
-                console.log('un autre joueur est en uno');
                 let i = Math.floor(Math.random() * Math.floor(8));
                 let img = document.createElement('img');
                 img.src = "img/contreUno.png";
@@ -385,7 +379,6 @@ socket.on('Change Color', (color, previousPos) => {
                     div.innerHTML = "";
                     e.hand.map(y => {
                         //creer une variable image
-                        console.log('ligne 333 card',y);
 
                         let img = document.createElement('img')
                         //prendre la combinaison value color pour aller chercher la bonne carte cf : le ternaire de fou
@@ -406,10 +399,8 @@ socket.on('Change Color', (color, previousPos) => {
             else i++;
         }
         if (e.hand.length == 1 && e._pos == previousPos) {
-            console.log('uno event !')
             if (document.getElementById('siege0').dataset.pos == e._pos) {
                 //bouton uno pour le joueur concerné
-                console.log('je suis le joueur qui a uno');
                 let img = document.createElement('img');
                 img.src = "img/uno.png";
                 img.addEventListener('click', () => {
@@ -417,7 +408,6 @@ socket.on('Change Color', (color, previousPos) => {
                 })
                 document.getElementById('unoDiv0').append(img);
             } else {
-                console.log('un autre joueur est en uno');
                 let i = Math.floor(Math.random() * Math.floor(8));
                 let img = document.createElement('img');
                 img.src = "img/contreUno.png";
