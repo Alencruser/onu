@@ -1,9 +1,11 @@
 let express = require('express'),
     app = express(),
     bodyparser = require('body-parser'),
+    fs = require('fs'),
     mysql = require('mysql'),
     session = require('express-session'),
     http = require('http').Server(app),
+    https = require('https'),
     io = require('socket.io')(http),
     bcrypt = require('bcrypt'),
     connection = mysql.createConnection({
@@ -21,12 +23,23 @@ app.use(session({
 }
 ));
 
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/firstthegame.fr/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/firstthegame.fr/cert.pem', 'utf8');
+const ca = fs.readFileSync('/etc/letsencrypt/live/firstthegame.fr/chain.pem', 'utf8');
+
+const credentials = {
+	key: privateKey,
+	cert: certificate,
+	ca: ca
+};
+
 
 
 //Use of body-parser
 app.use(bodyparser.urlencoded({ extended: false }));
 //use of static folder
 app.use(express.static('dist/public'));
+app.use(express.static(__dirname, { dotfiles: 'allow' } ));
 //use of ejs template engine
 app.set('view engine', 'ejs');
 //Securisation input
@@ -255,7 +268,14 @@ app.get('*', (req, res) => {
     res.redirect('/');
 })
 
-//Opening the server on the following port
-http.listen(process.env.PORT || 80, () => {
-    console.log('listening on ' + (process.env.PORT || '8080'));
+
+const httpsServer = https.Server(credentials, app);
+
+
+http.listen(80, () => {
+	console.log('HTTP Server running on port 80');
+});
+
+httpsServer.listen(443, () => {
+	console.log('HTTPS Server running on port 443');
 });

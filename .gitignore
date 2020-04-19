@@ -1,3 +1,5 @@
 node_modules
 dist/public/Games.js
 dist/public/script.js
+nohup.out
+dist/
