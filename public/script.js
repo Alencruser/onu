@@ -59,17 +59,17 @@ let colVal = Object.values(Color);
 let valKeys = Object.keys(Value);
 let valVal = Object.values(Value);
 let convertValue = {
-        ZERO: 0,
-        ONE: 1,
-        TWO: 2,
-        THREE: 3,
-        FOUR: 4,
-        FIVE: 5,
-        SIX: 6,
-        SEVEN: 7,
-        EIGHT: 8,
-        NINE: 9
-    };
+    ZERO: 0,
+    ONE: 1,
+    TWO: 2,
+    THREE: 3,
+    FOUR: 4,
+    FIVE: 5,
+    SIX: 6,
+    SEVEN: 7,
+    EIGHT: 8,
+    NINE: 9
+};
 
 function launchCustom() {
     socket.emit('group size', 0);
@@ -149,7 +149,7 @@ socket.on('setup', (session) => {
                 img.src = src.toLowerCase();
                 img.dataset.attr = e._color + ',' + e._value;
                 document.getElementById('siege0').append(img);
-                img.addEventListener("click", function () { centralizeEvents("clickcardEvent", e._value, e._color, null); });
+                img.addEventListener("click", function () { centralizeEvents("clickcardEvent", e._value, e._color, player); });
             })
 
 
@@ -214,10 +214,10 @@ socket.on('setup', (session) => {
                         //prendre la combinaison value color pour aller chercher la bonne carte cf : le ternaire de fou
                         img.src = i == 0 ? ("img/card/" + colKeys[colVal.indexOf(y._color)] + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(y._value)])) ? convertValue[valKeys[valVal.indexOf(y._value)]] : valKeys[valVal.indexOf(y._value)]) + ".png") : "img/Card/default_back.png";
                         //append à div mon img
-                        img.src= img.src.toLowerCase();
+                        img.src = img.src.toLowerCase();
                         img.dataset.attr = y._color + ',' + y._value;
                         if (i == 0) {
-                            img.addEventListener("click", function () { centralizeEvents("clickcardEvent", y._value, y._color, null); });
+                            img.addEventListener("click", function () { centralizeEvents("clickcardEvent", y._value, y._color, pos); });
                             if (e.hand.length > 10)
                                 img.style.height = '20' - (e.hand.length - 10) + 'vh';
                         }
@@ -251,6 +251,9 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
         }
     }
     else {
+        if(previousPos != game._currentPlayer._pos){
+            game._currentPlayer = game._players[previousPos];
+        }
         for (let i = 2; i < 15; i++) {
             let siege = document.getElementById('siege' + i);
             if (previousPos == siege.dataset.pos) {
@@ -268,7 +271,7 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
             //si la main que je regarde est dans cette div
             if (div.dataset.pos == pos) {
                 //je check si le nombre de cartes est similaire
-                if ((div.children.length != e.hand.length && i==0) || (div.children.length-1 != e.hand.length && i!=0)) {
+                if ((div.children.length != e.hand.length && i == 0) || (div.children.length - 1 != e.hand.length && i != 0)) {
                     //je vide les cartes du joueur déphasé
                     div.innerHTML = "";
                     //tentative de sort au dernier moment (après pioche)
@@ -282,12 +285,12 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
                         //prendre la combinaison value color pour aller chercher la bonne carte cf : le ternaire de fou
                         img.src = i == 0 ? ("img/card/" + colKeys[colVal.indexOf(y._color)] + '_' + ((Object.keys(convertValue).includes(valKeys[valVal.indexOf(y._value)])) ? convertValue[valKeys[valVal.indexOf(y._value)]] : valKeys[valVal.indexOf(y._value)]) + ".png") : "img/Card/default_back.png";
                         //append à div mon img
-                        img.src = img.src.toLowerCase() ;
+                        img.src = img.src.toLowerCase();
                         img.dataset.attr = y._color + ',' + y._value;
                         if (i == 0) {
-                            img.addEventListener("click", function () { centralizeEvents("clickcardEvent", y._value, y._color, null); });
+                            img.addEventListener("click", function () { centralizeEvents("clickcardEvent", y._value, y._color, pos); });
                             if (e.hand.length > 10)
-                            img.style.height = '20' - (e.hand.length - 10) + 'vh';
+                                img.style.height = '20' - (e.hand.length - 10) + 'vh';
                         }
                         div.append(img);
                     })
@@ -341,16 +344,18 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
 
 });
 
-function centralizeEvents(Message, value, color, player) {
+function centralizeEvents(Message, value, color, playerPos) {
     siege0.style.border = "none";
     if (siege0.dataset.pos == game._currentPlayer._pos) {
-        switch (Message) {
-            case "clickcardEvent":
-                let previousPos = game._currentPlayer._pos;
-                game.play(new Card(value, color));
-                socket.emit('PlayedEvent', { value: value, color: color }, game._currentPlayer._pos, previousPos); //TEMPORAIRE
-                break;
-        }
+        let previousPos = game._currentPlayer._pos;
+        game.play(new Card(value, color));
+        socket.emit('PlayedEvent', { value: value, color: color }, game._currentPlayer._pos, previousPos); //TEMPORAIRE
+    }
+    else if (game._discardedCard._value == value && game._discardedCard._color == color && game.optionSpeed == true) {
+        game._currentPlayer = game._players[playerPos];
+        let previousPos = game._currentPlayer._pos;
+        game.play(new Card(value, color));s
+        socket.emit('PlayedEvent', { value: value, color: color }, game._currentPlayer._pos, previousPos);
     }
 };
 

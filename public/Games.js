@@ -252,7 +252,9 @@ class Game {
     cumulativeamount = 0;
     round = 0;
     choice = 1;
-
+    optionZero = false;
+    optionSpeed = false;
+    
     constructor(NUMBER_OF_PLAYER, price) {
         this.NUMBER_OF_PLAYER = NUMBER_OF_PLAYER;
         this._price = price;
@@ -352,7 +354,11 @@ class Game {
                 this._players[this._currentPlayer._pos].hand = this._currentPlayer.hand;
         }
         if (!this._currentPlayer.hasPlayable(this._discardedCard))
-            this.goToNextPlayer();
+            setTimeout(this.waitingRoom(), 1000);
+    }
+
+    waitingRoom() {
+        this.goToNextPlayer();
     }
 
     play(card) {
@@ -389,6 +395,7 @@ class Game {
                     this.cumulativeamount += 4;
                 }
                 break;
+
             case Value.WILD:
                 this.choice = 0;
                 if (document.getElementById('siege0').dataset.pos == this._currentPlayer._pos) {
@@ -406,15 +413,41 @@ class Game {
                     this.cumulativeamount += 2;
                 }
                 break;
+
             case Value.SKIP:
                 this._currentPlayer = this.getNextPlayer();
                 break;
+
             case Value.REVERSE:
                 if (this.NUMBER_OF_PLAYER > 2)
                     this.reverseGame();
                 else
                     this._currentPlayer = this.getNextPlayer();
                 break;
+
+            case Value.ZERO:
+                if (this.optionZero == true) {
+                    if (this.direction == GameDirection.CLOCKWISE) {
+                        let saveHand = this._players[this.NUMBER_OF_PLAYER - 1].hand;
+                        for (let i = 1; i <= this.NUMBER_OF_PLAYER; i++) {
+                            if (i == this.NUMBER_OF_PLAYER)
+                                this._players[0].hand = saveHand;
+                            else
+                                this._players[i].hand = this._players[i - 1].hand;
+                        }
+                    }
+                    else {
+                        let saveHand = this._players[0].hand;
+                        for (let i = this.NUMBER_OF_PLAYER - 1; i >= 0; i--) {
+                            if (i == 0)
+                                this._players[this.NUMBER_OF_PLAYER - 1].hand = saveHand;
+                            else
+                                this._players[i - 1].hand = this._players[i].hand;
+                        }
+                    }
+                }
+                break;
+
             default:
                 break;
         }
