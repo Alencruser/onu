@@ -6,7 +6,6 @@ let express = require('express'),
     session = require('express-session'),
     http = require('http').Server(app),
     https = require('https'),
-    io = require('socket.io')(http),
     bcrypt = require('bcrypt'),
     connection = mysql.createConnection({
         host: 'localhost',
@@ -33,6 +32,8 @@ const credentials = {
 	ca: ca
 };
 
+const httpsServer = https.Server(credentials, app);
+let io = require('socket.io')(httpsServer);
 
 
 //Use of body-parser
@@ -269,7 +270,7 @@ app.get('*', (req, res) => {
 })
 
 
-const httpsServer = https.Server(credentials, app);
+
 
 
 http.listen(80, () => {
