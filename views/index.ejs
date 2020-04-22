@@ -7,62 +7,57 @@
     <% if(locals.pseudo){ %>
     <div id="carouselExampleIndicators" class="carousel slide align-self-center container-fluid row"
         data-interval="false" data-ride="carousel">
-        <ol class="carousel-indicators ">
-            <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
-            <li data-target="#carouselExampleIndicators" id="profil" class="test" data-slide-to="1"></li>
-            <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
-            <li data-target="#carouselExampleIndicators" data-slide-to="3"></li>
-        </ol>
         <div class="carousel-inner">
             <div class="carousel-item active">
                 <div class="row">
                     <h5 class="mx-auto screen-title">A ton tour de mettre des +4 ! #Macron</h5>
                 </div>
-                <div class=" align-self-center container-fluid row text-center " id="room-cards">
-                    <div class="col-sm-2 offset-sm-3">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title text-center">A venir</h5>
-                                <img src="img/icons/25.png" class="card-img-top" alt="..."
-                                    style="width:25%;height:auto">
-                                <center><small class="text-center">Entrée : A venir</small><br>
-                                    <small class="text-center">Gain : A venir</small></center>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title text-center">A venir</h5>
-                                <img src="img/icons/25.png" class="card-img-top" alt="..."
-                                    style="width:25%;height:auto">
-                                <center><small class="text-center">Entrée : A venir</small><br>
-                                    <small class="text-center">Gain : A venir</small></center>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-sm-2">
-                        <div class="card">
-                            <div class="card-body">
-                                <h5 class="card-title text-center">A venir</h5>
-                                <img src="img/icons/25.png" class="card-img-top" alt="..."
-                                    style="width:25%;height:auto">
-                                <center><small class="text-center">Entrée : A venir</small><br>
-                                    <small class="text-center">Gain : A venir</small></center>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 <div class="row">
-                    <div class="col-sm-12 col-lg-4 offset-lg-4 text-center" id="inviteFriend">
+                    <div class="col-sm-6 col-lg-4 offset-sm-3 offset-lg-4 text-center" id="inviteFriend">
                         <button class="btn btn-danger" id="createRoom">Inviter des amis</button>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-sm-12 col-lg-4 offset-lg-4 text-center" id="inviteFriend">
+                    <div class="col-sm-6 col-lg-4 offset-sm-3 offset-lg-4 text-center" id="inviteFriend">
                         <p id="currentParty" class="text-white bold"></p>
                     </div>
                 </div>
+                <div class="row col-sm-10 offset-sm-1 text-center " id="room-cards">
+                    <div class="col-sm-4 ">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title text-center">A venir</h5>
+                                <img src="img/icons/25.png" class="card-img-top" alt="..."
+                                    style="width:25%;height:auto">
+                                <center><small class="text-center">Entrée : A venir</small><br>
+                                    <small class="text-center">Gain : A venir</small></center>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 ">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title text-center">A venir</h5>
+                                <img src="img/icons/25.png" class="card-img-top" alt="..."
+                                    style="width:25%;height:auto">
+                                <center><small class="text-center">Entrée : A venir</small><br>
+                                    <small class="text-center">Gain : A venir</small></center>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4 ">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title text-center">A venir</h5>
+                                <img src="img/icons/25.png" class="card-img-top" alt="..."
+                                    style="width:25%;height:auto">
+                                <center><small class="text-center">Entrée : A venir</small><br>
+                                    <small class="text-center">Gain : A venir</small></center>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
             </div>
             <div class="carousel-item">
                 <div class="row">
@@ -150,8 +145,8 @@
 
             let div = document.getElementById('inviteFriend');
             div.innerHTML = `
-            <button class="btn btn-primary col-lg-6" id="launchCustom">Lancer une partie privée</button>
-            <div class="input-group mb-3">
+            <button class="btn btn-danger col-sm-8 col-lg-6" id="launchCustom">Lancer une partie privée</button>
+            <div class="input-group mb-3 col-sm-8 offset-sm-2">
                 <input type="text" class="form-control" id="customLink">
                 <div class="input-group-append">
                     <button id="customButtonLaunch" title="Copier dans le presse papier" class="btn btn-primary"><i class="far fa-copy"></i></button>

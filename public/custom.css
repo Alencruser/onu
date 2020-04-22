@@ -1,3 +1,10 @@
+#version {
+    position:fixed;
+    bottom:0;
+    right:0;
+    color:white;
+}
+
 #signupButton,#signinButton1 {
     cursor:pointer;
 }
@@ -23,9 +30,7 @@ body {
     margin-top: 5vh;
 }
 
-.carousel {
-    position:initial;
-}
+
 
 #carouselExampleIndicators {
     height:60%;
@@ -34,31 +39,24 @@ body {
     background-position:center;
 }
 
-.img-text{
-    display:flex;
-    align-items:center;
-    justify-content: center;
-}
+
 
 ul {
     list-style-type: none;
 }
 
-#room-cards {
-    margin-bottom:5vh;
-}
+
 
 #launchCustom {
-    margin-right:5%;
+    
+    margin-bottom: 16px;
 }
 
 #discardedCard {
     align-items: flex-start;
 }
 
-#discardedCard img {
-    height:33%;
-}
+
 
 
 #tableGame .row {
@@ -105,16 +103,6 @@ ul {
     padding-bottom: 2vh;
 }
 
-#discardedCard {
-    background-image: url('img/profil_background.png');
-    background-size:70% 43%;
-    background-position: 50% 0;
-    background-repeat: no-repeat;
-}
-
-#discardedCard img{
-    margin-top:1vh
-}
 
 #discardedCard p{
     color:black;
