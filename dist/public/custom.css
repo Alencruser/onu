@@ -53,7 +53,11 @@ ul {
 }
 
 #discardedCard {
-    align-items: flex-start;
+    height: 20vh;
+}
+
+#discardedCard img {
+    height: 100%;
 }
 
 
@@ -115,6 +119,10 @@ ul {
 }
 
 #unoDiv0 img,#unoDiv1 img,#unoDiv2 img,#unoDiv3 img,#unoDiv4 img,#unoDiv5 img,#unoDiv6 img,#unoDiv7 img {
-    height:50%;
     z-index: 9999;
+    height: 100%;
+}
+
+#unoDiv0 ,#unoDiv1 ,#unoDiv2 ,#unoDiv3 ,#unoDiv4 ,#unoDiv5 ,#unoDiv6 ,#unoDiv7 {
+    height: 100%;
 }
