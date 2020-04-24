@@ -98,14 +98,15 @@ socket.on('group size', (size, room, price) => {
     }
 });
 
-
 socket.on('you are the host', (partySize, price) => {
+    $('#popup').modal('hide');
     game = new Game(partySize, price);
     //envoyer un socket avec les objets player + la carte en cours.
     socket.emit('setup', { players: game._players, discardedCard: game._discardedCard, currentPlayer: game._currentPlayer, game: game })
 });
 
 socket.on('setup', (session) => {
+    $('#popup').modal('hide');
     game = $.extend(true, Object.create(Object.getPrototypeOf(new Game())), session.game);
     //recursively create prototype of
     for (var property in game) {
@@ -341,7 +342,6 @@ socket.on('PlayedEvent', (card, current, previousPos) => {
     p.textContent = "C'est au tour de " + currentPseudo;
     document.getElementById('discardedCard').removeChild(document.getElementById('discardedCard').lastChild);
     document.getElementById('discardedCard').append(p);
-
 });
 
 function centralizeEvents(Message, value, color, playerPos) {
@@ -349,12 +349,12 @@ function centralizeEvents(Message, value, color, playerPos) {
     if (siege0.dataset.pos == game._currentPlayer._pos) {
         let previousPos = game._currentPlayer._pos;
         game.play(new Card(value, color));
-        socket.emit('PlayedEvent', { value: value, color: color }, game._currentPlayer._pos, previousPos); //TEMPORAIRE
+        socket.emit('PlayedEvent', { value: value, color: color }, game._currentPlayer._pos, previousPos);
     }
     else if (game._discardedCard._value == value && game._discardedCard._color == color && game.optionSpeed == true) {
         game._currentPlayer = game._players[playerPos];
         let previousPos = game._currentPlayer._pos;
-        game.play(new Card(value, color));s
+        game.play(new Card(value, color));
         socket.emit('PlayedEvent', { value: value, color: color }, game._currentPlayer._pos, previousPos);
     }
 };

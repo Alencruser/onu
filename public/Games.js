@@ -252,9 +252,9 @@ class Game {
     cumulativeamount = 0;
     round = 0;
     choice = 1;
-    optionZero = false;
-    optionSpeed = false;
-    
+    optionZero = true;
+    optionSpeed = true;
+
     constructor(NUMBER_OF_PLAYER, price) {
         this.NUMBER_OF_PLAYER = NUMBER_OF_PLAYER;
         this._price = price;
@@ -375,6 +375,8 @@ class Game {
         this._currentPlayer.removeCard(card);
         if (this.round == 0)
             this._players[this._currentPlayer._pos].hand = this._currentPlayer.hand;
+        if (this._discardedCard._value == Value.WILD || this._discardedCard._value == Value.WILD_DRAW_FOUR)
+            this._discardedCard._color = null;
         this.drawPile.drawpile.push(this._discardedCard);
         this._discardedCard = card;
         if (currentPlayer.hand.length == 0) {

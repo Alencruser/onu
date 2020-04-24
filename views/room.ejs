@@ -39,31 +39,36 @@
     </div>
 
 
-    <div class="modal fade" id="changeColor" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal fade" id="changeColor" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog"
+        aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
-          <div class="modal-content">
-            <div class="modal-body" id="colorContainer">
-              <div class="color side" data-dismiss="modal" data-color="blue" style="background-color:blue"></div>
-              <div class="color side" data-dismiss="modal" data-color="yellow" style="background-color:yellow"></div>
-              <div class="color side" data-dismiss="modal" data-color="green" style="background-color:green"></div>
-              <div class="color" data-dismiss="modal" data-color="red" style="background-color:red"></div>
+            <div class="modal-content">
+                <div class="modal-body" id="colorContainer">
+                    <div class="color side" data-dismiss="modal" data-color="blue" style="background-color:blue"></div>
+                    <div class="color side" data-dismiss="modal" data-color="yellow" style="background-color:yellow">
+                    </div>
+                    <div class="color side" data-dismiss="modal" data-color="green" style="background-color:green">
+                    </div>
+                    <div class="color" data-dismiss="modal" data-color="red" style="background-color:red"></div>
+                </div>
             </div>
-          </div>
         </div>
-      </div>
+    </div>
 
-      <div class="modal fade" id="popup" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal fade" id="popup" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog"
+        aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" role="document">
-          <div class="modal-content text-center">
-            <div class="modal-body" id="popupContainer">
-                <p></p>
+            <div class="modal-content text-center">
+                <div class="modal-body" id="popupContainer">
+                    <p></p>
+                </div>
+                <a><button id="replay" class="btn btn-primary">Rejouer</button></a>
+                <a href="/"><button class="btn btn-primary">Retourner au menu</button></a>
             </div>
-            <a href="/"><button class="btn btn-primary">Retourner au menu</button></a>
-          </div>
         </div>
-      </div>
+    </div>
 
-      <div id="version">Beta v0.1</div>
+    <div id="version">Beta v0.1</div>
 
 
 </body>
@@ -71,19 +76,19 @@
     let socket = io('');
 
     let mypseudo = '<%=pseudo%>';
-     
-    setTimeout(()=>{
+
+    setTimeout(() => {
         connect()
-    },200);
-    function connect(){
-        socket.emit('connect me', '<%=roomId%>','<%=pseudo%>');
+    }, 200);
+    function connect() {
+        socket.emit('connect me', '<%=roomId%>', '<%=pseudo%>');
     }
 
     socket.on('connect me', (players) => {
         if (players == '<%=number%>') {
             //message starting game 
             //eventt socket pour chercher les id, prendre un hote et start SA game
-            socket.emit('start game','<%=price%>');
+            socket.emit('start game', '<%=price%>');
             console.log('tous les joueurs sont là, début de la partie')
         } else {
             //modifier les alertes custom pour tenir informés les joueurs du "chargement"
@@ -97,9 +102,9 @@
 
     var wasPressed = false;
 
-    function fkey(e){
+    function fkey(e) {
         e = e || window.event;
-       if( wasPressed ) return; 
+        if (wasPressed) return;
 
         if (e.keyCode == 116) {
             // let form = document.createElement('form');
@@ -110,6 +115,12 @@
             wasPressed = true;
         }
     }
+
+    let button = document.getElementById('replay');
+    button.addEventListener('click', () => {
+        launchCustom();
+    });
+
 </script>
 <% } %>
 <%-include('partials/footer.ejs')%>

@@ -40,7 +40,7 @@ let io = require('socket.io')(httpsServer);
 app.use(bodyparser.urlencoded({ extended: false }));
 //use of static folder
 app.use(express.static('dist/public'));
-app.use(express.static(__dirname, { dotfiles: 'allow' } ));
+app.use(express.static(__dirname, { dotfiles: 'allow' }));
 //use of ejs template engine
 app.set('view engine', 'ejs');
 //Securisation input
@@ -81,7 +81,11 @@ io.on('connection', (socket) => {
         }
         io.to(room).emit('party joined', list);
     });
+
     socket.on('group size', (price) => {
+        let room;
+        if (!room) 
+            room = socket.roomId;
         io.to(room).emit('group size', Object.keys(io.sockets.adapter.rooms[room].sockets).length, room, price);
     });
 
@@ -127,13 +131,13 @@ io.on('connection', (socket) => {
     }
     );
 
-    socket.on('Change Color', (color,previousPos) => {
+    socket.on('Change Color', (color, previousPos) => {
         let room = socket.roomId;
-        io.to(room).emit('Change Color', color,previousPos);
+        io.to(room).emit('Change Color', color, previousPos);
     });
 
-    socket.on('uno',(type,pos)=>{
-        io.to(socket.roomId).emit('uno',type,pos);
+    socket.on('uno', (type, pos) => {
+        io.to(socket.roomId).emit('uno', type, pos);
     })
 
     socket.on('disconnect', () => {
@@ -274,7 +278,7 @@ app.get('*', (req, res) => {
 
 
 http.listen(80, () => {
-	console.log('HTTP Server running on port 80');
+    console.log('HTTP Server running on port 80');
 });
 
 httpsServer.listen(443, () => {
