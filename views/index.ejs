@@ -192,6 +192,8 @@
             if (document.visibilityState === 'visible' && document.getElementById('customLink') && document.getElementById('customLink').dataset.link.length) {
                 let roomId = document.getElementById('customLink').dataset.link.split('party=')[1];
                     socket.emit('retrieve','<%=pseudo%>',roomId);
+            } else if(document.visibilityState === 'visible') {
+                socket.emit('retrieve','<%=pseudo%>',window.location.href.split('party=')[1]);
             }
         });
 
