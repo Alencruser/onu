@@ -33,7 +33,7 @@ const credentials = {
 };
 
 const httpsServer = https.Server(credentials, app);
-let io = require('socket.io')(http);
+let io = require('socket.io')(httpsServer);
 
 
 //Use of body-parser
