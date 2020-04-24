@@ -185,17 +185,12 @@ app.post('/room', (req, res) => {
 app.post('/register', (req, res) => {
     let pseudo = blbl(req.body.pseudo)
     pass = blbl(req.body.password),
-        firstName = blbl(req.body.firstName),
-        lastName = blbl(req.body.lastName),
-        birthDate = blbl(req.body.birthDate),
-        city = blbl(req.body.city),
-        zip = blbl(req.body.zip),
-        sess = req.session;
+        email = blbl(req.body.Email),
 
     bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(pass, salt, (err, hash) => {
             pass = hash;
-            let createAccount = `INSERT INTO Users (Pseudo,Password,First_name,Last_name,Birth_date,City,Zipcode) VALUES ('${pseudo}','${pass}','${firstName}','${lastName}','${birthDate}','${city}','${zip}');`;
+            let createAccount = `INSERT INTO Users (Pseudo,Password,Email) VALUES ('${pseudo}','${pass}','${email}');`;
             connection.query(createAccount, (error, results, field) => {
                 if (error) {
                     console.log(error);
