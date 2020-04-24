@@ -22,18 +22,18 @@ app.use(session({
 }
 ));
 
-// const privateKey = fs.readFileSync('/etc/letsencrypt/live/firstthegame.fr/privkey.pem', 'utf8');
-// const certificate = fs.readFileSync('/etc/letsencrypt/live/firstthegame.fr/cert.pem', 'utf8');
-// const ca = fs.readFileSync('/etc/letsencrypt/live/firstthegame.fr/chain.pem', 'utf8');
+const privateKey = fs.readFileSync('/etc/letsencrypt/live/firstthegame.fr/privkey.pem', 'utf8');
+const certificate = fs.readFileSync('/etc/letsencrypt/live/firstthegame.fr/cert.pem', 'utf8');
+const ca = fs.readFileSync('/etc/letsencrypt/live/firstthegame.fr/chain.pem', 'utf8');
 
-// const credentials = {
-// 	key: privateKey,
-// 	cert: certificate,
-// 	ca: ca
-// };
+const credentials = {
+	key: privateKey,
+	cert: certificate,
+	ca: ca
+};
 
-// const httpsServer = https.Server(credentials, app);
-let io = require('socket.io')(http);
+const httpsServer = https.Server(credentials, app);
+let io = require('socket.io')(httpsServer);
 
 
 //Use of body-parser
@@ -288,6 +288,6 @@ http.listen(80, () => {
 	console.log('HTTP Server running on port 80');
 });
 
-// httpsServer.listen(443, () => {
-// 	console.log('HTTPS Server running on port 443');
-// });
+httpsServer.listen(443, () => {
+	console.log('HTTPS Server running on port 443');
+});
