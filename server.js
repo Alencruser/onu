@@ -60,6 +60,7 @@ let allClients = [];
 io.on('connection', (socket) => {
     console.log('user connected');
     allClients.push(socket.id);
+
     let room;
     socket.on('createGroup', (pseudo) => {
         socket.pseudo = pseudo
@@ -69,6 +70,14 @@ io.on('connection', (socket) => {
         io.to(room).emit('party created', room, [pseudo]);
     });
 
+    socket.on('retrieve',(pseudo,roomId)=>{
+        if(!socket.roomId){
+            socket.pseudo = pseudo;
+            socket.roomId = roomId;
+            socket.join(roomId);
+        };
+    });
+
     socket.on('looking for party', (room, pseudo) => {
         socket.pseudo = pseudo;
         socket.roomId = room;
@@ -76,12 +85,12 @@ io.on('connection', (socket) => {
         let clients = io.sockets.adapter.rooms[room].sockets;
         let list = []
         for (var client in clients) {
-            console.log(io.sockets.connected[client].pseudo);
             list.push(io.sockets.connected[client].pseudo);
         }
         io.to(room).emit('party joined', list);
     });
     socket.on('group size', (price) => {
+        let room = socket.roomId;
         io.to(room).emit('group size', Object.keys(io.sockets.adapter.rooms[room].sockets).length, room, price);
     });
 
@@ -151,7 +160,6 @@ io.on('connection', (socket) => {
 app.get('/', (req, res) => {
     sess = req.session;
     if (sess.pseudo) {
-        console.log('ya un pseudo',sess.pseudo);
         let getprofile = `SELECT * from Stats WHERE Id_user = '${sess.idUser}' `;
         connection.query(getprofile, (err, results, field) => {
             if (err) {
@@ -169,7 +177,6 @@ app.get('/', (req, res) => {
             }
         })
     } else {
-        console.log('pas de pseudo');
         return res.render('index');
     }
 });

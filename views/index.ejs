@@ -185,9 +185,15 @@
             console.log('ouai un pote dans la party');
             console.log(party);
             document.getElementById('currentParty').textContent = "Joueur(s) dans votre groupe : " + party.join(', ');
-        })
+        });
 
-
+        //retrieve session if getting back from background browser
+        document.addEventListener("visibilitychange", () => {
+            if (document.visibilityState === 'visible' && document.getElementById('customLink') && document.getElementById('customLink').dataset.link.length) {
+                let roomId = document.getElementById('customLink').dataset.link.split('party=')[1];
+                    socket.emit('retrieve','<%=pseudo%>',roomId);
+            }
+        });
 
 
     </script>
@@ -246,7 +252,7 @@
                             <label for="pass">Email</label>
                             <input required class="form-control" type="text" id="Email" name="Email">
                         </div>
-                       
+
                 </div>
                 <div class="modal-footer">
                     <button type="submit" class="btn btn-primary">S'enregistrer</button>
