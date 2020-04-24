@@ -151,6 +151,7 @@ io.on('connection', (socket) => {
 app.get('/', (req, res) => {
     sess = req.session;
     if (sess.pseudo) {
+        console.log('ya un pseudo',sess.pseudo);
         let getprofile = `SELECT * from Stats WHERE Id_user = '${sess.idUser}' `;
         connection.query(getprofile, (err, results, field) => {
             if (err) {
@@ -168,6 +169,7 @@ app.get('/', (req, res) => {
             }
         })
     } else {
+        console.log('pas de pseudo');
         return res.render('index');
     }
 });
@@ -185,7 +187,8 @@ app.post('/room', (req, res) => {
 app.post('/register', (req, res) => {
     let pseudo = blbl(req.body.pseudo)
     pass = blbl(req.body.password),
-        email = blbl(req.body.Email),
+    email = blbl(req.body.Email),
+    sess = req.session;
 
     bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(pass, salt, (err, hash) => {
