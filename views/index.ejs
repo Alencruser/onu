@@ -195,6 +195,10 @@
             }
         });
 
+        socket.on('party refresh',(party)=>{
+            document.getElementById('currentParty').textContent = "Joueur(s) dans votre groupe : " + party.join(', ');
+        });
+
 
     </script>
 

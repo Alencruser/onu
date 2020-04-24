@@ -75,6 +75,12 @@ io.on('connection', (socket) => {
             socket.pseudo = pseudo;
             socket.roomId = roomId;
             socket.join(roomId);
+            let clients = io.sockets.adapter.rooms[roomId].sockets;
+            let party = [];
+            for (var client in clients) {
+                party.push(io.sockets.connected[client].pseudo);
+            }
+            io.to(roomId).emit('party refresh',party);
         };
     });
 
