@@ -252,8 +252,8 @@ class Game {
     cumulativeamount = 0;
     round = 0;
     choice = 1;
-    optionZero = true;
-    optionSpeed = true;
+    optionZero = false;
+    optionSpeed = false;
 
     constructor(NUMBER_OF_PLAYER, price) {
         this.NUMBER_OF_PLAYER = NUMBER_OF_PLAYER;
