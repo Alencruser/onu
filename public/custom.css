@@ -1,3 +1,10 @@
+#version {
+    position:fixed;
+    bottom:0;
+    right:0;
+    color:white;
+}
+
 #signupButton,#signinButton1 {
     cursor:pointer;
 }
@@ -19,46 +26,41 @@ body {
 
 .screen-title {
     color:white;
-    margin-bottom:10vh;
+    margin-bottom:5vh;
     margin-top: 5vh;
 }
 
-.carousel {
-    position:initial;
-}
+
 
 #carouselExampleIndicators {
     height:60%;
     background-repeat: no-repeat;
-    background-size:80% 100% ;
+    background-size:80vw 55vh ;
     background-position:center;
 }
 
-.img-text{
-    display:flex;
-    align-items:center;
-    justify-content: center;
-}
+
 
 ul {
     list-style-type: none;
 }
 
-#room-cards {
-    margin-bottom:5vh;
-}
+
 
 #launchCustom {
-    margin-right:5%;
+    
+    margin-bottom: 16px;
 }
 
 #discardedCard {
-    align-items: flex-start;
+    height: 20vh;
 }
 
 #discardedCard img {
-    height:33%;
+    height: 100%;
 }
+
+
 
 
 #tableGame .row {
@@ -105,16 +107,6 @@ ul {
     padding-bottom: 2vh;
 }
 
-#discardedCard {
-    background-image: url('img/profil_background.png');
-    background-size:70% 43%;
-    background-position: 50% 0;
-    background-repeat: no-repeat;
-}
-
-#discardedCard img{
-    margin-top:1vh
-}
 
 #discardedCard p{
     color:black;
@@ -127,6 +119,10 @@ ul {
 }
 
 #unoDiv0 img,#unoDiv1 img,#unoDiv2 img,#unoDiv3 img,#unoDiv4 img,#unoDiv5 img,#unoDiv6 img,#unoDiv7 img {
-    height:50%;
     z-index: 9999;
+    height: 100%;
+}
+
+#unoDiv0 ,#unoDiv1 ,#unoDiv2 ,#unoDiv3 ,#unoDiv4 ,#unoDiv5 ,#unoDiv6 ,#unoDiv7 {
+    height: 100%;
 }

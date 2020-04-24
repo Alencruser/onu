@@ -60,6 +60,7 @@ let allClients = [];
 io.on('connection', (socket) => {
     console.log('user connected');
     allClients.push(socket.id);
+
     let room;
     socket.on('createGroup', (pseudo) => {
         socket.pseudo = pseudo
@@ -69,6 +70,20 @@ io.on('connection', (socket) => {
         io.to(room).emit('party created', room, [pseudo]);
     });
 
+    socket.on('retrieve',(pseudo,roomId)=>{
+        if(!socket.roomId){
+            socket.pseudo = pseudo;
+            socket.roomId = roomId;
+            socket.join(roomId);
+            let clients = io.sockets.adapter.rooms[roomId].sockets;
+            let party = [];
+            for (var client in clients) {
+                party.push(io.sockets.connected[client].pseudo);
+            }
+            io.to(roomId).emit('party refresh',party);
+        };
+    });
+
     socket.on('looking for party', (room, pseudo) => {
         socket.pseudo = pseudo;
         socket.roomId = room;
@@ -76,16 +91,13 @@ io.on('connection', (socket) => {
         let clients = io.sockets.adapter.rooms[room].sockets;
         let list = []
         for (var client in clients) {
-            console.log(io.sockets.connected[client].pseudo);
             list.push(io.sockets.connected[client].pseudo);
         }
         io.to(room).emit('party joined', list);
     });
 
     socket.on('group size', (price) => {
-        let room;
-        if (!room) 
-            room = socket.roomId;
+        let room = socket.roomId;
         io.to(room).emit('group size', Object.keys(io.sockets.adapter.rooms[room].sockets).length, room, price);
     });
 
@@ -189,17 +201,13 @@ app.post('/room', (req, res) => {
 app.post('/register', (req, res) => {
     let pseudo = blbl(req.body.pseudo)
     pass = blbl(req.body.password),
-        firstName = blbl(req.body.firstName),
-        lastName = blbl(req.body.lastName),
-        birthDate = blbl(req.body.birthDate),
-        city = blbl(req.body.city),
-        zip = blbl(req.body.zip),
-        sess = req.session;
+    email = blbl(req.body.Email),
+    sess = req.session;
 
     bcrypt.genSalt(10, (err, salt) => {
         bcrypt.hash(pass, salt, (err, hash) => {
             pass = hash;
-            let createAccount = `INSERT INTO Users (Pseudo,Password,First_name,Last_name,Birth_date,City,Zipcode) VALUES ('${pseudo}','${pass}','${firstName}','${lastName}','${birthDate}','${city}','${zip}');`;
+            let createAccount = `INSERT INTO Users (Pseudo,Password,Email) VALUES ('${pseudo}','${pass}','${email}');`;
             connection.query(createAccount, (error, results, field) => {
                 if (error) {
                     console.log(error);

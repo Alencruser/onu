@@ -1,41 +1,41 @@
 <%-include('partials/header.ejs')%>
 <% if(locals.roomId) { %>
-<title>Room <%=roomId%></title>
+<title>Partie en cours</title>
 </head>
 
 <body id="tableGame" class="container-fluid">
-    <div class="row" style="height:20%;">
-        <div class="text-white col-lg-2 img-socket  offset-lg-1 text-center" id="siege6" data-socket="8"></div>
-        <div class="text-white col-lg-2 img-socket text-center" id="siege7" data-socket="5,7"></div>
-        <div class="text-white col-lg-2 img-socket text-center" id="siege8" data-socket="2,4,6,8"></div>
-        <div class="text-white col-lg-2 img-socket text-center" id="siege9" data-socket="5,7"></div>
-        <div class="text-white col-lg-2 img-socket text-center" id="siege10" data-socket="8"></div>
+    <div class="row" style="height:20vh;">
+        <div class="text-white col-lg-2 img-socket col-sm-2 offset-lg-1 offset-sm-1 text-center" id="siege6" data-socket="8"></div>
+        <div class="text-white col-lg-2 img-socket col-sm-2 text-center" id="siege7" data-socket="5,7"></div>
+        <div class="text-white col-lg-2 img-socket col-sm-2 text-center" id="siege8" data-socket="2,4,6,8"></div>
+        <div class="text-white col-lg-2 img-socket col-sm-2 text-center" id="siege9" data-socket="5,7"></div>
+        <div class="text-white col-lg-2 img-socket col-sm-2 text-center" id="siege10" data-socket="8"></div>
     </div>
-    <div class="row" style="height:20%;">
-        <div class="text-white col-lg-2 img-socket offset-lg-1 text-center" id="siege5" data-socket="3,6,7"></div>
-        <div class="text-white col-lg-2 text-center" id="unoDiv3"></div>
-        <div class="text-white col-lg-2 text-center" id="unoDiv4"></div>
-        <div class="text-white col-lg-2 text-center" id="unoDiv5"></div>
-        <div class="text-white col-lg-2 img-socket" id="siege11" data-socket="3,6,7"></div>
+    <div class="row" style="height:20vh;">
+        <div class="text-white col-lg-2 img-socket col-sm-2 offset-lg-1 offset-sm-1 text-center" id="siege5" data-socket="3,6,7"></div>
+        <div class="text-white col-lg-2 text-center col-sm-2"  id="unoDiv3"></div>
+        <div class="text-white col-lg-2 text-center col-sm-2" id="unoDiv4"></div>
+        <div class="text-white col-lg-2 text-center col-sm-2" id="unoDiv5"></div>
+        <div class="text-white col-lg-2 img-socket col-sm-2" id="siege11" data-socket="3,6,7"></div>
     </div>
-    <div class="row" style="height:20%;">
-        <div class="text-white col-lg-2 img-socket offset-lg-1" id="siege4" data-socket="4,8"></div>
-        <div class="text-white col-lg-2 text-center" id="unoDiv2"></div>
-        <div class="text-white col-lg-2 text-center" id="discardedCard"></div>
-        <div class="text-white col-lg-2 text-center" id="unoDiv6"></div>
-        <div class="text-white col-lg-2 img-socket" id="siege12" data-socket="4,8"></div>
+    <div class="row" style="height:20vh;">
+        <div class="text-white col-lg-2 img-socket col-sm-2 offset-lg-1 offset-sm-1" id="siege4" data-socket="4,8"></div>
+        <div class="text-white col-lg-2 text-center col-sm-2" id="unoDiv2"></div>
+        <div class="text-white col-lg-2 text-center col-sm-2" id="discardedCard"></div>
+        <div class="text-white col-lg-2 text-center col-sm-2" id="unoDiv6"></div>
+        <div class="text-white col-lg-2 img-socket col-sm-2" id="siege12" data-socket="4,8"></div>
     </div>
-    <div class="row" style="height:20%;">
-        <div class="text-white col-lg-2 img-socket offset-lg-1" id="siege3" data-socket="5,6,7"></div>
-        <div class="text-white col-lg-2 text-center" id="unoDiv1"></div>
-        <div class="text-white col-lg-2 text-center" id="unoDiv0"></div>
-        <div class="text-white col-lg-2 text-center" id="unoDiv7"></div>
-        <div class="text-white col-lg-2 img-socket" id="siege13" data-socket="5,6,7"></div>
+    <div class="row" style="height:20vh;">
+        <div class="text-white col-lg-2 img-socket col-sm-2 offset-lg-1 offset-sm-1" id="siege3" data-socket="5,6,7"></div>
+        <div class="text-white col-lg-2 text-center col-sm-2" id="unoDiv1"></div>
+        <div class="text-white col-lg-2 text-center col-sm-2" id="unoDiv0"></div>
+        <div class="text-white col-lg-2 text-center col-sm-2" id="unoDiv7"></div>
+        <div class="text-white col-lg-2 img-socket col-sm-2" id="siege13" data-socket="5,6,7"></div>
     </div>
-    <div class="row" style="height:20%;">
-        <div class="text-white col-lg-2 img-socket offset-lg-1" id="siege2" data-socket="8"></div>
-        <div class="text-white col-lg-6 text-center" style="z-index:9999;" id="siege0" data-socket=""></div>
-        <div class="text-white col-lg-2 img-socket" id="siege14" data-socket="8"></div>
+    <div class="row" style="height:20vh;">
+        <div class="text-white col-lg-2 img-socket col-sm-2 offset-lg-1 offset-sm-1" id="siege2" data-socket="8"></div>
+        <div class="text-white col-lg-6 text-center col-sm-6" style="z-index:9999;" id="siege0" data-socket=""></div>
+        <div class="text-white col-lg-2 img-socket col-sm-2" id="siege14" data-socket="8"></div>
     </div>
 
 
@@ -68,7 +68,7 @@
         </div>
     </div>
 
-    <div id="version">Beta v0.1</div>
+      <div id="version">Beta v0.2</div>
 
 
 </body>
